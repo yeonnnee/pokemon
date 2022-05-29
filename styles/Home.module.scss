@@ -1,3 +1,6 @@
+@import 'variables';
+
+
 .container {
   padding: 0 2rem;
 }
@@ -16,7 +19,7 @@
   display: flex;
   flex: 1;
   padding: 2rem 0;
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid $blue;
   justify-content: center;
   align-items: center;
 }
@@ -29,7 +32,7 @@
 }
 
 .title a {
-  color: #0070f3;
+  color: $blue;
   text-decoration: none;
 }
 
@@ -88,8 +91,8 @@
 .card:hover,
 .card:focus,
 .card:active {
-  color: #0070f3;
-  border-color: #0070f3;
+  color: $blue;
+  border-color: $blue;
 }
 
 .card h2 {
