@@ -3,9 +3,11 @@ import { useCallback, useEffect, useState } from 'react';
 import PokemonCard from './PokemonCard';
 import { PokemonDetail, Pokemons, ResourceForPokemon } from './types';
 import mainStyle from '../../styles/main.module.scss'
+import Image from 'next/image';
 
 const Main = (props:Pokemons) => {
   const [pokemons, setPokemons] = useState<PokemonDetail[]>([]);
+  const [moreLoading, setMoreLoading]= useState<boolean>(true);
 
   const getDetailData = useCallback(async() => {
     const pokemons = await Promise.all( props.results.map(async (data:ResourceForPokemon) => {
@@ -23,14 +25,18 @@ const Main = (props:Pokemons) => {
   },[getDetailData]);
   return (
     <div className={mainStyle.main}>
+      <div className={mainStyle.logo}>
+        <Image src="/main_logo.png" alt="logo"  width={300} height={130} />
+      </div>
       <div className={mainStyle.searchSection}>
         <input type="text" placeholder='search'/>
       </div>
       <ul className={mainStyle.pokemonList}>
-          {
-            pokemons.map((pokemon, index) => {return <PokemonCard {...pokemon} key={index} />})
-          }
-        </ul>
+        {
+          pokemons.map((pokemon, index) => {return <PokemonCard {...pokemon} key={index} />})
+        }
+        { moreLoading ? <li>Loading...</li> : null}
+      </ul>
     </div>
   )
 }

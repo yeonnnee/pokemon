@@ -3,6 +3,9 @@
 .main {
   padding: 20px;
 
+  .logo {
+    text-align: center;
+  }
   .searchSection {
     text-align: center;
     margin: 20px 0 150px;
@@ -15,14 +18,17 @@
     }
   }
   .pokemonList {
-    display: flex;
-    flex-wrap: wrap;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 
     li {
-      width: 30%;
+      padding: 20px 47px;
       margin: 20px 10px;
       text-align: center;
+      border: 1px solid gray;
+      cursor: pointer;
     }
   }
 }

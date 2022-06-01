@@ -9,20 +9,19 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       <Image src="/main_logo.png" alt="Main logo" width={350} height={150} />
       <Link href="/main">
-              <a>Start</a>
-            </Link>
+        <a>Start</a>
+      </Link>
       <div className={styles.bookContainer}>
         <div className={styles.book}>
-          <div className={styles.cover}>
-
-          </div>
-          <div className={styles.page}>
-          </div>
-          <div className={styles.page}></div>
-          <div className={styles.page}></div>
-          <div className={styles.page}></div>
-          <div className={styles.page}></div>
-          <div className={`${styles.backCover}`}></div>
+        <div className={styles.cover}>
+        </div>
+        <div className={styles.page}>
+        </div>
+        <div className={styles.page}></div>
+        <div className={styles.page}></div>
+        <div className={styles.page}></div>
+        <div className={styles.page}></div>
+        <div className={`${styles.backCover}`}></div>
         </div>
       </div>
     </div>
