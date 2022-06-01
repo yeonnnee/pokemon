@@ -50,7 +50,7 @@ export interface PokemonItem {
   version_details: {
     rarity: number,
     version: ResourceForPokemon
-  }
+  }[]
 }
 
 export interface PokemonMove {
@@ -65,9 +65,9 @@ export interface PokemonSprites extends FrontImage, BackImage {
   other: {
     dream_world: FrontImage,
     home: FrontImage,
-    official_artwork: FrontImage
+    ['official-artwork']: FrontImage
   },
-  versions: any
+  versions: PokemonGeneration
 }
 
 export interface FrontImage {
@@ -97,4 +97,165 @@ export interface PokemonStat {
 export interface PokemonType {
   slot: number,
   type: ResourceForPokemon // normal, fire, grass, water...
+}
+
+export interface PokemonGeneration {
+  ['generation-i']: FirstGen,
+  ['generation-ii']: SecondGen,
+  ['generation-iii']: ThirdGen,
+  ['generation-iv']: FourthGen,
+  ['generation-v']: FifthGen,
+  ['generation-vi']: SixthGen,
+  ['genration-vii']: {
+    icons: GenerationIcons,
+    ['ultra-sun-ultra-moon']: {
+      front_default: string,
+      front_female: string | null,
+      front_shiny: string,
+      front_shiny_female: string
+    }
+  },
+  ['generation-viii']: {
+    icons: GenerationIcons
+  },
+}
+
+export interface FirstGen {
+  ['red-blue']: {
+    back_default: string,
+    back_gray: string,
+    back_transparent: string,
+    front_default: string,
+    front_gray: string,
+    front_transparent: string
+  }
+  yellow: {
+    back_default: string,
+    back_gray: string,
+    back_transparent: string,
+    front_default: string,
+    front_gray: string,
+    front_transparent: string
+  }
+}
+
+export interface SecondGen {
+  crystal: {
+    back_default: string,
+    back_shiny: string,
+    back_shiny_transparent: string,
+    back_transparent: string,
+    front_default: string,
+    front_shiny: string,
+    front_shiny_transparent: string,
+    front_transparent: string,
+  },
+  gold: {
+    back_default: string,
+    back_shiny: string,
+    front_default: string,
+    front_shiny: string,
+    front_transparent: string
+  },
+  silver: {
+    back_default: string,
+    back_shiny: string,
+    front_default: string,
+    front_shiny: string,
+    front_transparent: string
+  }
+}
+
+export interface ThirdGen {
+  emerald: {
+    front_default: string,
+    front_shiny: string
+  },
+  ['firered-leafgreen']: {
+    back_default: string,
+    back_shiny: string,
+    front_default: string,
+    front_shiny: string,
+  },
+  ['ruby-sapphire']: {
+    back_default: string,
+    back_shiny: string,
+    front_default: string,
+    front_shiny: string,
+  }
+}
+
+export interface FourthGen {
+  ['diamond-pearl']: {
+    back_default: string,
+    back_female: string | null,
+    back_shiny: string,
+    back_shiny_female: string | null,
+    front_default: string,
+    front_female: string | null,
+    front_shiny: string,
+    front_shiny_female: string | null
+  },
+  ['heartgold-soulsilver']: {
+    back_default: string,
+    back_female: string | null,
+    back_shiny: string,
+    back_shiny_female: string | null,
+    front_default: string,
+    front_female: string | null,
+    front_shiny: string,
+    front_shiny_female: string | null
+  },
+  ['platinum']: {
+    back_default: string,
+    back_female: string | null,
+    back_shiny: string,
+    back_shiny_female: string | null,
+    front_default: string,
+    front_female: string | null,
+    front_shiny: string,
+    front_shiny_female: string | null
+  }
+}
+
+export interface FifthGen {
+  ['black-white']: {
+    animated: {
+      back_default: string,
+      back_female: string | null,
+      back_shiny: string,
+      back_shiny_female: string | null,
+      front_default: string,
+      front_female: string | null,
+      front_shiny: string,
+      front_shiny_female: string | null
+    },
+    back_default: string,
+    back_female: string | null,
+    back_shiny: string,
+    back_shiny_female: string | null,
+    front_default: string,
+    front_female: string | null,
+    front_shiny: string,
+    front_shiny_female: string | null
+  }
+}
+
+export interface SixthGen {
+  ['omegaruby-alphasapphire']: {
+    front_default: string,
+    front_female: string | null,
+    front_shiny: string,
+    front_shiny_female: string
+  },
+  ['x-y']: {
+    front_default: string,
+    front_female: string | null,
+    front_shiny: string,
+    front_shiny_female: string 
+  }
+}
+export interface GenerationIcons {
+  front_detail: string,
+  front_female: string
 }
