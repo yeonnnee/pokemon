@@ -1,20 +1,32 @@
 import type { GetStaticProps, NextPage } from 'next'
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import PokemonCard from './PokemonCard';
-import { Pokemons, ResourceForPokemon } from './types';
+import { PokemonDetail, Pokemons, ResourceForPokemon } from './types';
 
-const Main: NextPage = (props) => {
-  const data = props as Pokemons;
-  const [pokemons, setPokemons] = useState<Pokemons>(data);
+const Main = (props:Pokemons) => {
+  const [pokemons, setPokemons] = useState<PokemonDetail[]>([]);
 
-  console.log(pokemons);
+  const getDetailData = useCallback(async() => {
+    const pokemons = await Promise.all( props.results.map(async (data:ResourceForPokemon) => {
+      const detail = await fetch(data.url);
+      const result = await detail.json();
+      return result;
+    }));
+    setPokemons(pokemons);
+  },[props]);
+
+  console.log('pokemons', pokemons)
+
+  useEffect(()=>{
+    getDetailData();
+  },[getDetailData]);
   return (
     <div>
 
       <div>
         <ul>
           {
-            pokemons.results.map((pokemon, index) => {return <PokemonCard {...pokemon} key={index} />})
+            pokemons.map((pokemon, index) => {return <PokemonCard {...pokemon} key={index} />})
           }
         </ul>
       </div>
@@ -26,6 +38,7 @@ const Main: NextPage = (props) => {
 export const getStaticProps: GetStaticProps = async(context) => {
   const res = await fetch("https://pokeapi.co/api/v2/pokemon");
   const pokemons = await res.json();
+
   return {
     props: { ...pokemons }
   }
