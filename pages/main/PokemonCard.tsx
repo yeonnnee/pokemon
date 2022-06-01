@@ -38,34 +38,6 @@ const PokemonCard = (pokemon:PokemonDetail, key: number) => {
         }
       </div>
       <Image width={150} height={150} src={pokemon.sprites.other["official-artwork"].front_default || ''} alt={pokemon.name}/>
-
-      {/* <ul className={cardStyle.category}>
-        <li>
-          <span>Type</span>
-          {
-            pokemon.types.map((type, index) => {
-              return <div key={index} className={cardStyle.type}>{type.type.name}</div>
-            })
-          }
-        </li>
-        <li>
-          <span>Height</span>
-          <span>{pokemon.height}m</span>
-        </li>
-        <li>
-          <span>Weight</span>
-          <span>{pokemon.weight}kg</span>
-        </li>
-
-      </ul> */}
-      {/* <div className={cardStyle.rarity}>
-        {ratingStarArr.map(num => {
-          const isColoredStar = num <= pokemon.held_items[0]?.version_details[0].rarity ? true : false;
-          return <FontAwesomeIcon icon={star} className={isColoredStar ? cardStyle.rating : cardStyle.emptyStar} key={num}/>
-        })}
-        
-      </div> */}
-
     </li>
   )
 }
