@@ -1,0 +1,60 @@
+@import 'variables';
+
+.card {
+  .info {
+    margin: 0 0 10px;
+  }
+
+  .type {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    span {
+      padding: 2px 5px 6px;
+      font-size: 13px;
+      border-radius: 10px;
+
+      &:nth-child(1) {
+        margin: 0 10px 0 0;
+      }
+
+      &.grass {
+        background-color: $green-label;
+      }
+      &.poison {
+        background-color: $purple-label;
+      }
+      &.fire {
+        background-color: $red-label;
+      }
+      &.flying {
+        background-color: $blue-green-label;
+      }
+      &.water {
+        background-color: $blue-label;
+      }
+      &.bug {
+        background-color: $light-green-label;
+      }
+      &.normal {
+        background-color: $yellow-label;
+      }
+    }
+  }
+
+  .category {
+    display: flex;
+
+    span {
+      display: block;
+    }
+
+    .type {
+      display: inline-block;
+
+      &:nth-child(1) {
+        margin: 0 10px 0 0;
+      }
+    }
+  }
+}

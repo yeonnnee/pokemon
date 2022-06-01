@@ -2,6 +2,7 @@ import type { GetStaticProps, NextPage } from 'next'
 import { useCallback, useEffect, useState } from 'react';
 import PokemonCard from './PokemonCard';
 import { PokemonDetail, Pokemons, ResourceForPokemon } from './types';
+import mainStyle from '../../styles/main.module.scss'
 
 const Main = (props:Pokemons) => {
   const [pokemons, setPokemons] = useState<PokemonDetail[]>([]);
@@ -21,15 +22,15 @@ const Main = (props:Pokemons) => {
     getDetailData();
   },[getDetailData]);
   return (
-    <div>
-
-      <div>
-        <ul>
+    <div className={mainStyle.main}>
+      <div className={mainStyle.searchSection}>
+        <input type="text" placeholder='search'/>
+      </div>
+      <ul className={mainStyle.pokemonList}>
           {
             pokemons.map((pokemon, index) => {return <PokemonCard {...pokemon} key={index} />})
           }
         </ul>
-      </div>
     </div>
   )
 }

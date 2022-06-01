@@ -1,0 +1,28 @@
+@import './variables';
+
+.main {
+  padding: 20px;
+
+  .searchSection {
+    text-align: center;
+    margin: 20px 0 150px;
+
+    input {
+      padding: 10px;
+      width: 40%;
+      border: 1px solid #7f7a7a;
+      border-radius: 20px;
+    }
+  }
+  .pokemonList {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+
+    li {
+      width: 30%;
+      margin: 20px 10px;
+      text-align: center;
+    }
+  }
+}
