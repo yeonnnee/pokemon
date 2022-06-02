@@ -1,8 +1,5 @@
-import { NextPage } from "next";
 import Image from "next/image";
 import { PokemonDetail, ResourceForPokemon } from "./types";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar as star} from '@fortawesome/free-solid-svg-icons'
 import cardStyle from '../../styles/pokemon-card.module.scss'
 
 
@@ -28,15 +25,15 @@ const PokemonCard = (pokemon:PokemonDetail, key: number) => {
   console.log('card',pokemon)
   return(
     <li className={cardStyle.card}>
-      <div className={cardStyle.info}>No.{pokemonIdx}</div>
+      <span className={`${cardStyle.info} ${getClassName(0)}`}>No.{pokemonIdx}</span>
       <div className={cardStyle.info}>{pokemon.name.toUpperCase()}</div>
-      <div className={cardStyle.type}>
+      {/* <div className={cardStyle.type}>
         {
           types.map((type, index) => {
-            return <span key={index} className={getClassName(index)}>{type}</span>
+            return <span key={index}>{type}</span>
           })
         }
-      </div>
+      </div> */}
       <Image width={150} height={150} src={pokemon.sprites.other["official-artwork"].front_default || ''} alt={pokemon.name}/>
     </li>
   )

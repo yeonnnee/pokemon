@@ -28,10 +28,10 @@ const Main = (props:Pokemons) => {
       <div className={mainStyle.logo}>
         <Image src="/main_logo.png" alt="logo"  width={300} height={130} />
       </div>
-      <div className={mainStyle.searchSection}>
+      <div className={mainStyle['search-section']}>
         <input type="text" placeholder='search'/>
       </div>
-      <ul className={mainStyle.pokemonList}>
+      <ul className={mainStyle['pokemon-list']}>
         {
           pokemons.map((pokemon, index) => {return <PokemonCard {...pokemon} key={index} />})
         }
