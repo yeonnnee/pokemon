@@ -29,13 +29,6 @@ const PokemonCard = (pokemon:PokemonDetail, key: number) => {
       <li className={cardStyle.card}>
         <span className={`${cardStyle.info} ${getClassName(0)}`}>No.{pokemonIdx}</span>
         <div className={cardStyle.info}>{pokemon.name.toUpperCase()}</div>
-        {/* <div className={cardStyle.type}>
-          {
-            types.map((type, index) => {
-              return <span key={index}>{type}</span>
-            })
-          }
-          </div> */}
         <Image width={150} height={150} src={pokemon.sprites.other["official-artwork"].front_default || ''} alt={pokemon.name}/>
       </li>
     </Link>
