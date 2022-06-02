@@ -18,11 +18,10 @@ const Main = (props:Pokemons) => {
     setPokemons(pokemons);
   },[props]);
 
-  console.log('pokemons', pokemons)
-
   useEffect(()=>{
     getDetailData();
   },[getDetailData]);
+
   return (
     <div className={mainStyle.main}>
       <div className={mainStyle.logo}>
