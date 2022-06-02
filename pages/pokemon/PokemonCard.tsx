@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { PokemonDetail, ResourceForPokemon } from "./types";
 import cardStyle from '../../styles/pokemon-card.module.scss'
+import Link from "next/link";
 
 
 const PokemonCard = (pokemon:PokemonDetail, key: number) => {
@@ -24,7 +25,8 @@ const PokemonCard = (pokemon:PokemonDetail, key: number) => {
 
   console.log('card',pokemon)
   return(
-    <li className={cardStyle.card}>
+    <Link href={`/pokemon/${pokemon.name}`}>
+     <li className={cardStyle.card}>
       <span className={`${cardStyle.info} ${getClassName(0)}`}>No.{pokemonIdx}</span>
       <div className={cardStyle.info}>{pokemon.name.toUpperCase()}</div>
       {/* <div className={cardStyle.type}>
@@ -36,6 +38,8 @@ const PokemonCard = (pokemon:PokemonDetail, key: number) => {
       </div> */}
       <Image width={150} height={150} src={pokemon.sprites.other["official-artwork"].front_default || ''} alt={pokemon.name}/>
     </li>
+    </Link>
+   
   )
 }
 

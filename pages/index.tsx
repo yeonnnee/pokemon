@@ -8,7 +8,7 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <Image src="/main_logo.png" alt="Main logo" width={350} height={150} />
-      <Link href="/main">
+      <Link href="/pokemon">
         <a>Start</a>
       </Link>
       <div className={styles.bookContainer}>
