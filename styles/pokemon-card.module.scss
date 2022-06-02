@@ -1,44 +1,42 @@
-@import 'variables';
+@import './variables/colors';
+@import './mixins/shadow';
 
 .card {
   .info {
-    margin: 0 0 10px;
-  }
+    margin: 5px 0 0;
 
-  .type {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    span {
-      padding: 2px 5px 6px;
-      font-size: 13px;
+    &:nth-child(1) {
+      margin: 0;
       border-radius: 10px;
+      padding: 2px 10px;
+      font-size: 13px;
+    }
 
-      &:nth-child(1) {
-        margin: 0 10px 0 0;
-      }
-
-      &.grass {
-        background-color: $green-label;
-      }
-      &.poison {
-        background-color: $purple-label;
-      }
-      &.fire {
-        background-color: $red-label;
-      }
-      &.flying {
-        background-color: $blue-green-label;
-      }
-      &.water {
-        background-color: $blue-label;
-      }
-      &.bug {
-        background-color: $light-green-label;
-      }
-      &.normal {
-        background-color: $yellow-label;
-      }
+    &.grass {
+      background-color: $green-label;
+      @include label-shadow($green-shadow);
+    }
+    &.poison {
+      background-color: $purple-label;
+    }
+    &.fire {
+      background-color: $red-label;
+      @include label-shadow($red-shadow);
+    }
+    &.flying {
+      background-color: $blue-green-label;
+    }
+    &.water {
+      background-color: $blue-label;
+      @include label-shadow($blue-shadow);
+    }
+    &.bug {
+      background-color: $light-green-label;
+      @include label-shadow($normal-shadow);
+    }
+    &.normal {
+      background-color: $yellow-label;
+      @include label-shadow($normal-shadow);
     }
   }
 }
