@@ -4,7 +4,9 @@ import { FlavorTextEntry, Genera, PokemonName } from "./speices"
 
 export interface PokemonDetail {
   name: string,
+  nameKr: string,
   names: PokemonName[],
+  desc: FlavorTextEntry[],
   order: string,
   height: number,
   weight: number,

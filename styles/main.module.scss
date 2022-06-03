@@ -1,4 +1,5 @@
 @import './variables/colors';
+@import './mixins/shadow';
 
 .main {
   padding: 20px;
@@ -22,7 +23,7 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    background-color: #f4f2f2;
+    background-color: $list-bg;
     border-radius: 5px;
 
     li {
@@ -31,15 +32,13 @@
       text-align: center;
       cursor: pointer;
 
-      border: 1px solid white;
-      background-color: #f0f0f0;
+      border: 1px solid #fff;
+      background-color: $card-color;
       border-radius: 10px;
-      box-shadow: 12px 11px 11px 5px #e1e4e6, -8px -8px 7px 0px #f6f6f6;
       transition: all 0.3s ease;
       
       &:hover {
-        box-shadow: inset 7px 10px 15px 0px #d3cdcd, 1px 2px 0px 0px #fffefe, inset 0px 1px 10px 8px #fff;
-        // box-shadow: inset -8px -7px 12px 0px #d3cdcd, -2px -1px 0px 0px #fffefe, inset -4px -3px 10px 8px #fff
+        @include card-inner-shadow();
       }
     }
   }

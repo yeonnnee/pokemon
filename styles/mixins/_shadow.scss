@@ -1,3 +1,15 @@
 @mixin label-shadow($color) {
   box-shadow: inset 1px 2px 0px 0px $color, inset -1px -1px 2px 0px #fff;
 }
+
+@mixin graph-shadow() {
+  box-shadow: -1px -1px 0px $graph-dark-shadow, 1px 2px 0px 0px #f1f1f1, inset 0px 3px 4px 0px #d1d1d1;
+}
+
+@mixin card-inner-shadow() {
+  box-shadow: inset 7px 10px 15px 0px #d3cdcd, 1px 2px 0px 0px #fffefe, inset 0px 1px 10px 8px #fff;
+}
+
+@mixin card-normal-shadow() {
+  box-shadow: 12px 11px 11px 5px #e1e4e6, -8px -8px 7px 0px #f6f6f6;
+}

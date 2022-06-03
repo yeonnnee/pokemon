@@ -1,3 +1,96 @@
+@import './variables/colors';
+@import './mixins/shadow';
+
 .detail {
-  
+
+  .image-section {
+    position: fixed;
+    width: 450px;
+    height: 100%;
+    top: 100px;
+    left: 200px;
+    padding: 20px;
+    border: 1px solid black;
+  }
+
+  .pokemon-info-section {
+    width: 100%;
+    margin: 100px 0 0;
+    padding: 0 20px 0 700px;
+
+
+
+    .order {
+      font-size: 20px;
+      color: rgb(173, 171, 171);
+    }
+
+    .name {
+      font-size: 30px;
+    }
+
+    .desc {
+      margin: 0 0 20px;
+      .version-tab {
+        display: flex;
+
+        li {
+          border: 1px solid black;
+          width: 200px;
+          padding: 10px 0;
+          text-align: center;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .rate {
+      margin: 0 0 20px;
+      .graph-section {
+        display: flex;
+        align-items: center;
+        p {
+          display: inline-block;
+          width: 100px;
+          line-height: 1.7;
+        }
+        .graph {
+          @include graph-shadow();
+          display: inline-block;
+          margin: 0 10px;
+          width: 50%;
+          padding: 10px;
+          border-radius: 10px;
+          position: relative;
+
+          .graph-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            padding: 10px;
+            border-radius: 10px;
+          }
+
+          .happiness-bar {
+            background-color: $pink;
+            @include label-shadow($red-shadow);
+          }
+
+          .growth-bar {
+            background-color: $green-label;
+            @include label-shadow($green-shadow)
+          }
+
+          .capture-bar {
+            background-color: $blue-label;
+            @include label-shadow($blue-shadow);
+          }
+        }
+      }
+    }
+
+    .category {
+      margin: 0 0 10px;
+    }
+  }
 }
