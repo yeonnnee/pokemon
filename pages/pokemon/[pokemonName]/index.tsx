@@ -103,6 +103,29 @@ const Detail = () => {
         {
           data ? <Image width={400} height={400} src={data.images.other["official-artwork"].front_default || ''} alt={data.name}/> : <span>No Image</span>
         }
+        <div className={detailStyle.pic}>
+          <div>
+            {
+              data ? <Image width={100} height={100} src={data.images.back_default || ''} alt={data.name}/> : <span>No Image</span>
+            }
+          </div>
+          <div>
+            {
+              data ? <Image width={100} height={100} src={data.images.back_shiny || ''} alt={data.name}/> : <span>No Image</span>
+            }
+          </div>
+          <div>
+            {
+              data ? <Image width={100} height={100} src={data.images.front_default || ''} alt={data.name}/> : <span>No Image</span>
+            }
+          </div>
+          <div>
+            {
+              data ? <Image width={100} height={100} src={data.images.front_shiny || ''} alt={data.name}/> : <span>No Image</span>
+            }
+          </div>
+        </div>
+
       </section>
 
       <section className={detailStyle["pokemon-info-section"]}>
@@ -110,6 +133,14 @@ const Detail = () => {
         <div className={detailStyle.name}>
           <span>{data?.nameKr}</span>
         </div>
+
+        {
+              data ? <Image width={100} height={100} src={data.images.other.home.front_default|| ''} alt={data.name}/> : <span>No Image</span>
+        }
+        
+        {
+              data ? <Image width={100} height={100} src={data.images.other.home.front_shiny|| ''} alt={data.name}/> : <span>No Image</span>
+            }
 
         {/* 특징 */}
         <div className={`${detailStyle.desc} ${detailStyle.section}`}>

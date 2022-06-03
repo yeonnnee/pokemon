@@ -9,8 +9,24 @@
 
   .image-section {
     width: 50%;
+    display: flex;
     padding: 20px;
     border: 1px solid black;
+
+    .pic {
+      margin: 0 0 0 38px;
+      div {
+        width: 100px;
+        height: 100px;
+        border: 1px solid black;
+        margin: 0 0 10px;
+
+        &:nth-last-child(1) {
+          margin:  0;
+        }
+      }
+    }
+
   }
 
   .pokemon-info-section {
