@@ -2,13 +2,14 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import detailStyle from '../../../styles/detail.module.scss';
-import { PokemonDetail } from "../types";
+import { PokemonDetailApiRes } from "../../types/detail";
+
 
 const Detail = () => {
   const router = useRouter();
   const pokemonName = router.query.pokemonName;
   const [pokemonIdx, setPokemonIdx] = useState<string>('000');
-  const [data, setData] = useState<PokemonDetail | null>(null);
+  const [data, setData] = useState<PokemonDetailApiRes | null>(null);
 
 
 

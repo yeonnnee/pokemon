@@ -1,16 +1,6 @@
-export interface Pokemons {
-  count: number,
-  next: string | null,
-  previous: string | null,
-  results: ResourceForPokemon[],
-}
+import { ResourceForPokemon } from "./pokemons"
 
-export interface ResourceForPokemon {
-  name: string,
-  url: string
-}
-
-export interface PokemonDetail {
+export interface PokemonDetailApiRes {
   abilities: PokemonAbility[],
   base_experience: number,
   forms: ResourceForPokemon[],

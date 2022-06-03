@@ -1,10 +1,11 @@
 import Image from "next/image";
-import { PokemonDetail, ResourceForPokemon } from "./types";
+
 import cardStyle from '../../styles/pokemon-card.module.scss'
 import Link from "next/link";
+import { PokemonDetailApiRes } from "../types/detail";
 
 
-const PokemonCard = (pokemon:PokemonDetail, key: number) => {
+const PokemonCard = (pokemon:PokemonDetailApiRes, key: number) => {
   const pokemonIdx = getThreeDigitsIdx(pokemon.order);
   const types = pokemon.types.map(type => type.type.name);
   // const ratingStarArr = Array.from({length: 5}, (v,i) => i+1);
