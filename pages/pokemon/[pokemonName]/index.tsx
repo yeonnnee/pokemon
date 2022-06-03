@@ -2,14 +2,14 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import detailStyle from '../../../styles/detail.module.scss';
-import { PokemonDetailApiRes } from "../../types/detail";
+import { PokemonDetail, PokemonDetailApiRes } from "../../types/detail";
+import { PokemonSpeciesApiRes } from "../../types/speices";
 
 
 const Detail = () => {
   const router = useRouter();
   const pokemonName = router.query.pokemonName;
-  const [pokemonIdx, setPokemonIdx] = useState<string>('000');
-  const [data, setData] = useState<PokemonDetailApiRes | null>(null);
+  const [data, setData] = useState<PokemonDetail | null>(null);
 
 
 
@@ -23,14 +23,34 @@ const Detail = () => {
     }
   }
 
+
   const getDetailData = useCallback(async() => {
     if(!pokemonName) return;
+    const detailRes = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+    const detail:PokemonDetailApiRes = await detailRes.json();
 
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
-    const data = await res.json();
-    setPokemonIdx(getThreeDigitsIdx(data.order));
-    setData(data)
-    console.log('res', data);
+    const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`);
+    const species:PokemonSpeciesApiRes = await speciesRes.json();
+
+    const result = {
+      name: species.name,
+      names: species.names,
+      order: getThreeDigitsIdx(detail.order),
+      weight: detail.weight,
+      height: detail.height,
+      types: detail.types,
+      images: detail.sprites,
+      happiness: species.base_happiness,
+      capture_rate: species.capture_rate,
+      growth_rate: species.growth_rate,
+      flavor_text_entries: species.flavor_text_entries,
+      genera: species.genera,
+      generation: species.generation,
+      has_gender_differences: species.has_gender_differences,
+      is_legendary: species.is_legendary,
+    };
+    console.log(result);
+    setData(result);
   },[pokemonName]);
 
 
@@ -43,13 +63,33 @@ const Detail = () => {
     <div className={detailStyle.detail}>
       <div>
         {
-          data ? <Image width={400} height={400} src={data.sprites.other["official-artwork"].front_default || ''} alt={data.name}/> : <span>No Image</span>
+          data ? <Image width={400} height={400} src={data.images.other["official-artwork"].front_default || ''} alt={data.name}/> : <span>No Image</span>
         }
       </div>
 
       <div>
-        <span>No.{pokemonIdx}</span>
+        <span>No.{data?.order}</span>
         <div>{data?.name}</div>
+
+        <div>
+          <p>Generation</p>
+          <p>{data?.generation.name}</p>
+        </div>
+        <div>
+          <p>Rate</p>
+
+          <div>
+          <p>Happiness</p>
+        </div>
+        <div>
+          <p>Capture</p>
+        </div>
+        <div>
+          <p>Growth</p>
+        </div>
+
+        </div>
+        
         <div>
           <p>Type</p>
           {
