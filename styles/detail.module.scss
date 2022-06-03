@@ -2,23 +2,21 @@
 @import './mixins/shadow';
 
 .detail {
+  display: flex;
+  padding: 20px 50px;
+  height: 100%;
+  align-items: center;
 
   .image-section {
-    position: fixed;
-    width: 450px;
-    height: 100%;
-    top: 100px;
-    left: 200px;
+    width: 50%;
     padding: 20px;
     border: 1px solid black;
   }
 
   .pokemon-info-section {
-    width: 100%;
-    margin: 100px 0 0;
-    padding: 0 20px 0 700px;
-
-
+    width: 50%;
+    margin: 0 10%;
+    // padding: 0 20px 0 700px;
 
     .order {
       font-size: 20px;
@@ -26,26 +24,58 @@
     }
 
     .name {
-      font-size: 30px;
+      margin: 0 0 30px;
+      font-size: 35px;
+    }
+
+    .section {
+      margin: 0 0 60px;
+      padding: 10px;
+      background: $container-bg;
+      border-radius: 10px;
+      box-shadow: -3px -3px 7px #ffffff73,
+      3px 3px 5px rgba(94,104,121,0.288);
     }
 
     .desc {
-      margin: 0 0 20px;
       .version-tab {
         display: flex;
+        box-shadow: -3px -3px 7px #ffffff73,
+        3px 3px 5px rgba(94,104,121,0.288);
 
         li {
-          border: 1px solid black;
-          width: 200px;
-          padding: 10px 0;
+          flex: 1;
+          margin: 0 10px 0 0;
+          padding: 10px;
+          background-color: $container-bg; //#e7e7e7;
+          box-shadow: -3px -3px 7px #ffffff73,
+          3px 3px 5px rgba(94,104,121,0.288);
+          font-size: 13px;
           text-align: center;
+          align-items: center;
           cursor: pointer;
+
+          &:nth-last-child(1) {
+            margin: 0;
+          }
+
+          &:hover, &.selected-tab {
+            box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
+          }
         }
+      }
+
+      .desc-text {
+        height: 130px;
+        padding: 50px 42px;
+        margin: 20px 0 0;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
       }
     }
 
     .rate {
-      margin: 0 0 20px;
       .graph-section {
         display: flex;
         align-items: center;
@@ -73,17 +103,17 @@
 
           .happiness-bar {
             background-color: $pink;
-            @include label-shadow($red-shadow);
+            @include graph-bar($red-shadow);
           }
 
           .growth-bar {
             background-color: $green-label;
-            @include label-shadow($green-shadow)
+            @include graph-bar($green-shadow)
           }
 
           .capture-bar {
             background-color: $blue-label;
-            @include label-shadow($blue-shadow);
+            @include graph-bar($blue-shadow);
           }
         }
       }
@@ -91,6 +121,27 @@
 
     .category {
       margin: 0 0 10px;
+    }
+
+    .info {
+      display: flex;
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: $container-bg;
+      box-shadow: -3px -3px 7px #ffffff73,
+      3px 3px 5px rgba(94,104,121,0.288);
+      li {
+        flex: 1;
+
+        .type {
+          display: flex;
+          align-items: center;
+          justify-content: space-around
+        }
+        
+
+      }
     }
   }
 }

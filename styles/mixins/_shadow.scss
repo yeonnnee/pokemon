@@ -3,7 +3,11 @@
 }
 
 @mixin graph-shadow() {
-  box-shadow: -1px -1px 0px $graph-dark-shadow, 1px 2px 0px 0px #f1f1f1, inset 0px 3px 4px 0px #d1d1d1;
+  box-shadow: inset -1px 2px 3px #7a7777, 0px 3px 2px 0px #dedbdb, inset 0px 3px 4px 0px #d1d1d1;
+}
+
+@mixin graph-bar($color) {
+  box-shadow: 1px 2px 0px 0px $color, inset -1px -1px 2px 0px #fff;
 }
 
 @mixin card-inner-shadow() {

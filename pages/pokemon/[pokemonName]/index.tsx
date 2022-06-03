@@ -42,15 +42,17 @@ const Detail = () => {
   const paintGraphBar = useCallback((result: PokemonDetail) => {
     const growthRate = result.growth_rate.name;
     const convertedGrowthRate = converGrowthToPercentage(growthRate);
+    const happines = result.happiness > 100 ? 100 : result.happiness;
+    const captureRate = result.capture_rate > 100 ? 100 : result.capture_rate;
 
     if (!happinessBarRef.current) return;
-    happinessBarRef.current.style.width = `${result.happiness}%`;
+    happinessBarRef.current.style.width = `${happines}%`;
 
     if (!growthBarRef.current) return;
     growthBarRef.current.style.width = `${convertedGrowthRate}%`;
     
     if (!captureBarRef.current) return;
-    captureBarRef.current.style.width = `${result.capture_rate}%`;
+    captureBarRef.current.style.width = `${captureRate}%`;
   }, []);
 
   const getDetailData = useCallback(async() => {
@@ -105,19 +107,23 @@ const Detail = () => {
 
       <section className={detailStyle["pokemon-info-section"]}>
         <span className={detailStyle.order}>No.{data?.order}</span>
-        <div className={detailStyle.name}>{data?.nameKr}</div>
-
-        <div className={detailStyle.desc}>
-          <span className={detailStyle.category}>특징</span>
-          <ul className={detailStyle["version-tab"]}>
-            {data?.desc.map((desc, index) => <li key={index} onClick={()=>setSelectedVersion(index)}>{desc.version.name.toUpperCase() }</li>)}
-          </ul>
-
-          <p>{data?.desc[selectedVersion].flavor_text}</p>
+        <div className={detailStyle.name}>
+          <span>{data?.nameKr}</span>
         </div>
 
-        <div className={detailStyle.rate}>
-          <p className={detailStyle.category}>Rate</p>
+        {/* 특징 */}
+        <div className={`${detailStyle.desc} ${detailStyle.section}`}>
+          {/* <p className={detailStyle.category}>특징</p> */}
+          <ul className={detailStyle["version-tab"]}>
+            {data?.desc.map((desc, index) => <li key={index} onClick={()=>setSelectedVersion(index)} className={selectedVersion === index ? `${detailStyle["selected-tab"]}` : ''}>{desc.version.name.toUpperCase() }</li>)}
+          </ul>
+
+          <p className={detailStyle["desc-text"]}>{data?.desc[selectedVersion].flavor_text}</p>
+        </div>
+
+        {/* RATE */}
+        <div className={`${detailStyle.rate} ${detailStyle.section}`}>
+          <p className={detailStyle.category}>Info</p>
 
           <div className={detailStyle['graph-section']}>
             <p>Happiness</p>
@@ -144,35 +150,41 @@ const Detail = () => {
           </div>
         </div>
 
+        {/* Info */}
+        <ul className={`${detailStyle.info} ${detailStyle.section}`}>
+          <li>
+            <p className={detailStyle.category}>Type</p>
+            <div className={detailStyle.type}>
+            {
+              data?.types.map((type, index) => {
+                return <p key={index}>{type.type.name}</p>
+              })
+            }
+            </div>
+
+          </li>
 
 
-        <div>
-          <p>Generation</p>
-          <p>{data?.generation.name}</p>
-        </div>
+          <li>
+            <p className={detailStyle.category}>Height</p>
+            <p>{data?.height}m</p>
+          </li>
+          
+          
+          <li>
+            <p className={detailStyle.category}>Weight</p>
+            <p>{data?.weight} kg</p>
+          </li>
 
-        <div>
-          <p>Type</p>
-          {
-            data?.types.map((type, index) => {
-              return <span key={index}>{type.type.name}</span>
-            })
-          }
-        </div>
-
-
-        <div>
-          <p>Height</p>
-          <p>{data?.height}m</p>
-        </div>
-        
-        
-        <div>
-          <p>Weight</p>
-          <p>{data?.weight}</p>
-        </div>
-
+          <li>
+            <p className={detailStyle.category}>Generation</p>
+            <p>{data?.generation.name}</p>
+          </li>
+        </ul>
       </section>
+      {/* <div>
+        <button>목록으로</button>
+      </div> */}
     </div>
   )
 }
