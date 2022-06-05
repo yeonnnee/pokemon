@@ -45,7 +45,7 @@
     }
 
     .section {
-      margin: 0 0 60px;
+      margin: 0 0 30px;
       padding: 10px;
       background: $container-bg;
       border-radius: 10px;
@@ -122,14 +122,34 @@
             @include graph-bar($red-shadow);
           }
 
-          .growth-bar {
-            background-color: $green-label;
-            @include graph-bar($green-shadow)
-          }
-
-          .capture-bar {
+          .speed-bar {
             background-color: $blue-label;
             @include graph-bar($blue-shadow);
+          }
+
+          .special-defense-bar {
+            background-color: $purple-label;
+            @include graph-bar($blue-shadow);
+          }
+
+          .special-attack-bar {
+            background-color: $yellow-label;
+            @include graph-bar($red-shadow);
+          }
+
+          .hp-bar {
+            background-color: $red-label;
+            @include graph-bar($red-shadow);
+          }
+
+          .attack-bar {
+            background-color: $orange-label;
+            @include graph-bar($red-shadow);
+          }
+
+          .defense-bar {
+            background-color: $green-label;
+            @include graph-bar($green-shadow)
           }
         }
       }

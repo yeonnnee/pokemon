@@ -20,6 +20,7 @@ export interface PokemonDetail {
   generation: ResourceForPokemon,
   has_gender_differences: boolean,
   is_legendary: boolean,
+  stats: PokemonStat[]
 }
 export interface PokemonDetailApiRes {
   abilities: PokemonAbility[],
@@ -102,7 +103,9 @@ export interface BackImage {
 export interface PokemonStat {
   base_stat: number,
   url: string,
-  stat: ResourceForPokemon
+  stat: ResourceForPokemon,
+  label?: string,
+  ref?: any
 }
 
 export interface PokemonType {

@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import detailStyle from '../../../styles/detail.module.scss';
-import { PokemonDetail, PokemonDetailApiRes } from "../../types/detail";
+import { PokemonDetail, PokemonDetailApiRes, PokemonStat } from "../../types/detail";
 import { PokemonSpeciesApiRes } from "../../types/speices";
 
 
@@ -13,8 +13,13 @@ const Detail = () => {
   const [selectedVersion, setSelectedVersion] = useState<number>(0);
 
   const happinessBarRef = useRef<HTMLDivElement | null>(null);
-  const growthBarRef = useRef<HTMLDivElement | null>(null);
-  const captureBarRef = useRef<HTMLDivElement | null>(null);
+  const hpBarRef = useRef<HTMLDivElement | null>(null);
+  const attackBarRef = useRef<HTMLDivElement | null>(null);
+  const defenseBarRef = useRef<HTMLDivElement | null>(null);
+  const spAttackBarRef = useRef<HTMLDivElement | null>(null);
+  const spDefenseBarRef = useRef<HTMLDivElement | null>(null);
+  const speedBarRef = useRef<HTMLDivElement | null>(null);
+
 
 
   function getThreeDigitsIdx(pokemonOrder: number) {
@@ -44,16 +49,59 @@ const Detail = () => {
     const convertedGrowthRate = converGrowthToPercentage(growthRate);
     const happines = result.happiness > 100 ? 100 : result.happiness;
     const captureRate = result.capture_rate > 100 ? 100 : result.capture_rate;
+    const hpRate = result.stats.find(stat => stat.stat.name === 'hp')?.base_stat;
+    const attackRate = result.stats.find(stat => stat.stat.name === 'attack')?.base_stat;
+    const defenseRate = result.stats.find(stat => stat.stat.name === 'defense')?.base_stat;
+    const spAttackRate = result.stats.find(stat => stat.stat.name === 'special-attack')?.base_stat;
+    const spDefenseRate = result.stats.find(stat => stat.stat.name === 'special-defense')?.base_stat;
+    const speedRate = result.stats.find(stat => stat.stat.name === 'speed')?.base_stat;
 
     if (!happinessBarRef.current) return;
     happinessBarRef.current.style.width = `${happines}%`;
 
-    if (!growthBarRef.current) return;
-    growthBarRef.current.style.width = `${convertedGrowthRate}%`;
+    if (!spAttackBarRef.current) return;
+    spAttackBarRef.current.style.width = `${spAttackRate}%`;
     
-    if (!captureBarRef.current) return;
-    captureBarRef.current.style.width = `${captureRate}%`;
+    if (!spDefenseBarRef.current) return;
+    spDefenseBarRef.current.style.width = `${spDefenseRate}%`;
+
+    if (!hpBarRef.current) return;
+    hpBarRef.current.style.width = `${hpRate}%`;
+
+    if (!attackBarRef.current) return;
+    attackBarRef.current.style.width = `${attackRate}%`;
+
+    if (!defenseBarRef.current) return;
+    defenseBarRef.current.style.width = `${defenseRate}%`;
+
+    
+    if (!speedBarRef.current) return;
+    speedBarRef.current.style.width = `${defenseRate}%`;
   }, []);
+
+  const convertStatName = (name: string) => {
+    switch (name) { 
+      case 'hp' : return 'Hp';
+      case 'attack': return 'Attack';
+      case 'defense': return 'Defense';
+      case 'special-attack': return 'Sp.Attack';
+      case 'special-defense': return 'Sp.Defense';
+      case 'speed': return 'Speed';
+      default: return '';
+    }
+  }
+
+  const getStatRef = (name: string) => {
+    switch (name) { 
+      case 'hp' : return hpBarRef;
+      case 'attack': return attackBarRef;
+      case 'defense': return defenseBarRef;
+      case 'special-attack': return spAttackBarRef;
+      case 'special-defense': return spDefenseBarRef;
+      case 'speed': return speedBarRef;
+      default: return null;
+    }
+  }
 
   const getDetailData = useCallback(async() => {
     if(!pokemonName) return;
@@ -80,10 +128,17 @@ const Detail = () => {
       capture_rate: species.capture_rate,
       growth_rate: species.growth_rate,
       flavor_text_entries: species.flavor_text_entries,
-      genera: species.genera,
+      genera: species.genera.filter(genera => genera.language.name === 'ko'),
       generation: species.generation,
       has_gender_differences: species.has_gender_differences,
       is_legendary: species.is_legendary,
+      stats: detail.stats.map(stat => {
+        return {
+          ...stat,
+          label: convertStatName(stat.stat.name),
+          ref: getStatRef(stat.stat.name)
+        }
+      })
     };
     console.log(result);
     paintGraphBar(result);
@@ -154,7 +209,21 @@ const Detail = () => {
 
         {/* RATE */}
         <div className={`${detailStyle.rate} ${detailStyle.section}`}>
-          <p className={detailStyle.category}>Info</p>
+          <p className={detailStyle.category}>STAT</p>
+
+          {data?.stats.map((stat: PokemonStat, index: number) => {
+            // if (index > 2) return;
+            return (
+              <div className={detailStyle['graph-section']} key={index}>
+                <p>{ stat.label }</p>
+                <div className={ detailStyle.graph }>
+                  <div ref={stat.ref} className={`${detailStyle['graph-bar']} ${detailStyle[`${stat.stat.name}-bar`]}`}></div>
+                </div>
+                <p>{ stat.base_stat }</p>
+              </div>
+            )
+          })}
+
 
           <div className={detailStyle['graph-section']}>
             <p>Happiness</p>
@@ -164,7 +233,7 @@ const Detail = () => {
             <p>{ data?.happiness }</p>
           </div>
 
-          <div className={detailStyle['graph-section']}>
+          {/* <div className={detailStyle['graph-section']}>
             <p>Capture</p>
             <div className={detailStyle.graph}>
               <div ref={captureBarRef} className={`${detailStyle['graph-bar']} ${detailStyle['capture-bar']}`}></div>
@@ -178,7 +247,7 @@ const Detail = () => {
               <div ref={growthBarRef} className={`${detailStyle['graph-bar']} ${detailStyle['growth-bar']}`}></div>
             </div>
             <p>{ data?.growth_rate.name }</p>
-          </div>
+          </div> */}
         </div>
 
         {/* Info */}
@@ -210,6 +279,12 @@ const Detail = () => {
           <li>
             <p className={detailStyle.category}>Generation</p>
             <p>{data?.generation.name}</p>
+          </li>
+
+          
+          <li>
+            <p className={detailStyle.category}>Category</p>
+            <p>{data?.genera[0].genus}</p>
           </li>
         </ul>
       </section>
