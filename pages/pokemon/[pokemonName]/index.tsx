@@ -32,23 +32,10 @@ const Detail = () => {
     }
   }
 
-  function converGrowthToPercentage(growthRate:string) {
-    switch (growthRate) {
-      case 'slow': return 10;
-      case 'medium': return 50;
-      case 'medium-slow': return 32;
-      case 'fase': return 100;
-      case 'slow-then-very-fast': return 90;
-      case 'fast-then-very-slow': return 20;
-      default: return 0;
-    }
-  }
+  const paintGraphBar = useCallback((result: PokemonDetail | null) => {
+    if (!result) return;
 
-  const paintGraphBar = useCallback((result: PokemonDetail) => {
-    const growthRate = result.growth_rate.name;
-    const convertedGrowthRate = converGrowthToPercentage(growthRate);
-    const happines = result.happiness > 100 ? 100 : result.happiness;
-    const captureRate = result.capture_rate > 100 ? 100 : result.capture_rate;
+    const happines = result.happiness;
     const hpRate = result.stats.find(stat => stat.stat.name === 'hp')?.base_stat;
     const attackRate = result.stats.find(stat => stat.stat.name === 'attack')?.base_stat;
     const defenseRate = result.stats.find(stat => stat.stat.name === 'defense')?.base_stat;
@@ -57,26 +44,25 @@ const Detail = () => {
     const speedRate = result.stats.find(stat => stat.stat.name === 'speed')?.base_stat;
 
     if (!happinessBarRef.current) return;
-    happinessBarRef.current.style.width = `${happines}%`;
+    happinessBarRef.current.style.width = `${ (happines && happines > 100) ? 100 : happines}%`;
 
     if (!spAttackBarRef.current) return;
-    spAttackBarRef.current.style.width = `${spAttackRate}%`;
+    spAttackBarRef.current.style.width = `${(spAttackRate && spAttackRate > 100) ? 100 : spAttackRate}%`;
     
     if (!spDefenseBarRef.current) return;
-    spDefenseBarRef.current.style.width = `${spDefenseRate}%`;
+    spDefenseBarRef.current.style.width = `${(spDefenseRate && spDefenseRate > 100) ? 100 : spDefenseRate}%`;
 
     if (!hpBarRef.current) return;
-    hpBarRef.current.style.width = `${hpRate}%`;
+    hpBarRef.current.style.width = `${(hpRate && hpRate > 100) ? 100 : hpRate}%`;
 
     if (!attackBarRef.current) return;
-    attackBarRef.current.style.width = `${attackRate}%`;
+    attackBarRef.current.style.width = `${(attackRate && attackRate > 100) ? 100 : attackRate}%`;
 
     if (!defenseBarRef.current) return;
-    defenseBarRef.current.style.width = `${defenseRate}%`;
+    defenseBarRef.current.style.width = `${(defenseRate && defenseRate > 100) ? 100 : defenseRate}%`;
 
-    
     if (!speedBarRef.current) return;
-    speedBarRef.current.style.width = `${defenseRate}%`;
+    speedBarRef.current.style.width = `${(speedRate && speedRate > 100) ? 100 : speedRate}%`;
   }, []);
 
   const convertStatName = (name: string) => {
@@ -141,15 +127,16 @@ const Detail = () => {
       })
     };
     console.log(result);
-    paintGraphBar(result);
-
+    
     setData(result);
-  },[pokemonName, paintGraphBar]);
+    paintGraphBar(data);
+  },[pokemonName, data, paintGraphBar]);
 
 
 
-  useEffect(()=>{
+  useEffect( ()=>{
     getDetailData();
+
   },[getDetailData]);
 
   return (
@@ -212,7 +199,6 @@ const Detail = () => {
           <p className={detailStyle.category}>STAT</p>
 
           {data?.stats.map((stat: PokemonStat, index: number) => {
-            // if (index > 2) return;
             return (
               <div className={detailStyle['graph-section']} key={index}>
                 <p>{ stat.label }</p>
@@ -224,7 +210,6 @@ const Detail = () => {
             )
           })}
 
-
           <div className={detailStyle['graph-section']}>
             <p>Happiness</p>
             <div className={detailStyle.graph}>
@@ -232,22 +217,6 @@ const Detail = () => {
             </div>
             <p>{ data?.happiness }</p>
           </div>
-
-          {/* <div className={detailStyle['graph-section']}>
-            <p>Capture</p>
-            <div className={detailStyle.graph}>
-              <div ref={captureBarRef} className={`${detailStyle['graph-bar']} ${detailStyle['capture-bar']}`}></div>
-            </div>
-            <p>{ data?.capture_rate }</p>
-          </div>
-
-          <div className={detailStyle['graph-section']}>
-            <p>Growth</p>
-            <div className={detailStyle.graph}>
-              <div ref={growthBarRef} className={`${detailStyle['graph-bar']} ${detailStyle['growth-bar']}`}></div>
-            </div>
-            <p>{ data?.growth_rate.name }</p>
-          </div> */}
         </div>
 
         {/* Info */}

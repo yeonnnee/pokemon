@@ -115,6 +115,8 @@
             top: 0;
             padding: 10px;
             border-radius: 10px;
+            width: 0;
+            transition: all 1s ease;
           }
 
           .happiness-bar {
