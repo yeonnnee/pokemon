@@ -1,3 +1,5 @@
+import { PokemonSprites, PokemonType } from "./detail"
+
 export interface PokemonsApiRes {
   count: number,
   next: string | null,
@@ -8,4 +10,12 @@ export interface PokemonsApiRes {
 export interface ResourceForPokemon {
   name: string,
   url: string
+}
+
+export interface Pokemon {
+  name: string,
+  nameKr: string,
+  images: PokemonSprites,
+  types: PokemonType[],
+  order: number
 }

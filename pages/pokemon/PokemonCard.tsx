@@ -2,13 +2,12 @@ import Image from "next/image";
 
 import cardStyle from '../../styles/pokemon-card.module.scss'
 import Link from "next/link";
-import { PokemonDetailApiRes } from "../types/detail";
+import { Pokemon } from "../types/pokemons";
 
 
-const PokemonCard = (pokemon:PokemonDetailApiRes, key: number) => {
+const PokemonCard = (pokemon:Pokemon, key: number) => {
   const pokemonIdx = getThreeDigitsIdx(pokemon.order);
   const types = pokemon.types.map(type => type.type.name);
-  // const ratingStarArr = Array.from({length: 5}, (v,i) => i+1);
 
   function getThreeDigitsIdx(pokemonOrder: number) {
     if(pokemonOrder < 10) {
@@ -29,8 +28,8 @@ const PokemonCard = (pokemon:PokemonDetailApiRes, key: number) => {
     <Link href={`/pokemon/${pokemon.name}`}>
       <li className={cardStyle.card}>
         <span className={`${cardStyle.info} ${getClassName(0)}`}>No.{pokemonIdx}</span>
-        <div className={cardStyle.info}>{pokemon.name.toUpperCase()}</div>
-        <Image width={150} height={150} src={pokemon.sprites.other["official-artwork"].front_default || ''} alt={pokemon.name}/>
+        <div className={cardStyle.info}>{pokemon.nameKr}</div>
+        <Image width={150} height={150} src={pokemon.images.other["official-artwork"].front_default || ''} alt={pokemon.name}/>
       </li>
     </Link>
   )
