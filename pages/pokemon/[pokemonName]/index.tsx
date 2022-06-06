@@ -35,7 +35,7 @@ const Detail = () => {
 
   const paintGraphBar = useCallback((result:PokemonDetail | null) => {
     if (!result || loading) return;
-
+    console.log('paint', result)
     const happines = result.happiness;
     const hpRate = result.stats.find(stat => stat.stat.name === 'hp')?.base_stat;
     const attackRate = result.stats.find(stat => stat.stat.name === 'attack')?.base_stat;
@@ -44,14 +44,19 @@ const Detail = () => {
     const spDefenseRate = result.stats.find(stat => stat.stat.name === 'special-defense')?.base_stat;
     const speedRate = result.stats.find(stat => stat.stat.name === 'speed')?.base_stat;
 
+    console.log(happinessBarRef)
+
     if (!happinessBarRef.current) return;
     happinessBarRef.current.style.width = `${ (happines && happines > 100) ? 100 : happines}%`;
 
+    console.log(happinessBarRef)
     if (!spAttackBarRef.current) return;
     spAttackBarRef.current.style.width = `${(spAttackRate && spAttackRate > 100) ? 100 : spAttackRate}%`;
+    console.log(2)
     
     if (!spDefenseBarRef.current) return;
     spDefenseBarRef.current.style.width = `${(spDefenseRate && spDefenseRate > 100) ? 100 : spDefenseRate}%`;
+    console.log(3)
 
     if (!hpBarRef.current) return;
     hpBarRef.current.style.width = `${(hpRate && hpRate > 100) ? 100 : hpRate}%`;
@@ -86,7 +91,7 @@ const Detail = () => {
       case 'special-attack': return spAttackBarRef;
       case 'special-defense': return spDefenseBarRef;
       case 'speed': return speedBarRef;
-      default: return null;
+      default: return happinessBarRef;
     }
   }
 
@@ -123,10 +128,12 @@ const Detail = () => {
         return {
           ...stat,
           label: convertStatName(stat.stat.name),
-          ref: getStatRef(stat.stat.name)
+          ref: getStatRef(stat.stat.name),
         }
       })
     };
+
+    result.stats.push({url:'', base_stat: result.happiness, stat:{name: 'happiness', url:''}, label: 'Happiness', ref: getStatRef('happiness'),})
     console.log(result);
     setLoading(false);
     setData(result);
@@ -210,14 +217,6 @@ const Detail = () => {
               </div>
             )
           })}
-
-          <div className={detailStyle['graph-section']}>
-            <p>Happiness</p>
-            <div className={detailStyle.graph}>
-              <div ref={happinessBarRef} className={`${detailStyle['graph-bar']} ${detailStyle['happiness-bar']}`}></div>
-            </div>
-            <p>{ data?.happiness }</p>
-          </div>
         </div>
 
         {/* Info */}
