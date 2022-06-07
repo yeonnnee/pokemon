@@ -7,6 +7,7 @@ import { PokemonSpeciesApiRes } from "../../../types/speices";
 import { AbilityApiRes } from "../../../types/ability";
 import ImageCard from "./ImageCard";
 import usePokemonIdx from "../../../hooks/usePokemonIdx";
+import DetailInfoList from "./DetailInfoList";
 
 
 const Detail = () => {
@@ -16,6 +17,8 @@ const Detail = () => {
   const [selectedVersion, setSelectedVersion] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const pokemonIdx = usePokemonIdx(data?.order || 0);
+
+
 
   const barRef = useRef<HTMLDivElement[] | null[]>([]);
 
@@ -110,17 +113,21 @@ const Detail = () => {
   return (
     <div className={detailStyle.detail}>
       <section className={detailStyle["image-section"]}>
+      <span className={detailStyle.order}>No.{pokemonIdx}</span>
+        <div className={detailStyle.name}>
+          <span>{data?.nameKr}</span>
+        </div>
         {
           data ? <Image priority width={400} height={400} src={data.images.other["official-artwork"].front_default || ''} alt={data.name}/> : <span>No Image</span>
         }
         <div className={detailStyle.pic}>
         {/* <ImageCard width={100} height={100} src={data?.images.back_shiny} alt={data?.name}/>
           <ImageCard width={100} height={100} src={data?.images.back_default} alt={data?.name}/> */}
-          <ImageCard width={100} height={100} src={data?.images.front_default} alt={data?.name}/>
+          {/* <ImageCard width={100} height={100} src={data?.images.front_default} alt={data?.name}/>
           <ImageCard width={100} height={100} src={data?.images.front_shiny} alt={data?.name}/>
 
           <ImageCard width={100} height={100} src={data?.images.other.home.front_default} alt={data?.name}/>
-          <ImageCard width={100} height={100} src={data?.images.other.home.front_shiny} alt={data?.name} />
+          <ImageCard width={100} height={100} src={data?.images.other.home.front_shiny} alt={data?.name} /> */}
 
         </div>
 
@@ -130,6 +137,34 @@ const Detail = () => {
         <span className={detailStyle.order}>No.{pokemonIdx}</span>
         <div className={detailStyle.name}>
           <span>{data?.nameKr}</span>
+        </div>
+
+        {/* 기본정보 */}
+        <div className={detailStyle['default-info']}>
+          <p>기본 정보</p>
+          <ul className={detailStyle.section}>
+            <li>
+              <ImageCard width={80} height={80} src={data?.images.front_default} alt={data?.name} />
+            </li>
+
+            <DetailInfoList title={'도감번호'} text={ [pokemonIdx] }/>
+            <DetailInfoList title={'이름'} text={ [data?.nameKr || '-'] }/>
+            <DetailInfoList title={'타입'} text={ data?.types.map((type) => type.type.name) || ['-'] }/>
+            <DetailInfoList title={'세대'} text={ [data?.generation.name || '-'] }/>
+          </ul>
+        </div>
+
+        {/* 세부정보 */}
+        <div className={detailStyle['detail-info']}>
+          <p>세부 정보</p>
+          <ul className={detailStyle.section}>
+            <DetailInfoList title={'분류'} text={ [data?.genera[0].genus || '-'] }/>
+            {/* <DetailInfoList title={'타입'} text={ data?.types.map((type) => type.type.name) || ['-'] }/> */}
+            <DetailInfoList title={'신장'} text={ data ? [`${data.height}m`] : ['-'] }/>
+            <DetailInfoList title={'체중'} text={ data ? [`${data.weight}kg`] : ['-'] }/>
+            {/* <DetailInfoList title={'세대'} text={ [data?.generation.name || '-'] }/> */}
+            <DetailInfoList title={'특성'} text={ data?.abilitiesKr.map((ability) => ability.name.name) || ['-'] }/>
+          </ul>
         </div>
 
         {/* 특징 */}
@@ -158,50 +193,6 @@ const Detail = () => {
             )
           })}
         </div>
-
-        {/* Info */}
-        <ul className={`${detailStyle.info} ${detailStyle.section}`}>
-          <li>
-            <p className={detailStyle.category}>타입</p>
-            <div className={detailStyle.type}>
-            {
-              data?.types.map((type, index) => {
-                return <p key={index}>{type.type.name}</p>
-              })
-            }
-            </div>
-
-          </li>
-
-          <li>
-            <p className={detailStyle.category}>신장</p>
-            <p>{data?.height}m</p>
-          </li>
-          
-          
-          <li>
-            <p className={detailStyle.category}>체중</p>
-            <p>{data?.weight} kg</p>
-          </li>
-
-          <li>
-            <p className={detailStyle.category}>세대</p>
-            <p>{data?.generation.name}</p>
-          </li>
-
-          
-          <li>
-            <p className={detailStyle.category}>분류</p>
-            <p>{data?.genera[0].genus}</p>
-          </li>
-
-          <li>
-            <p className={detailStyle.category}>특성</p>
-            {data?.abilitiesKr.map((ability, index) => {
-              return (<p key={index}>{ ability.name.name}</p>)
-            })}
-          </li>
-        </ul>
       </section>
       {/* <div>
         <button>목록으로</button>
