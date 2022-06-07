@@ -12,6 +12,7 @@ import { EvolutionApiRes } from "../../../types/evolution";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import { ResourceForPokemon } from "../../../types/pokemons";
 
 
 
@@ -86,6 +87,19 @@ const Detail = () => {
   }, [getEvolutionData]);
 
 
+  const convertGenerationText = (generation: ResourceForPokemon) => {
+    switch (generation.name) {
+      case 'generation-i' : return {...generation, name: '1세대 포켓몬'}
+      case 'generation-ii' : return {...generation, name: '2세대 포켓몬'}
+      case 'generation-iii' : return {...generation, name: '3세대 포켓몬'}
+      case 'generation-iv' : return {...generation, name: '4세대 포켓몬'}
+      case 'generation-v' : return {...generation, name: '5세대 포켓몬'}
+      case 'generation-vi' : return {...generation, name: '6세대 포켓몬'}
+      case 'generation-vii': return { ...generation, name: '7세대 포켓몬' }
+      default: return generation;
+    }
+  }
+
   const customData = useCallback(async (detailData:PokemonDetailApiRes, speciesData: PokemonSpeciesApiRes) => {
     if (!speciesData || !detailData) return;
     
@@ -133,7 +147,7 @@ const Detail = () => {
       growth_rate: speciesData.growth_rate,
       flavor_text_entries: speciesData.flavor_text_entries,
       genera: speciesData.genera.filter(genera => genera.language.name === 'ko'),
-      generation: speciesData.generation,
+      generation: convertGenerationText(speciesData.generation),
       has_gender_differences: speciesData.has_gender_differences,
       is_legendary: speciesData.is_legendary,
       stats: stats
