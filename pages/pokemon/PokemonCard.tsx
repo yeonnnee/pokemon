@@ -1,29 +1,18 @@
 import Image from "next/image";
-
 import cardStyle from '../../styles/pokemon-card.module.scss'
 import Link from "next/link";
-import { Pokemon } from "../types/pokemons";
+import { Pokemon } from "../../types/pokemons";
+import usePokemonIdx from "../../hooks/usePokemonIdx";
 
 
 const PokemonCard = (pokemon:Pokemon, key: number) => {
-  const pokemonIdx = getThreeDigitsIdx(pokemon.order);
+  const pokemonIdx = usePokemonIdx(pokemon.order);
   const types = pokemon.types.map(type => type.type.name);
-
-  function getThreeDigitsIdx(pokemonOrder: number) {
-    if(pokemonOrder < 10) {
-      return `00${pokemonOrder}`;
-    } else if(pokemonOrder > 9) {
-      return `0${pokemonOrder}`;
-    } else {
-      return pokemonOrder.toString();
-    }
-  }
   
   function getClassName(index: number) {
     return cardStyle[`${types[index]}`];
   }
 
-  console.log('card',pokemon)
   return(
     <Link href={`/pokemon/${pokemon.name}`}>
       <li className={cardStyle.card}>
