@@ -1,12 +1,12 @@
-import type { GetStaticProps, NextPage } from 'next'
+import type { GetStaticProps } from 'next'
 import { useCallback, useEffect, useState } from 'react';
 import PokemonCard from './PokemonCard';
 
 import mainStyle from '../../styles/main.module.scss'
 import Image from 'next/image';
-import { PokemonName } from '../types/speices';
-import { PokemonDetailApiRes } from '../types/detail';
-import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../types/pokemons';
+import { PokemonName } from '../../types/speices';
+import { PokemonDetailApiRes } from '../../types/detail';
+import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../../types/pokemons';
 
 const Main = (props:PokemonsApiRes) => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);

@@ -1,3 +1,4 @@
+import { AbilityApiRes, AbilityDetail, AbilityText } from "./ability"
 import { ResourceForPokemon } from "./pokemons"
 import { FlavorTextEntry, Genera, PokemonName } from "./speices"
 
@@ -7,12 +8,14 @@ export interface PokemonDetail {
   nameKr: string,
   names: PokemonName[],
   desc: FlavorTextEntry[],
-  order: string,
+  order: number,
   height: number,
   weight: number,
   types: PokemonType[],
   images: PokemonSprites,
   happiness: number,
+  abilities?: AbilityApiRes[],
+  abilitiesKr: AbilityDetail[],
   capture_rate: number,
   growth_rate: ResourceForPokemon,
   flavor_text_entries: FlavorTextEntry[],
