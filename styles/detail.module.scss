@@ -40,7 +40,7 @@
           display: flex;
           align-items: center;
           justify-content: space-around;
-
+          // box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
           .hidden {
             opacity: 0;
           }
@@ -51,8 +51,14 @@
             height: 150px;
             padding: 15px 0 0;
             text-align: center;
-            border: 1px solid black;
+            background-color: $container-bg;
+            box-shadow: -3px -3px 7px #ffffff73,
+            3px 3px 5px rgba(94,104,121,0.288);
             cursor: pointer;
+
+            &:hover {
+              box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
+            }
   
             .pic-name {
               margin: 0 0 10px;
@@ -70,13 +76,14 @@
     .section {
       margin: 0 0 30px;
       padding: 10px;
-      background: $container-bg;
-      border-radius: 10px;
-      box-shadow: -3px -3px 7px #ffffff73,
-      3px 3px 5px rgba(94,104,121,0.288);
+      // background: $container-bg;
+      // border-radius: 10px;
+      // box-shadow: -3px -3px 7px #ffffff73,
+      // 3px 3px 5px rgba(94,104,121,0.288);
     }
 
     .detail-info, .default-info {
+
       ul {
         display: flex;
         flex-direction: row;
@@ -84,14 +91,14 @@
         width: 100%;
         min-width: 500px;
         text-align: center;
-        
+        box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
         li {
           width: 25%;
           padding: 10px;
-          border: 1px solid $light-gray;
+          border: 1px solid #d6d4d4;
           margin: 0 -1px 0 0;
-
-          .section-title {
+          // box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
+          .category-title {
             font-size: 13px;
             margin: 0 0 10px;
           }
@@ -154,19 +161,34 @@
     }
 
     .rate {
+      padding: 10px 20px;
+      // background: $container-bg;
+      border-radius: 10px;
+      // box-shadow: -3px -3px 7px #ffffff73,
+      // 3px 3px 5px rgba(94,104,121,0.288);
+      box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
       .graph-section {
         display: flex;
         align-items: center;
+
+
         p {
           display: inline-block;
-          width: 100px;
           line-height: 1.7;
+          text-align: center;
+          width: 90px;
+        }
+
+        .graph-label {
+          text-align: left;
+          width: 120px;
+
         }
         .graph {
           @include graph-shadow();
           display: inline-block;
           margin: 0 10px;
-          width: 50%;
+          width: 80%;
           padding: 10px;
           border-radius: 10px;
           position: relative;
@@ -223,5 +245,25 @@
       margin: 0 0 10px;
     }
 
+
+    .btn-section {
+      text-align: center;
+      .btn {
+        padding: 10px 20px;
+        font-weight: bold;
+        background-color: $container-bg; //#e7e7e7;
+        box-shadow: -3px -3px 7px #ffffff73,
+        3px 3px 5px rgba(94,104,121,0.288);
+      }
+
+    }
+  }
+
+  .section-title {
+    background: $container-bg;
+    // border-radius: 10px;
+    padding: 5px 10px;
+    box-shadow: -3px -3px 7px #ffffff73,
+    3px 3px 5px rgba(94,104,121,0.288);
   }
 }

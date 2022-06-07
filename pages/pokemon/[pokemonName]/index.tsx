@@ -11,6 +11,7 @@ import DetailInfoList from "./DetailInfoList";
 import { EvolutionApiRes } from "../../../types/evolution";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 
 
 
@@ -177,7 +178,7 @@ const Detail = () => {
 
 
         <div className={detailStyle.evolution}>
-          <p>진화</p>
+          <p className={detailStyle["section-title"]}>진화</p>
           <ul className={detailStyle["evolution-image"]}>
             {
               data? data.evloution_chain.map((chain) => {
@@ -198,7 +199,7 @@ const Detail = () => {
       <section className={detailStyle["pokemon-info-section"]}>
         {/* 기본정보 */}
         <div className={detailStyle['default-info']}>
-          <p>기본 정보</p>
+          <p className={detailStyle['section-title']}>기본 정보</p>
           <ul className={detailStyle.section}>
             <li>
               <ImageCard width={80} height={80} src={data?.images.front_default} alt={data?.name} />
@@ -212,7 +213,7 @@ const Detail = () => {
 
         {/* 세부정보 */}
         <div className={detailStyle['detail-info']}>
-          <p>세부 정보</p>
+          <p className={detailStyle['section-title']}>세부 정보</p>
           <ul className={detailStyle.section}>
             <DetailInfoList title={'분류'} text={ [data?.genera[0].genus || '-'] }/>
             <DetailInfoList title={'신장'} text={ data ? [`${data.height}m`] : ['-'] }/>
@@ -230,25 +231,32 @@ const Detail = () => {
         </div>
 
         {/* STAT */}
-        <div className={`${detailStyle.rate} ${detailStyle.section}`}>
-          <p className={detailStyle.category}>STAT</p>
+        <div className={` ${detailStyle.section}`}>
+          <p className={detailStyle["section-title"]}>종족치</p>
 
-          {data?.stats.map((stat: PokemonStat, index: number) => {
-            return (
-              <div className={detailStyle['graph-section']} key={`stat-${index}`}>
-                <p>{ stat.label }</p>
-                <div className={ detailStyle.graph }>
-                  <div ref={el => (barRef.current[index] = el)} className={`${detailStyle['graph-bar']} ${detailStyle[`${stat.stat.name}-bar`]}`}></div>
+          <div className={detailStyle.rate}>
+            {data?.stats.map((stat: PokemonStat, index: number) => {
+              return (
+                <div className={detailStyle['graph-section']} key={`stat-${index}`}>
+                  <p className={detailStyle['graph-label']}>{ stat.label }</p>
+                  <div className={ detailStyle.graph }>
+                    <div ref={el => (barRef.current[index] = el)} className={`${detailStyle['graph-bar']} ${detailStyle[`${stat.stat.name}-bar`]}`}></div>
+                  </div>
+                  <p>{ stat.base_stat }</p>
                 </div>
-                <p>{ stat.base_stat }</p>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
+         
+        </div>
+
+        <div className={detailStyle["btn-section"]}>
+          <Link href="/pokemon">
+            <button className={detailStyle.btn}>목록으로</button>
+          </Link>
         </div>
       </section>
-      {/* <div>
-        <button>목록으로</button>
-      </div> */}
+
     </div>
   )
 }
