@@ -22,8 +22,6 @@ const Detail = () => {
   const [loading, setLoading] = useState(true);
   const pokemonIdx = usePokemonIdx(data?.order || 0);
 
-
-
   const barRef = useRef<HTMLDivElement[] | null[]>([]);
 
   const paintGraphBar = useCallback((result:PokemonDetail | null) => {
@@ -48,18 +46,52 @@ const Detail = () => {
     }
   }
 
-  const getDetailData = useCallback(async() => {
-    if(!pokemonName) return;
+  const getSpeciesData = useCallback(async (pokemonName:string | string[]) => {
+    const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`);
+    const species: PokemonSpeciesApiRes = await speciesRes.json();
+    return species;
+  }, []);
+
+  const getDetailData = useCallback(async(pokemonName:string | string[]) => {
     const detailRes = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
     const detail:PokemonDetailApiRes = await detailRes.json();
+    return detail;
+  },[]);
 
-    const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`);
-    const species:PokemonSpeciesApiRes = await speciesRes.json();
 
-    const nameKr = species.names.filter(name => name.language.name === 'ko')[0];
-    const desc = species.flavor_text_entries.filter(text => text.language.name === 'ko');
+  const getEvolutionData = useCallback(async (url: string, index: number) => {
+    const result = await fetch(url).then(async (res) => {
+      const data: PokemonSpeciesApiRes = await res.json();
+      const detail: PokemonDetailApiRes = await fetch(data.varieties[0].pokemon.url).then(res => res.json());
 
-    const abilitiesKr = await Promise.all(detail.abilities.map(async (ability) => {
+      return {
+        id: index,
+        name: data.name,
+        nameKr: data.names.filter(name => name.language.name === 'ko')[0].name,
+        image: detail.sprites.front_default
+      }
+    });
+    return result;
+  }, []);
+
+
+  const getEvolutionChain = useCallback(async (url:string) => {
+    const evolution: EvolutionApiRes = await fetch(url).then(data => data.json());
+    const first = await getEvolutionData(evolution.chain.species.url, 1);
+    const firstEvolution = await getEvolutionData(evolution.chain.evolves_to[0].species.url, 2);
+    const lastEvolution = await getEvolutionData(evolution.chain.evolves_to[0].evolves_to[0].species.url, 3);
+
+    return [first, firstEvolution, lastEvolution];
+  }, [getEvolutionData]);
+
+
+  const customData = useCallback(async (detailData:PokemonDetailApiRes, speciesData: PokemonSpeciesApiRes) => {
+    if (!speciesData || !detailData) return;
+    
+    const nameKr = speciesData.names.filter(name => name.language.name === 'ko')[0];
+    const pokemonDesc = speciesData.flavor_text_entries.filter(text => text.language.name === 'ko');
+    const evolutionChain = await getEvolutionChain(speciesData.evolution_chain.url);
+    const abilitiesKr = await Promise.all(detailData.abilities.map(async (ability) => {
       const abilityDetail: AbilityApiRes = await fetch(ability.ability.url).then(data => data.json());
       const result = abilityDetail.flavor_text_entries.filter(effect => effect.language.name === 'ko');
       return {
@@ -68,96 +100,65 @@ const Detail = () => {
       };
     }));
 
-    const evolution: EvolutionApiRes = await fetch(species.evolution_chain.url).then(data => data.json());
-    const first = await fetch(evolution.chain.species.url).then(async (res) => {
-      const data: PokemonSpeciesApiRes = await res.json();
-      const detail: PokemonDetailApiRes = await fetch(data.varieties[0].pokemon.url).then(res => res.json());
-
+    const stats = detailData.stats.map(stat => {
       return {
-        id: 1,
-        name: data.name,
-        nameKr: data.names.filter(name => name.language.name === 'ko')[0].name,
-        image: detail.sprites.front_default
+        ...stat,
+        label: convertStatName(stat.stat.name),
       }
-
-    });
-    const firstEvolve = await fetch(evolution.chain.evolves_to[0].species.url).then(async (res) => {
-      const data: PokemonSpeciesApiRes = await res.json();
-      const detail: PokemonDetailApiRes = await fetch(data.varieties[0].pokemon.url).then(res => res.json());
-
-      return {
-        id: 2,
-        name: data.name,
-        nameKr: data.names.filter(name => name.language.name === 'ko')[0].name,
-        image: detail.sprites.front_default
-      }
-
-    });
-    const lastEvolve = await fetch(evolution.chain.evolves_to[0].evolves_to[0].species.url).then(async (res) => {
-      const data: PokemonSpeciesApiRes = await res.json();
-      const detail: PokemonDetailApiRes = await fetch(data.varieties[0].pokemon.url).then(res => res.json());
-
-      return {
-        id: 3,
-        name: data.name,
-        nameKr: data.names.filter(name => name.language.name === 'ko')[0].name,
-        image: detail.sprites.front_default
-      }
-
     });
 
-    const evolutionData = [first, firstEvolve, lastEvolve];
-
-
-    console.log('first', evolutionData);
-
-      
-    console.log('detail', detail);
-    console.log('species', species);
-    console.log('abilitiesKr', abilitiesKr);
-
-    const result = {
-      name: species.name,
-      nameKr: nameKr.name, 
-      names: species.names,
-      desc: desc,
-      order: detail.order,
-      weight: detail.weight,
-      height: detail.height,
-      types: detail.types,
-      images: detail.sprites,
-      // abilities: detail.abilities,
-      evloution_chain: evolutionData,
-      abilitiesKr: abilitiesKr,
-      happiness: species.base_happiness,
-      capture_rate: species.capture_rate,
-      growth_rate: species.growth_rate,
-      flavor_text_entries: species.flavor_text_entries,
-      genera: species.genera.filter(genera => genera.language.name === 'ko'),
-      generation: species.generation,
-      has_gender_differences: species.has_gender_differences,
-      is_legendary: species.is_legendary,
-      stats: detail.stats.map(stat => {
-        return {
-          ...stat,
-          label: convertStatName(stat.stat.name),
-        }
-      })
+    const hapiness = {
+      url: '',
+      base_stat: speciesData.base_happiness,
+      stat: { name: 'happiness', url: '' },
+      label: 'Happiness'
     };
 
-    result.stats.push({url:'', base_stat: result.happiness, stat:{name: 'happiness', url:''}, label: 'Happiness'})
+    stats.push(hapiness);
+
+    const result = {
+      name: speciesData.name,
+      nameKr: nameKr.name, 
+      names: speciesData.names,
+      desc: pokemonDesc,
+      order: detailData.order,
+      weight: detailData.weight,
+      height: detailData.height,
+      types: detailData.types,
+      images: detailData.sprites,
+      evloution_chain: evolutionChain,
+      abilitiesKr: abilitiesKr,
+      capture_rate: speciesData.capture_rate,
+      growth_rate: speciesData.growth_rate,
+      flavor_text_entries: speciesData.flavor_text_entries,
+      genera: speciesData.genera.filter(genera => genera.language.name === 'ko'),
+      generation: speciesData.generation,
+      has_gender_differences: speciesData.has_gender_differences,
+      is_legendary: speciesData.is_legendary,
+      stats: stats
+    };
 
     setLoading(false);
     setData(result);
     paintGraphBar(result);
-  },[paintGraphBar,pokemonName]);
 
+  }, [getEvolutionChain, paintGraphBar]);
+
+
+  const fetchData = useCallback(async () => {
+    if (!pokemonName) return;
+
+    const detailData = await getDetailData(pokemonName);
+    const speciesData = await getSpeciesData(pokemonName);
+    customData(detailData, speciesData);
+
+  }, [getDetailData, getSpeciesData, pokemonName,customData]);
 
 
   useEffect(()=>{
     setPokemonName(router.query.pokemonName);
-    getDetailData();
-  },[getDetailData, router.query.pokemonName]);
+    fetchData();
+  },[fetchData, router.query.pokemonName]);
 
   return (
     <div className={detailStyle.detail}>

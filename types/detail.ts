@@ -14,7 +14,6 @@ export interface PokemonDetail {
   types: PokemonType[],
   images: PokemonSprites,
   evloution_chain: EvolutionData[]
-  happiness: number,
   abilities?: AbilityApiRes[],
   abilitiesKr: AbilityDetail[],
   capture_rate: number,
