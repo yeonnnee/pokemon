@@ -13,6 +13,7 @@ export interface PokemonDetail {
   weight: number,
   types: PokemonType[],
   images: PokemonSprites,
+  evloution_chain: EvolutionData[]
   happiness: number,
   abilities?: AbilityApiRes[],
   abilitiesKr: AbilityDetail[],
@@ -24,6 +25,13 @@ export interface PokemonDetail {
   has_gender_differences: boolean,
   is_legendary: boolean,
   stats: PokemonStat[]
+}
+
+export interface EvolutionData {
+  id: number,
+  name: string,
+  nameKr: string,
+  image: string
 }
 export interface PokemonDetailApiRes {
   abilities: PokemonAbility[],
@@ -78,29 +86,30 @@ export interface PokemonMove {
 
 export interface PokemonSprites extends FrontImage, BackImage {
   other: {
-    dream_world: FrontImage,
+    dream_world: {
+      front_default: string,
+      front_female: string | null
+    }
     home: FrontImage,
-    ['official-artwork']: FrontImage
+    ['official-artwork']: {
+      front_default: string
+    }
   },
   versions: PokemonGeneration
 }
 
 export interface FrontImage {
-  front_default?: string,
-  front_gray?: string,
-  front_transparent?: string,
-  front_female?: null | string,
-  front_shiny?: null | string,
-  front_shiny_female?: null | string,
+  front_default: string,
+  front_female: string | null,
+  front_shiny: string,
+  front_shiny_female: string | null
 }
 
 export interface BackImage {
-  back_default?: string,
-  back_gray?: string,
-  back_transparent: string,
-  back_female?: null | string,
-  back_shiny?: null | string,
-  back_shiny_female?: null | string,
+  back_default: string,
+  back_female: string | null,
+  back_shiny: string,
+  back_shiny_female: string | null
 }
 
 export interface PokemonStat {

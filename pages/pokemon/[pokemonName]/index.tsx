@@ -8,6 +8,10 @@ import { AbilityApiRes } from "../../../types/ability";
 import ImageCard from "./ImageCard";
 import usePokemonIdx from "../../../hooks/usePokemonIdx";
 import DetailInfoList from "./DetailInfoList";
+import { EvolutionApiRes } from "../../../types/evolution";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+
 
 
 const Detail = () => {
@@ -63,6 +67,50 @@ const Detail = () => {
         name: abilityDetail.names.filter(name => name.language.name === 'ko')[0]
       };
     }));
+
+    const evolution: EvolutionApiRes = await fetch(species.evolution_chain.url).then(data => data.json());
+    const first = await fetch(evolution.chain.species.url).then(async (res) => {
+      const data: PokemonSpeciesApiRes = await res.json();
+      const detail: PokemonDetailApiRes = await fetch(data.varieties[0].pokemon.url).then(res => res.json());
+
+      return {
+        id: 1,
+        name: data.name,
+        nameKr: data.names.filter(name => name.language.name === 'ko')[0].name,
+        image: detail.sprites.front_default
+      }
+
+    });
+    const firstEvolve = await fetch(evolution.chain.evolves_to[0].species.url).then(async (res) => {
+      const data: PokemonSpeciesApiRes = await res.json();
+      const detail: PokemonDetailApiRes = await fetch(data.varieties[0].pokemon.url).then(res => res.json());
+
+      return {
+        id: 2,
+        name: data.name,
+        nameKr: data.names.filter(name => name.language.name === 'ko')[0].name,
+        image: detail.sprites.front_default
+      }
+
+    });
+    const lastEvolve = await fetch(evolution.chain.evolves_to[0].evolves_to[0].species.url).then(async (res) => {
+      const data: PokemonSpeciesApiRes = await res.json();
+      const detail: PokemonDetailApiRes = await fetch(data.varieties[0].pokemon.url).then(res => res.json());
+
+      return {
+        id: 3,
+        name: data.name,
+        nameKr: data.names.filter(name => name.language.name === 'ko')[0].name,
+        image: detail.sprites.front_default
+      }
+
+    });
+
+    const evolutionData = [first, firstEvolve, lastEvolve];
+
+
+    console.log('first', evolutionData);
+
       
     console.log('detail', detail);
     console.log('species', species);
@@ -79,6 +127,7 @@ const Detail = () => {
       types: detail.types,
       images: detail.sprites,
       // abilities: detail.abilities,
+      evloution_chain: evolutionData,
       abilitiesKr: abilitiesKr,
       happiness: species.base_happiness,
       capture_rate: species.capture_rate,
@@ -113,32 +162,39 @@ const Detail = () => {
   return (
     <div className={detailStyle.detail}>
       <section className={detailStyle["image-section"]}>
-      <span className={detailStyle.order}>No.{pokemonIdx}</span>
-        <div className={detailStyle.name}>
-          <span>{data?.nameKr}</span>
+        <div className={detailStyle.profile}>
+          <span className={detailStyle.order}>No.{pokemonIdx}</span>
+          <div className={detailStyle.name}>
+            <span>{data?.nameKr}</span>
+          </div>
+          <div className={detailStyle["profile-image"]}>
+            {
+              data ? <Image priority width={400} height={400} src={data.images.other["official-artwork"].front_default || ''} alt={data.name}/> : <span>No Image</span>
+            }
+          </div>
         </div>
-        {
-          data ? <Image priority width={400} height={400} src={data.images.other["official-artwork"].front_default || ''} alt={data.name}/> : <span>No Image</span>
-        }
-        <div className={detailStyle.pic}>
-        {/* <ImageCard width={100} height={100} src={data?.images.back_shiny} alt={data?.name}/>
-          <ImageCard width={100} height={100} src={data?.images.back_default} alt={data?.name}/> */}
-          {/* <ImageCard width={100} height={100} src={data?.images.front_default} alt={data?.name}/>
-          <ImageCard width={100} height={100} src={data?.images.front_shiny} alt={data?.name}/>
 
-          <ImageCard width={100} height={100} src={data?.images.other.home.front_default} alt={data?.name}/>
-          <ImageCard width={100} height={100} src={data?.images.other.home.front_shiny} alt={data?.name} /> */}
 
+        <div className={detailStyle.evolution}>
+          <p>진화</p>
+          <ul className={detailStyle["evolution-image"]}>
+            {
+              data? data.evloution_chain.map((chain) => {
+                return (
+                  <li key={`evolve-${chain.id}`}>
+                    <ImageCard width={100} height={100} src={chain.image} alt={chain.name} name={chain.name} nameKr={chain.nameKr}/>
+                    <FontAwesomeIcon icon={faChevronRight} className={ chain.id === 3 ? detailStyle.hidden : ''}/>
+                  </li>
+                )
+              }) : null
+            }
+          </ul>
         </div>
 
       </section>
 
+      
       <section className={detailStyle["pokemon-info-section"]}>
-        <span className={detailStyle.order}>No.{pokemonIdx}</span>
-        <div className={detailStyle.name}>
-          <span>{data?.nameKr}</span>
-        </div>
-
         {/* 기본정보 */}
         <div className={detailStyle['default-info']}>
           <p>기본 정보</p>
@@ -146,7 +202,6 @@ const Detail = () => {
             <li>
               <ImageCard width={80} height={80} src={data?.images.front_default} alt={data?.name} />
             </li>
-
             <DetailInfoList title={'도감번호'} text={ [pokemonIdx] }/>
             <DetailInfoList title={'이름'} text={ [data?.nameKr || '-'] }/>
             <DetailInfoList title={'타입'} text={ data?.types.map((type) => type.type.name) || ['-'] }/>
@@ -159,31 +214,27 @@ const Detail = () => {
           <p>세부 정보</p>
           <ul className={detailStyle.section}>
             <DetailInfoList title={'분류'} text={ [data?.genera[0].genus || '-'] }/>
-            {/* <DetailInfoList title={'타입'} text={ data?.types.map((type) => type.type.name) || ['-'] }/> */}
             <DetailInfoList title={'신장'} text={ data ? [`${data.height}m`] : ['-'] }/>
             <DetailInfoList title={'체중'} text={ data ? [`${data.weight}kg`] : ['-'] }/>
-            {/* <DetailInfoList title={'세대'} text={ [data?.generation.name || '-'] }/> */}
             <DetailInfoList title={'특성'} text={ data?.abilitiesKr.map((ability) => ability.name.name) || ['-'] }/>
           </ul>
         </div>
 
         {/* 특징 */}
         <div className={`${detailStyle.desc} ${detailStyle.section}`}>
-          {/* <p className={detailStyle.category}>특징</p> */}
           <ul className={detailStyle["version-tab"]}>
-            {data?.desc.map((desc, index) => <li key={index} onClick={()=>setSelectedVersion(index)} className={selectedVersion === index ? `${detailStyle["selected-tab"]}` : ''}>{desc.version.name.toUpperCase() }</li>)}
+            {data?.desc.map((desc, index) => <li key={`version-${index}`} onClick={()=>setSelectedVersion(index)} className={selectedVersion === index ? `${detailStyle["selected-tab"]}` : ''}>{desc.version.name.toUpperCase() }</li>)}
           </ul>
-
           <p className={detailStyle["desc-text"]}>{data?.desc[selectedVersion].flavor_text}</p>
         </div>
 
-        {/* RATE */}
+        {/* STAT */}
         <div className={`${detailStyle.rate} ${detailStyle.section}`}>
           <p className={detailStyle.category}>STAT</p>
 
           {data?.stats.map((stat: PokemonStat, index: number) => {
             return (
-              <div className={detailStyle['graph-section']} key={index}>
+              <div className={detailStyle['graph-section']} key={`stat-${index}`}>
                 <p>{ stat.label }</p>
                 <div className={ detailStyle.graph }>
                   <div ref={el => (barRef.current[index] = el)} className={`${detailStyle['graph-bar']} ${detailStyle[`${stat.stat.name}-bar`]}`}></div>

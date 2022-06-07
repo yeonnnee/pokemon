@@ -12,7 +12,7 @@ const DetailInfoList = (detailInfo: DetailInfoProps) => {
     <li>
       <p className={ detailStyle['section-title'] }> { title } </p>
       <div className={detailStyle['info-text-area']}>
-        { text.length > 1 ? text.map((content, index) => { return (<p key={index }>{content}</p>) }) : <p> { text } </p> }
+        { text.length > 1 ? text.map((content, index) => { return (<p key={`text-${index}`}>{content}</p>) }) : <p> { text } </p> }
       </div>
     </li>
 
