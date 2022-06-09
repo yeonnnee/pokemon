@@ -44,6 +44,66 @@
       }
     }
   }
+
+
+
+  .filter {
+    input[type="checkbox"] {
+      display: none;
+    }
+
+    .filter-label {
+      position: absolute;
+      top: 334px;
+      right: 38px;
+      padding: 5px 20px;
+      border: 1px solid black;
+      border-radius: 10px;
+    }
+
+    .scroll-wrapper {
+      visibility: hidden;
+      position: absolute;
+      top: 380px;
+      right: 20px;
+      background: #fff;
+      width: 0;
+      height: 0;
+      z-index: 1;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 5px grey;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+
+    .type-list {
+      width: 220px;
+      height: 300px;
+      overflow-y: scroll;
+
+      li {
+        padding: 5px;
+      }
+
+      input[type="radio"] {
+        display: none;
+      }
+
+    }
+
+    .filter-btn:checked ~ .scroll-wrapper {
+      visibility: visible;
+      width: 220px;
+      height: 287px;
+    }
+  }
+
+  .no-result {
+    text-align: center;
+  }
+
   .pokemon-list {
     width: 100%;
     display: flex;

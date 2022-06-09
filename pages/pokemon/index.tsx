@@ -8,7 +8,9 @@ import { PokemonName } from '../../types/speices';
 import { PokemonDetailApiRes } from '../../types/detail';
 import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../../types/pokemons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faFilter, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { PokemonType, PokemonTypesApiRes } from '../../types/pokemonTypes';
+import { type } from 'os';
 
 interface TotalState {
   totalCount: number,
@@ -25,6 +27,7 @@ const Main = (props:PokemonsApiRes) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<SearchState>({searchString: '', isSearching: false});
   const [itemCount, setItemCount] = useState<number>(0);
+  const [types, setTypes] = useState<PokemonType[]>([]);
 
   const target = useRef<HTMLDivElement>(null);
 
@@ -108,10 +111,48 @@ const Main = (props:PokemonsApiRes) => {
     setLoading(false);
   }
 
+  function convertTypeName(name: string) {
+    switch (name) {
+      case 'normal': return '노말';
+      case 'fighting': return '격투';
+      case 'flying': return '비행';
+      case 'poison': return '독';
+      case 'ground': return '땅';
+      case 'rock': return '바위';
+      case 'bug': return '벌레';
+      case 'ghost': return '고스트';
+      case 'steel': return '강철';
+      case 'fire': return '불꽃';
+      case 'water': return '물';
+      case 'grass': return '풀';
+      case 'electric': return '전기';
+      case 'psychic': return '에스퍼';
+      case 'ice': return '얼음';
+      case 'dragon': return '드레곤';
+      case 'dark': return '악';
+      case 'fairy': return '페어리';
+      case 'unknown': return 'unKnown';
+      case 'shadow': return '다크 ';
+      default: return '';
+    }
+  }
+
+  const fetchTypes = useCallback(async () => {
+    const res:PokemonTypesApiRes = await fetch("https://pokeapi.co/api/v2/type").then(res => res.json());
+    const result = res.results.map(result => {
+      return {
+        ...result,
+        nameKr: convertTypeName(result.name)
+      }
+    });
+    setTypes(result);
+  }, []);
+
   useEffect(() => {
     fetchData(props.results);
+    fetchTypes();
     setTotal({totalCount: props.count, data:[]});
-  },[fetchData, props]);
+  },[fetchData, props, fetchTypes]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(checkIntersect, {threshold:1});
@@ -128,13 +169,37 @@ const Main = (props:PokemonsApiRes) => {
         <div className={mainStyle['search-bar']}>
           <FontAwesomeIcon icon={ faSearch } className={mainStyle['search-icon']}/>
           <input type="text" value={search.searchString} placeholder='포켓몬 이름을 입력해주세요' onChange={(e) => setSearch({ ...search, searchString: e.target.value })} onKeyUp={searchByPokemonName} />
-          
           {search.searchString ? <FontAwesomeIcon icon={faTimes} className={mainStyle['reset-icon']} onClick={ resetSeachCondition }/> : null }
         </div>
       </div>
 
+      <div className={mainStyle.filter}>
+        <input className={ mainStyle["filter-btn"] } type="checkbox" id="filter" />
+        <label className={mainStyle["filter-label"]} htmlFor="filter">Type</label>
+
+        <div className={mainStyle["scroll-wrapper"]}>
+          <ul className={mainStyle["type-list"]}>
+              <li>
+                <input type="radio" id="all"/>
+                <label htmlFor="all"> 전체 </label>
+              </li>
+            {
+              types.map((type, index) => {
+                return (
+                  <li key={index}>
+                    <input type="radio" id={ type.name }/>
+                    <label htmlFor={ type.name }> {type.nameKr} </label>
+                  </li>
+                )
+              })
+            }
+
+          </ul>
+        </div>
+        
+      </div>
       { 
-        pokemons.length === 0 && !loading ? <p>검색 결과가 없습니다.</p> :
+        pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>검색 결과가 없습니다.</p> :
         <ul className={mainStyle['pokemon-list']}>
           {
             pokemons.map((pokemon, index) => {return <PokemonCard {...pokemon} key={index} />})
