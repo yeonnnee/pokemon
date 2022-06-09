@@ -39,7 +39,7 @@ const Main = (props:PokemonsApiRes) => {
   
 
   const getMorePokemons = useCallback(async () => {
-    const res: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${itemCount * 2}&offset=0`).then(res => res.json());
+    const res: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${itemCount + 20}&offset=0`).then(res => res.json());
     await getPokemons(res.results);
     
   }, [itemCount, getPokemons]);
@@ -76,7 +76,7 @@ const Main = (props:PokemonsApiRes) => {
       </ul>
 
       <div ref={target} className={mainStyle.loading}>
-        { loading ? <span>Loading</span> : null}
+        { loading ? <div className={mainStyle["loading-box"]}>Loading</div> : null}
       </div>
     </div>
   )
