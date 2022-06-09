@@ -47,18 +47,5 @@
   .loading {
     width: 100%;
     text-align: center;
-
-    .loading-box {
-      @include card-normal-shadow();
-
-      width: 100px;
-      padding: 20px;
-      margin: 0 auto;
-      text-align: center;
-      cursor: pointer;
-      border: 1px solid #fff;
-      background-color: $container-bg;
-      border-radius: 10px;
-    }
   }
 }

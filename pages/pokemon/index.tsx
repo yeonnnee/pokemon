@@ -39,7 +39,7 @@ const Main = (props:PokemonsApiRes) => {
   
 
   const getMorePokemons = useCallback(async () => {
-    const res: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${itemCount + 20}&offset=0`).then(res => res.json());
+    const res: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${itemCount + 50}&offset=0`).then(res => res.json());
     await getPokemons(res.results);
     
   }, [itemCount, getPokemons]);
@@ -76,7 +76,7 @@ const Main = (props:PokemonsApiRes) => {
       </ul>
 
       <div ref={target} className={mainStyle.loading}>
-        { loading ? <div className={mainStyle["loading-box"]}>Loading</div> : null}
+        { loading ? <span>Loading</span> : null}
       </div>
     </div>
   )
@@ -84,7 +84,7 @@ const Main = (props:PokemonsApiRes) => {
 
 // 데이터가 있어야 화면을 그릴 수 있으므로 SSG 방식으로 렌더링
 export const getStaticProps: GetStaticProps = async(context) => {
-  const res = await fetch("https://pokeapi.co/api/v2/pokemon");
+  const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=50&offset=0");
   const pokemons = await res.json();
 
   return {
