@@ -1,5 +1,5 @@
 import type { GetStaticProps } from 'next'
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import PokemonCard from './PokemonCard';
 
 import mainStyle from '../../styles/main.module.scss'
@@ -10,11 +10,16 @@ import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../../types/pokemon
 
 const Main = (props:PokemonsApiRes) => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [moreLoading, setMoreLoading]= useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [itemCount, setItemCount] = useState<number>(0);
 
-  const getDetailData = useCallback(async() => {
-    const pokemons = await Promise.all( props.results.map(async (data:ResourceForPokemon) => {
-      const detail:PokemonDetailApiRes = await fetch(data.url).then(result => result.json());
+  const target = useRef<HTMLDivElement>(null);
+
+  const getPokemons = useCallback(async (data: ResourceForPokemon[]) => {
+    setLoading(true);
+
+    const pokemons = await Promise.all( data.map(async (pokemon) => {
+      const detail:PokemonDetailApiRes = await fetch(pokemon.url).then(result => result.json());
       const species = await fetch(detail.species.url).then(data => data.json());
       const nameKr:PokemonName = await species.names.filter((d: PokemonName) => d.language.name === 'ko')[0];
       const result = {
@@ -26,12 +31,34 @@ const Main = (props:PokemonsApiRes) => {
       }
       return result;
     }));
+
     setPokemons(pokemons);
-  },[props]);
+    setItemCount(pokemons.length);
+    setLoading(false);
+  }, []);
+  
+
+  const getMorePokemons = useCallback(async () => {
+    const res: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${itemCount * 2}&offset=0`).then(res => res.json());
+    await getPokemons(res.results);
+    
+  }, [itemCount, getPokemons]);
+
+  const checkIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+    if (!entry.isIntersecting) return;
+    await getMorePokemons();
+  }, [getMorePokemons]);
+
 
   useEffect(()=>{
-    getDetailData();
-  },[getDetailData]);
+    getPokemons(props.results);
+  },[getPokemons, props]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(checkIntersect, {threshold:1});
+    if (target.current) observer.observe(target.current);
+    return () => observer && observer.disconnect();
+  }, [checkIntersect]);
 
   return (
     <div className={mainStyle.main}>
@@ -45,8 +72,12 @@ const Main = (props:PokemonsApiRes) => {
         {
           pokemons.map((pokemon, index) => {return <PokemonCard {...pokemon} key={index} />})
         }
-        { moreLoading ? <li>Loading...</li> : null}
+
       </ul>
+
+      <div ref={target} className={mainStyle.loading}>
+        { loading ? <span>Loading</span> : null}
+      </div>
     </div>
   )
 }
