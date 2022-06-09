@@ -9,8 +9,8 @@ import { PokemonDetailApiRes } from '../../types/detail';
 import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../../types/pokemons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { PokemonType, PokemonTypesApiRes } from '../../types/pokemonTypes';
-import { type } from 'os';
+import { CustomPokemonType, PokemonTypesApiRes } from '../../types/pokemonTypes';
+
 
 interface TotalState {
   totalCount: number,
@@ -27,7 +27,7 @@ const Main = (props:PokemonsApiRes) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<SearchState>({searchString: '', isSearching: false});
   const [itemCount, setItemCount] = useState<number>(0);
-  const [types, setTypes] = useState<PokemonType[]>([]);
+  const [types, setTypes] = useState<CustomPokemonType[]>([]);
 
   const target = useRef<HTMLDivElement>(null);
 

@@ -79,11 +79,20 @@ const Detail = () => {
 
   const getEvolutionChain = useCallback(async (url:string) => {
     const evolution: EvolutionApiRes = await fetch(url).then(data => data.json());
-    const first = await getEvolutionData(evolution.chain.species.url, 1);
-    const firstEvolution = await getEvolutionData(evolution.chain.evolves_to[0].species.url, 2);
-    const lastEvolution = await getEvolutionData(evolution.chain.evolves_to[0].evolves_to[0].species.url, 3);
+    const firstEvolution = evolution.chain.evolves_to[0];
+    const secondEvolution = evolution.chain.evolves_to[0].evolves_to[0];
 
-    return [first, firstEvolution, lastEvolution];
+    const initialData = {
+      id: null,
+      name: null,
+      nameKr: null,
+      image: null
+    };
+    const beforeEvolution = await getEvolutionData(evolution.chain.species.url, 1);
+    const firstLevelUp = firstEvolution ? await getEvolutionData(firstEvolution.species.url, 2) : initialData;
+    const secondLevelUp = secondEvolution ? await getEvolutionData(secondEvolution.species.url, 3) : initialData;
+
+    return [beforeEvolution, firstLevelUp, secondLevelUp];
   }, [getEvolutionData]);
 
 
@@ -99,6 +108,33 @@ const Detail = () => {
       default: return generation;
     }
   }
+
+  function convertTypeName(name: string) {
+    switch (name) {
+      case 'normal': return '노말';
+      case 'fighting': return '격투';
+      case 'flying': return '비행';
+      case 'poison': return '독';
+      case 'ground': return '땅';
+      case 'rock': return '바위';
+      case 'bug': return '벌레';
+      case 'ghost': return '고스트';
+      case 'steel': return '강철';
+      case 'fire': return '불꽃';
+      case 'water': return '물';
+      case 'grass': return '풀';
+      case 'electric': return '전기';
+      case 'psychic': return '에스퍼';
+      case 'ice': return '얼음';
+      case 'dragon': return '드레곤';
+      case 'dark': return '악';
+      case 'fairy': return '페어리';
+      case 'unknown': return 'unKnown';
+      case 'shadow': return '다크 ';
+      default: return '';
+    }
+  }
+
 
   const customData = useCallback(async (detailData:PokemonDetailApiRes, speciesData: PokemonSpeciesApiRes) => {
     if (!speciesData || !detailData) return;
@@ -131,6 +167,7 @@ const Detail = () => {
 
     stats.push(hapiness);
 
+
     const result = {
       name: speciesData.name,
       nameKr: nameKr.name, 
@@ -139,7 +176,7 @@ const Detail = () => {
       order: detailData.order,
       weight: detailData.weight,
       height: detailData.height,
-      types: detailData.types,
+      types: detailData.types.map(type => {return {...type.type, nameKr: convertTypeName(type.type.name)}}),
       images: detailData.sprites,
       evloution_chain: evolutionChain,
       abilitiesKr: abilitiesKr,
@@ -195,13 +232,11 @@ const Detail = () => {
           <p className={detailStyle["section-title"]}>진화</p>
           <ul className={detailStyle["evolution-image"]}>
             {
-              data? data.evloution_chain.map((chain) => {
-                return (
-                  <li key={`evolve-${chain.id}`}>
-                    <ImageCard width={100} height={100} src={chain.image} alt={chain.name} name={chain.name} nameKr={chain.nameKr}/>
-                    <FontAwesomeIcon icon={faChevronRight} className={ chain.id === 3 ? detailStyle.hidden : ''}/>
-                  </li>
-                )
+              data ? data.evloution_chain.map((chain) => {
+                return chain.id ?   <li key={`evolve-${chain.id}`}>
+                <ImageCard width={100} height={100} src={chain.image} alt={chain.name} name={chain.name} nameKr={chain.nameKr}/>
+                <FontAwesomeIcon icon={faChevronRight} className={ chain.id === 3 || !data.evloution_chain[chain.id + 1] ? detailStyle.hidden : ''}/>
+              </li> : null
               }) : null
             }
           </ul>
@@ -220,7 +255,7 @@ const Detail = () => {
             </li>
             <DetailInfoList title={'도감번호'} text={ [pokemonIdx] }/>
             <DetailInfoList title={'이름'} text={ [data?.nameKr || '-'] }/>
-            <DetailInfoList title={'타입'} text={ data?.types.map((type) => type.type.name) || ['-'] }/>
+            <DetailInfoList title={'타입'} text={ data?.types.map((type) => type.nameKr) || ['-'] }/>
             <DetailInfoList title={'세대'} text={ [data?.generation.name || '-'] }/>
           </ul>
         </div>

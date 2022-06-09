@@ -1,6 +1,8 @@
 import { AbilityApiRes, AbilityDetail, AbilityText } from "./ability"
 import { ResourceForPokemon } from "./pokemons"
+import { CustomPokemonType } from "./pokemonTypes"
 import { FlavorTextEntry, Genera, PokemonName } from "./speices"
+
 
 
 export interface PokemonDetail {
@@ -11,7 +13,7 @@ export interface PokemonDetail {
   order: number,
   height: number,
   weight: number,
-  types: PokemonType[],
+  types: CustomPokemonType[],
   images: PokemonSprites,
   evloution_chain: EvolutionData[]
   abilities?: AbilityApiRes[],
@@ -27,10 +29,10 @@ export interface PokemonDetail {
 }
 
 export interface EvolutionData {
-  id: number,
-  name: string,
-  nameKr: string,
-  image: string
+  id: number | null,
+  name: string | null,
+  nameKr: string | null,
+  image: string | null
 }
 export interface PokemonDetailApiRes {
   abilities: PokemonAbility[],

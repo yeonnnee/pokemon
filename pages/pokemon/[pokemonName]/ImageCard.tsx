@@ -6,8 +6,8 @@ interface ImageCardPorps {
   height: number,
   src: string | undefined | null,
   alt: string | undefined | null,
-  name?: string,
-  nameKr?: string
+  name?: string | null,
+  nameKr?: string | null
 }
 
 

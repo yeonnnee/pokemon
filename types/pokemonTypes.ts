@@ -7,7 +7,7 @@ export interface PokemonTypesApiRes {
   results: ResourceForPokemon[];
 }
 
-export interface PokemonType {
+export interface CustomPokemonType {
   name: string,
   nameKr: string,
   url: string
