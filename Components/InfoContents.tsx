@@ -1,5 +1,5 @@
-import detailStyle from '../../../styles/detail.module.scss';
-import labelStyle from '../../../styles/label.module.scss'
+import detailStyle from '../styles/detail.module.scss';
+import labelStyle from '../styles/label.module.scss'
 
 interface InfoContentsProps {
   title: string,

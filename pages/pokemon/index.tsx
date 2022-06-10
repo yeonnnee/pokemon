@@ -1,6 +1,6 @@
 import type { GetStaticProps } from 'next'
 import { useCallback, useEffect, useRef, useState } from 'react';
-import PokemonCard from './PokemonCard';
+import PokemonCard from '../../Components/PokemonCard';
 
 import mainStyle from '../../styles/main.module.scss'
 import Image from 'next/image';

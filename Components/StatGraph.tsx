@@ -1,5 +1,5 @@
-import detailStyle from '../../../styles/detail.module.scss';
-import { PokemonStat } from '../../../types/detail';
+import detailStyle from '../../styles/detail.module.scss';
+import { PokemonStat } from '../types/detail';
 
 
 const StatGraph = (stat: PokemonStat, ref: any ) => {

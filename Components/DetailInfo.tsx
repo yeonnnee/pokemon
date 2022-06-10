@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import detailStyle from '../../../styles/detail.module.scss';
-import { EvolutionData } from '../../../types/detail';
+import detailStyle from '../styles/detail.module.scss';
+import { EvolutionData } from '../types/detail';
 import InfoContents from './InfoContents';
 
 interface DetailInfoProps {

@@ -1,8 +1,8 @@
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import detailStyle from '../../../styles/detail.module.scss';
-import { EvolutionData, PokemonSprites } from '../../../types/detail';
+import detailStyle from '../styles/detail.module.scss';
+import { EvolutionData, PokemonSprites } from '../types/detail';
 import ImageCard from './ImageCard';
 
 interface ImageSectionProps {

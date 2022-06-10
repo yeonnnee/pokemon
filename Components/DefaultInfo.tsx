@@ -1,6 +1,6 @@
-import detailStyle from '../../../styles/detail.module.scss';
-import { ResourceForPokemon } from '../../../types/pokemons';
-import { CustomPokemonType } from '../../../types/pokemonTypes';
+import detailStyle from '../styles/detail.module.scss';
+import { ResourceForPokemon } from '../types/pokemons';
+import { CustomPokemonType } from '../types/pokemonTypes';
 import InfoContents from './InfoContents';
 import ImageCard from './ImageCard';
 

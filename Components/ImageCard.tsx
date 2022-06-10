@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import detailStyle from '../../../styles/detail.module.scss';
+import detailStyle from '../styles/detail.module.scss';
 interface ImageCardPorps {
   width: number,
   height: number,
