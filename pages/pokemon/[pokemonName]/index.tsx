@@ -1,18 +1,15 @@
-import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import detailStyle from '../../../styles/detail.module.scss';
 import { PokemonDetail, PokemonDetailApiRes, PokemonStat } from "../../../types/detail";
 import { PokemonSpeciesApiRes } from "../../../types/speices";
 import { AbilityApiRes } from "../../../types/ability";
-import ImageCard from "./ImageCard";
 import usePokemonIdx from "../../../hooks/usePokemonIdx";
-import DetailInfoList from "./DetailInfoList";
 import { EvolutionApiRes } from "../../../types/evolution";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
-import { ResourceForPokemon } from "../../../types/pokemons";
+import ImageSection from "./ImageSection";
+import DefaultInfo from "./DefaultInfo";
+import DetailInfo from "./DetailInfo";
 
 
 
@@ -81,34 +78,26 @@ const Detail = () => {
   const getEvolutionChain = useCallback(async (url:string) => {
     const evolution: EvolutionApiRes = await fetch(url).then(data => data.json());
     const firstEvolution = evolution.chain.evolves_to[0];
-    const secondEvolution = evolution.chain.evolves_to[0].evolves_to[0];
+    const finalEvolution = evolution.chain.evolves_to[0].evolves_to[0];
 
     const initialData = {
       id: null,
       name: null,
       nameKr: null,
-      image: null
+      image: null,
     };
+
     const beforeEvolution = await getEvolutionData(evolution.chain.species.url, 1);
     const firstLevelUp = firstEvolution ? await getEvolutionData(firstEvolution.species.url, 2) : initialData;
-    const secondLevelUp = secondEvolution ? await getEvolutionData(secondEvolution.species.url, 3) : initialData;
+    const lastLevelUp = finalEvolution ? await getEvolutionData(finalEvolution.species.url, 3) : initialData;
+    const isMega = lastLevelUp.name ? await getDetailData(`${lastLevelUp.name}-mega`).then(res => true).catch(err => false) : false;
+    const isGmax = lastLevelUp.name ? await getDetailData(`${lastLevelUp.name}-gmax`).then(res => true).catch(err => false) : false;
 
-    return [beforeEvolution, firstLevelUp, secondLevelUp];
-  }, [getEvolutionData]);
+    return { evolution: [beforeEvolution, firstLevelUp, lastLevelUp], isMega: isMega, isGmax: isGmax};
+  }, [getEvolutionData,getDetailData]);
 
 
-  const convertGenerationText = (generation: ResourceForPokemon) => {
-    switch (generation.name) {
-      case 'generation-i' : return {...generation, name: '1세대 포켓몬'}
-      case 'generation-ii' : return {...generation, name: '2세대 포켓몬'}
-      case 'generation-iii' : return {...generation, name: '3세대 포켓몬'}
-      case 'generation-iv' : return {...generation, name: '4세대 포켓몬'}
-      case 'generation-v' : return {...generation, name: '5세대 포켓몬'}
-      case 'generation-vi' : return {...generation, name: '6세대 포켓몬'}
-      case 'generation-vii': return { ...generation, name: '7세대 포켓몬' }
-      default: return generation;
-    }
-  }
+
 
   function convertTypeName(name: string) {
     switch (name) {
@@ -195,7 +184,7 @@ const Detail = () => {
       growth_rate: speciesData.growth_rate,
       flavor_text_entries: speciesData.flavor_text_entries,
       genera: speciesData.genera.filter(genera => genera.language.name === 'ko'),
-      generation: convertGenerationText(speciesData.generation),
+      generation: speciesData.generation,
       has_gender_differences: speciesData.has_gender_differences,
       is_legendary: speciesData.is_legendary,
       stats: stats
@@ -224,100 +213,64 @@ const Detail = () => {
   },[fetchData, router.query.pokemonName]);
 
   return (
-    <div className={detailStyle.detail}>
-      <section className={detailStyle["image-section"]}>
-        <div className={detailStyle.profile}>
-          <span className={detailStyle.order}>No.{pokemonIdx}</span>
-          <div className={detailStyle.name}>
-            <span>{data?.nameKr}</span>
-          </div>
-          <div className={detailStyle["profile-image"]}>
-            {
-              data ? <Image priority width={400} height={400} src={data.images.other["official-artwork"].front_default || ''} alt={data.name}/> : <span>No Image</span>
-            }
-          </div>
-        </div>
-
-
-        <div className={detailStyle.evolution}>
-          <p className={detailStyle["section-title"]}>진화</p>
-          <ul className={detailStyle["evolution-image"]}>
-            {
-              data ? data.evloution_chain.map((chain) => {
-                return chain.id ?   <li key={`evolve-${chain.id}`}>
-                <ImageCard width={100} height={100} src={chain.image} alt={chain.name} name={chain.name} nameKr={chain.nameKr}/>
-                <FontAwesomeIcon icon={faChevronRight} className={ chain.id === 3 || !data.evloution_chain[chain.id] ? detailStyle.hidden : ''}/>
-              </li> : null
-              }) : null
-            }
-          </ul>
-        </div>
-
-      </section>
-
+    <>
+      { !data ? <p>Loading...</p> :
+        <div className={detailStyle.detail}>
+          <ImageSection images={data.images} pokemonIdx={pokemonIdx} pokemonName={data.nameKr} evolution={data.evloution_chain}/>
       
-      <section className={detailStyle["pokemon-info-section"]}>
-        {/* 기본정보 */}
-        <div className={detailStyle['default-info']}>
-          <p className={detailStyle['section-title']}>기본 정보</p>
-          <ul className={detailStyle.section}>
-            <li>
-              <ImageCard width={80} height={80} src={data?.images.front_default} alt={data?.name} />
-            </li>
-            <DetailInfoList title={'도감번호'} text={ [pokemonIdx] }/>
-            <DetailInfoList title={'이름'} text={ [data?.nameKr || '-'] }/>
-            <DetailInfoList title={'타입'} text={data?.types.map((type) => type.nameKr) || ['-']} label={data?.types.map((type) => type.name) || ['-'] }/>
-            <DetailInfoList title={'세대'} text={ [data?.generation.name || '-'] }/>
-          </ul>
+          <section className={detailStyle["pokemon-info-section"]}>
+            {/* 기본정보 */}
+            <DefaultInfo image={data.images.front_default} pokemonName={data.nameKr} pokemonIdx={pokemonIdx} types={data.types} generation={data.generation}/>
+
+            {/* 세부정보 */}
+            <DetailInfo genera={data.genera[0].genus} height={data.height} weight={data.weight} form={data.evloution_chain}/>
+
+            {/* 특성 */}
+            <div className={detailStyle['detail-info']}>
+              <p className={detailStyle['section-title']}>특성</p>
+              <ul className={detailStyle.section}>
+                {data?.abilitiesKr.map((ability, index) => <li key={index}>{ ability.name.name }</li>)}
+              </ul>
+            </div>
+
+
+            {/* 특징 */}
+            <div className={`${detailStyle.desc} ${detailStyle.section}`}>
+              <ul className={detailStyle["version-tab"]}>
+                {data?.desc.map((desc, index) => <li key={`version-${index}`} onClick={()=>setSelectedVersion(index)} className={selectedVersion === index ? `${detailStyle["selected-tab"]}` : ''}>{desc.version.name.toUpperCase() }</li>)}
+              </ul>
+              <p className={detailStyle["desc-text"]}>{data?.desc[selectedVersion].flavor_text}</p>
+            </div>
+
+            {/* 종족치 */}
+            <div className={` ${detailStyle.section}`}>
+              <p className={detailStyle["section-title"]}>종족치</p>
+
+              <div className={detailStyle.rate}>
+                {data?.stats.map((stat: PokemonStat, index: number) => {
+                  return (
+                    <div className={detailStyle['graph-section']} key={`stat-${index}`}>
+                      <p className={detailStyle['graph-label']}>{ stat.label }</p>
+                      <div className={ detailStyle.graph }>
+                        <div ref={el => (barRef.current[index] = el)} className={`${detailStyle['graph-bar']} ${detailStyle[`${stat.stat.name}-bar`]}`}></div>
+                      </div>
+                      <p>{ stat.base_stat }</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className={detailStyle["btn-section"]}>
+              <Link href="/pokemon">
+                <button className={detailStyle.btn}>목록으로</button>
+              </Link>
+            </div>
+          </section>
+
         </div>
-
-        {/* 세부정보 */}
-        <div className={detailStyle['detail-info']}>
-          <p className={detailStyle['section-title']}>세부 정보</p>
-          <ul className={detailStyle.section}>
-            <DetailInfoList title={'분류'} text={ [data?.genera[0].genus || '-'] }/>
-            <DetailInfoList title={'신장'} text={ data ? [`${data.height}m`] : ['-'] }/>
-            <DetailInfoList title={'체중'} text={ data ? [`${data.weight}kg`] : ['-'] }/>
-            <DetailInfoList title={'특성'} text={ data?.abilitiesKr.map((ability) => ability.name.name) || ['-'] }/>
-          </ul>
-        </div>
-
-        {/* 특징 */}
-        <div className={`${detailStyle.desc} ${detailStyle.section}`}>
-          <ul className={detailStyle["version-tab"]}>
-            {data?.desc.map((desc, index) => <li key={`version-${index}`} onClick={()=>setSelectedVersion(index)} className={selectedVersion === index ? `${detailStyle["selected-tab"]}` : ''}>{desc.version.name.toUpperCase() }</li>)}
-          </ul>
-          <p className={detailStyle["desc-text"]}>{data?.desc[selectedVersion].flavor_text}</p>
-        </div>
-
-        {/* STAT */}
-        <div className={` ${detailStyle.section}`}>
-          <p className={detailStyle["section-title"]}>종족치</p>
-
-          <div className={detailStyle.rate}>
-            {data?.stats.map((stat: PokemonStat, index: number) => {
-              return (
-                <div className={detailStyle['graph-section']} key={`stat-${index}`}>
-                  <p className={detailStyle['graph-label']}>{ stat.label }</p>
-                  <div className={ detailStyle.graph }>
-                    <div ref={el => (barRef.current[index] = el)} className={`${detailStyle['graph-bar']} ${detailStyle[`${stat.stat.name}-bar`]}`}></div>
-                  </div>
-                  <p>{ stat.base_stat }</p>
-                </div>
-              )
-            })}
-          </div>
-         
-        </div>
-
-        <div className={detailStyle["btn-section"]}>
-          <Link href="/pokemon">
-            <button className={detailStyle.btn}>목록으로</button>
-          </Link>
-        </div>
-      </section>
-
-    </div>
+      }
+    </>
   )
 }
 
