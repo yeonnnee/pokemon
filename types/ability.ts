@@ -30,6 +30,7 @@ export interface AbilityName {
 }
 
 export interface AbilityDetail{
-  text: AbilityText[],
-  name: AbilityName
+  text: string,
+  name: AbilityName,
+  isHidden: boolean
 }

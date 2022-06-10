@@ -10,8 +10,7 @@ import Link from "next/link";
 import ImageSection from "../../../components/ImageSection";
 import DefaultInfo from "../../../components/DefaultInfo";
 import DetailInfo from "../../../components/DetailInfo";
-
-
+import AbilityInfo from "../../../components/AbilityInfo";
 
 const Detail = () => {
   const router = useRouter();
@@ -142,12 +141,14 @@ const Detail = () => {
     const nameKr = getFullName(speciesData.names.filter(name => name.language.name === 'ko')[0].name);
     const pokemonDesc = speciesData.flavor_text_entries.filter(text => text.language.name === 'ko');
     const evolutionChain = await getEvolutionChain(speciesData.evolution_chain.url);
+  
     const abilitiesKr = await Promise.all(detailData.abilities.map(async (ability) => {
       const abilityDetail: AbilityApiRes = await fetch(ability.ability.url).then(data => data.json());
       const result = abilityDetail.flavor_text_entries.filter(effect => effect.language.name === 'ko');
       return {
-        text: result,
-        name: abilityDetail.names.filter(name => name.language.name === 'ko')[0]
+        text: result[0].flavor_text,
+        name: abilityDetail.names.filter(name => name.language.name === 'ko')[0],
+        isHidden: ability.is_hidden
       };
     }));
 
@@ -226,12 +227,7 @@ const Detail = () => {
             <DetailInfo genera={data.genera[0].genus} height={data.height} weight={data.weight} form={data.evloution_chain}/>
 
             {/* 특성 */}
-            <div className={detailStyle['detail-info']}>
-              <p className={detailStyle['section-title']}>특성</p>
-              <ul className={detailStyle.section}>
-                {data?.abilitiesKr.map((ability, index) => <li key={index}>{ ability.name.name }</li>)}
-              </ul>
-            </div>
+            <AbilityInfo abilities={data.abilitiesKr}/>
 
 
             {/* 특징 */}
