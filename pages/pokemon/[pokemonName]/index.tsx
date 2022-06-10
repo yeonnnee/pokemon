@@ -60,6 +60,7 @@ const Detail = () => {
     return detail;
   },[]);
 
+  
 
   const getEvolutionData = useCallback(async (url: string, index: number) => {
     const result = await fetch(url).then(async (res) => {
@@ -135,11 +136,21 @@ const Detail = () => {
     }
   }
 
+  const getFullName = useCallback((nameKr: string) => {
+    const isGmax = pokemonName?.includes('gmax');
+    const isMega = pokemonName?.includes('mega');
+
+    if (isGmax) return `${nameKr} (거다이맥스)`;
+    if (isMega) return `메가${nameKr}`;
+    
+    return nameKr;
+  }, [pokemonName]);
+
 
   const customData = useCallback(async (detailData:PokemonDetailApiRes, speciesData: PokemonSpeciesApiRes) => {
     if (!speciesData || !detailData) return;
     
-    const nameKr = speciesData.names.filter(name => name.language.name === 'ko')[0];
+    const nameKr = getFullName(speciesData.names.filter(name => name.language.name === 'ko')[0].name);
     const pokemonDesc = speciesData.flavor_text_entries.filter(text => text.language.name === 'ko');
     const evolutionChain = await getEvolutionChain(speciesData.evolution_chain.url);
     const abilitiesKr = await Promise.all(detailData.abilities.map(async (ability) => {
@@ -170,7 +181,7 @@ const Detail = () => {
 
     const result = {
       name: speciesData.name,
-      nameKr: nameKr.name, 
+      nameKr: nameKr, 
       names: speciesData.names,
       desc: pokemonDesc,
       order: detailData.order,
@@ -194,20 +205,20 @@ const Detail = () => {
     setData(result);
     paintGraphBar(result);
 
-  }, [getEvolutionChain, paintGraphBar]);
+  }, [getEvolutionChain, paintGraphBar, getFullName]);
 
 
   const fetchData = useCallback(async () => {
     if (!pokemonName) return;
 
     const detailData = await getDetailData(pokemonName);
-    const speciesData = await getSpeciesData(pokemonName);
+    const speciesData = await getSpeciesData(detailData.species.name);
     customData(detailData, speciesData);
 
   }, [getDetailData, getSpeciesData, pokemonName,customData]);
 
 
-  useEffect(()=>{
+  useEffect(() => {
     setPokemonName(router.query.pokemonName);
     fetchData();
   },[fetchData, router.query.pokemonName]);
@@ -235,7 +246,7 @@ const Detail = () => {
               data ? data.evloution_chain.map((chain) => {
                 return chain.id ?   <li key={`evolve-${chain.id}`}>
                 <ImageCard width={100} height={100} src={chain.image} alt={chain.name} name={chain.name} nameKr={chain.nameKr}/>
-                <FontAwesomeIcon icon={faChevronRight} className={ chain.id === 3 || !data.evloution_chain[chain.id + 1] ? detailStyle.hidden : ''}/>
+                <FontAwesomeIcon icon={faChevronRight} className={ chain.id === 3 || !data.evloution_chain[chain.id] ? detailStyle.hidden : ''}/>
               </li> : null
               }) : null
             }
@@ -255,7 +266,7 @@ const Detail = () => {
             </li>
             <DetailInfoList title={'도감번호'} text={ [pokemonIdx] }/>
             <DetailInfoList title={'이름'} text={ [data?.nameKr || '-'] }/>
-            <DetailInfoList title={'타입'} text={ data?.types.map((type) => type.nameKr) || ['-'] }/>
+            <DetailInfoList title={'타입'} text={data?.types.map((type) => type.nameKr) || ['-']} label={data?.types.map((type) => type.name) || ['-'] }/>
             <DetailInfoList title={'세대'} text={ [data?.generation.name || '-'] }/>
           </ul>
         </div>

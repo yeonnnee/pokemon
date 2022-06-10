@@ -31,6 +31,16 @@ const Main = (props:PokemonsApiRes) => {
 
   const target = useRef<HTMLDivElement>(null);
 
+  const getFullName = useCallback((pokemonName: string, nameKr:string) => {
+    const isGmax = pokemonName.includes('gmax');
+    const isMega = pokemonName.includes('mega');
+
+    if (isGmax) return `${nameKr} (거다이맥스)`;
+    if (isMega) return `메가${nameKr}`;
+    
+    return nameKr;
+  }, []);
+
 
   const getPokemons = useCallback(async (data: ResourceForPokemon[]) => {
     setLoading(true);
@@ -38,10 +48,12 @@ const Main = (props:PokemonsApiRes) => {
     const pokemons = await Promise.all( data.map(async (pokemon) => {
       const detail:PokemonDetailApiRes = await fetch(pokemon.url).then(result => result.json());
       const species = await fetch(detail.species.url).then(data => data.json());
-      const nameKr:PokemonName = await species.names.filter((d: PokemonName) => d.language.name === 'ko')[0];
+      const nameKr: PokemonName = await species.names.filter((d: PokemonName) => d.language.name === 'ko')[0];
+      const fullName = getFullName(detail.name, nameKr.name);
+
       const result = {
         name: detail.name,
-        nameKr: nameKr.name,
+        nameKr: fullName,
         images: detail.sprites,
         types: detail.types,
         order: detail.order
@@ -51,7 +63,7 @@ const Main = (props:PokemonsApiRes) => {
     setLoading(false);
 
     return pokemons;
-  }, []);
+  }, [getFullName]);
   
   const fetchData = useCallback(async (data: ResourceForPokemon[]) => {
     const pokemons = await getPokemons(data);
