@@ -1,5 +1,6 @@
 import Image from "next/image";
 import cardStyle from '../../styles/pokemon-card.module.scss'
+import labelStyle from '../../styles/label.module.scss'
 import Link from "next/link";
 import { Pokemon } from "../../types/pokemons";
 import usePokemonIdx from "../../hooks/usePokemonIdx";
@@ -10,7 +11,7 @@ const PokemonCard = (pokemon:Pokemon, key: number) => {
   const types = pokemon.types.map(type => type.type.name);
   
   function getClassName(index: number) {
-    return cardStyle[`${types[index]}`];
+    return labelStyle[`${types[index]}`];
   }
 
   return(

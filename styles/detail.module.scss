@@ -92,6 +92,7 @@
         min-width: 500px;
         text-align: center;
         box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
+
         li {
           width: 25%;
           padding: 10px;
@@ -106,6 +107,14 @@
           .info-text-area {
             display: flex;
             justify-content: space-around;
+
+            .label {
+              width: 48px;
+              border-radius: 4px;
+              font-size: 14px;
+              padding: 2px;
+              cursor: pointer;
+            }
           }
         }
       }
@@ -114,6 +123,7 @@
     .default-info {
       ul {
         li {
+          padding: 10px 0 0;
           .category-title {
             margin: 10px 0;
           }
@@ -205,37 +215,37 @@
 
           .happiness-bar {
             background-color: $pink;
-            @include graph-bar($red-shadow);
+            @include graph-bar($normal-shadow);
           }
 
           .speed-bar {
-            background-color: $blue-label;
-            @include graph-bar($blue-shadow);
+            background-color: $water-label;
+            @include graph-bar($normal-shadow);
           }
 
           .special-defense-bar {
-            background-color: $purple-label;
-            @include graph-bar($blue-shadow);
+            background-color: $ghost-label;
+            @include graph-bar($normal-shadow);
           }
 
           .special-attack-bar {
-            background-color: $yellow-label;
-            @include graph-bar($red-shadow);
+            background-color: $electric-label;
+            @include graph-bar($normal-shadow);
           }
 
           .hp-bar {
-            background-color: $red-label;
-            @include graph-bar($red-shadow);
+            background-color: $fire-label;
+            @include graph-bar($normal-shadow);
           }
 
           .attack-bar {
-            background-color: $orange-label;
-            @include graph-bar($red-shadow);
+            background-color: $fighting-label;
+            @include graph-bar($normal-shadow);
           }
 
           .defense-bar {
-            background-color: $green-label;
-            @include graph-bar($green-shadow)
+            background-color: $grass-label;
+            @include graph-bar($normal-shadow)
           }
         }
       }
