@@ -1,14 +1,14 @@
 import detailStyle from '../../../styles/detail.module.scss';
 import labelStyle from '../../../styles/label.module.scss'
 
-interface DetailInfoProps {
+interface InfoContentsProps {
   title: string,
   text: string[],
   label?: string[]
 }
 
-const DetailInfoList = (detailInfo: DetailInfoProps) => {
-  const { title, text, label } = detailInfo;
+const InfoContens = (props: InfoContentsProps) => {
+  const { title, text, label } = props;
 
   function getClassName(index: number) {
     if (!label) return;
@@ -25,7 +25,7 @@ const DetailInfoList = (detailInfo: DetailInfoProps) => {
         </div>
         :
         <div className={detailStyle['info-text-area']}>
-          { text.length > 1 ? text.map((content, index) => { return (<p key={`text-${index}`}>{content}</p>) }) : <p> { text } </p> }
+          { text.map((content, index) => { return text ? <p key={`text-${index}`}>{content}</p> : <p>-</p> }) }
         </div>
       }
 
@@ -34,4 +34,4 @@ const DetailInfoList = (detailInfo: DetailInfoProps) => {
   )
 }
 
-export default DetailInfoList;
+export default InfoContens;

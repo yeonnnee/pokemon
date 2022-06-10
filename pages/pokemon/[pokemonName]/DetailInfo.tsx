@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import detailStyle from '../../../styles/detail.module.scss';
 import { EvolutionData } from '../../../types/detail';
-import DetailInfoList from './DetailInfoList';
+import InfoContents from './InfoContents';
 
 interface DetailInfoProps {
   genera: string,
@@ -22,9 +22,9 @@ const DetailInfo = (detailInfo: DetailInfoProps) => {
     <div className={detailStyle['detail-info']}>
       <p className={detailStyle['section-title']}>세부 정보</p>
       <ul className={detailStyle.section}>
-        <DetailInfoList title={'분류'} text={ [genera] }/>
-        <DetailInfoList title={'신장'} text={ [`${height}m`] }/>
-        <DetailInfoList title={'체중'} text={ [`${weight}kg`] }/>
+        <InfoContents title={'분류'} text={ [genera] }/>
+        <InfoContents title={'신장'} text={ [`${height}m`] }/>
+        <InfoContents title={'체중'} text={ [`${weight}kg`] }/>
 
         <li>
           <p className={detailStyle['category-title']}> Form </p>

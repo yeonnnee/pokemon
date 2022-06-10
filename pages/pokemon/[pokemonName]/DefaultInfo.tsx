@@ -1,8 +1,9 @@
 import detailStyle from '../../../styles/detail.module.scss';
 import { ResourceForPokemon } from '../../../types/pokemons';
 import { CustomPokemonType } from '../../../types/pokemonTypes';
-import DetailInfoList from './DetailInfoList';
+import InfoContents from './InfoContents';
 import ImageCard from './ImageCard';
+
 
 interface DetailInfoProps {
   image: string,
@@ -35,10 +36,10 @@ const DefaultInfo = (detailInfo: DetailInfoProps) => {
         <li>
           <ImageCard width={80} height={80} src={image} alt={pokemonName} />
         </li>
-        <DetailInfoList title={'도감번호'} text={ [pokemonIdx] }/>
-        <DetailInfoList title={'이름'} text={ [pokemonName] }/>
-        <DetailInfoList title={'타입'} text={types.map((type) => type.nameKr) || []} label={types.map((type) => type.name) || [] }/>
-        <DetailInfoList title={'세대'} text={ [convertGenerationText(generation.name)] }/>
+        <InfoContents title={'도감번호'} text={ [pokemonIdx] }/>
+        <InfoContents title={'이름'} text={ [pokemonName] }/>
+        <InfoContents title={'타입'} text={types.map((type) => type.nameKr) || []} label={types.map((type) => type.name) || [] }/>
+        <InfoContents title={'세대'} text={ [convertGenerationText(generation.name)] }/>
       </ul>
     </div>
   )
