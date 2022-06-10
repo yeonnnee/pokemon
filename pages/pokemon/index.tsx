@@ -1,6 +1,6 @@
 import type { GetStaticProps } from 'next'
 import { useCallback, useEffect, useRef, useState } from 'react';
-import PokemonCard from '../../Components/PokemonCard';
+import PokemonCard from '../../components/PokemonCard';
 
 import mainStyle from '../../styles/main.module.scss'
 import Image from 'next/image';
@@ -8,7 +8,7 @@ import { PokemonName } from '../../types/speices';
 import { PokemonDetailApiRes } from '../../types/detail';
 import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../../types/pokemons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilter, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { CustomPokemonType, PokemonTypesApiRes } from '../../types/pokemonTypes';
 
 

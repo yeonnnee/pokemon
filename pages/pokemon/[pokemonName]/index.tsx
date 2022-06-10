@@ -7,9 +7,9 @@ import { AbilityApiRes } from "../../../types/ability";
 import usePokemonIdx from "../../../hooks/usePokemonIdx";
 import { EvolutionApiRes } from "../../../types/evolution";
 import Link from "next/link";
-import ImageSection from "../../../Components/ImageSection";
-import DefaultInfo from "../../../Components/DefaultInfo";
-import DetailInfo from "../../../Components/DetailInfo";
+import ImageSection from "../../../components/ImageSection";
+import DefaultInfo from "../../../components/DefaultInfo";
+import DetailInfo from "../../../components/DetailInfo";
 
 
 
