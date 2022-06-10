@@ -15,7 +15,11 @@ export interface PokemonDetail {
   weight: number,
   types: CustomPokemonType[],
   images: PokemonSprites,
-  evloution_chain: EvolutionData[]
+  evloution_chain: {
+    evolution: EvolutionData[],
+    isMega: boolean,
+    isGmax: boolean
+  }
   abilities?: AbilityApiRes[],
   abilitiesKr: AbilityDetail[],
   capture_rate: number,
@@ -32,7 +36,7 @@ export interface EvolutionData {
   id: number | null,
   name: string | null,
   nameKr: string | null,
-  image: string | null
+  image: string | null,
 }
 export interface PokemonDetailApiRes {
   abilities: PokemonAbility[],
