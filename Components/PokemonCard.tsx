@@ -1,6 +1,6 @@
 import Image from "next/image";
-import cardStyle from '../../styles/pokemon-card.module.scss'
-import labelStyle from '../../styles/label.module.scss'
+import cardStyle from '../styles/pokemon-card.module.scss'
+import labelStyle from '../styles/label.module.scss'
 import Link from "next/link";
 import { Pokemon } from "../types/pokemons";
 import usePokemonIdx from "../hooks/usePokemonIdx";

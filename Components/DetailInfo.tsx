@@ -27,10 +27,10 @@ const DetailInfo = (detailInfo: DetailInfoProps) => {
         <InfoContents title={'체중'} text={ [`${weight}kg`] }/>
 
         <li>
-          <p className={detailStyle['category-title']}> Form </p>
+          <p className={detailStyle['category-title']}> 형태 </p>
             <div className={detailStyle['info-text-area']}>
-              { form.isGmax ? <Link href={`/pokemon/${finalEvolutionName}-gmax`}><a>다이맥스</a></Link> : null }
-              { form.isMega ? <Link href={`/pokemon/${finalEvolutionName}-mega`}><a>메가진화</a></Link> : null }
+              { form.isGmax ? <Link href={`/pokemon/${finalEvolutionName}-gmax`}><a className={detailStyle.gmax}>다이맥스</a></Link> : null }
+              { form.isMega ? <Link href={`/pokemon/${finalEvolutionName}-mega`}><a className={detailStyle.mega}>메가진화</a></Link> : null }
               { !form.isMega && !form.isGmax ? <p>-</p> : null}
             </div>
         </li>

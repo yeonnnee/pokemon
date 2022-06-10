@@ -74,8 +74,7 @@
     padding: 20px;
 
     .section {
-      margin: 0 0 30px;
-      padding: 10px;
+      margin: 0 0 20px;
     }
 
     .detail-info, .default-info {
@@ -110,6 +109,16 @@
               font-size: 14px;
               padding: 2px;
               cursor: pointer;
+            }
+
+            .gmax {
+              color: $fighting-label;
+              text-decoration-line: underline;
+            }
+
+            .mega {
+              color: $water-label;
+              text-decoration-line: underline;
             }
           }
         }
