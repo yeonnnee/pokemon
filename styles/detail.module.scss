@@ -1,5 +1,6 @@
 @import './variables/colors';
 @import './mixins/shadow';
+@import './mixins/tooltip';
 
 .detail {
   display: flex;
@@ -24,47 +25,6 @@
 
       .profile-image {
         text-align: center;
-      }
-    }
-
-    .evolution {
-      p {
-        margin: 0 0 20px;
-      }
-
-      .evolution-image {
-        display: flex;
-
-        li {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-around;
-          // box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
-          .hidden {
-            opacity: 0;
-          }
-
-
-          .pic {
-            width: 150px;
-            height: 150px;
-            padding: 15px 0 0;
-            text-align: center;
-            background-color: $container-bg;
-            box-shadow: -3px -3px 7px #ffffff73,
-            3px 3px 5px rgba(94,104,121,0.288);
-            cursor: pointer;
-
-            &:hover {
-              box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
-            }
-  
-            .pic-name {
-              margin: 0 0 10px;
-            }
-          }
-        }
       }
     }
   }
@@ -149,10 +109,14 @@
             border-right: 1px solid #d6d4d4;
             position: relative;
 
+            .tool-tip {
+              @include tooltip (28px, -2px, -6px, 7px, 10px, 14px);
+            }
+
             span {
               position: absolute;
               color: red;
-              left: 16px;
+              left: 9px;
               top: 6px;
               cursor: pointer;
 
@@ -160,33 +124,6 @@
                 visibility: visible;
               }
             }
-
-            .tool-tip {
-              visibility: hidden;
-              position: absolute;
-              top: 28px;
-              left: -2px;
-              padding: 10px 14px;
-              background-color: #3d3b3bcf;
-              color: white;
-              font-size: 13px;
-              border-radius: 4px;
-              z-index: 1;
-              transition: all 0.3s ease;
-
-              &::after {
-                content: '';
-                position: absolute;
-                width: 0px;
-                height: 0px;
-                border-bottom: 9px solid #3d3b3bdc;
-                border-left: 8px solid transparent;
-                border-right: 8px solid transparent;
-                left: 14px;
-                top: -8px;
-              }
-            }
-
           }
         }
       }
@@ -204,44 +141,7 @@
       }
     }
 
-    .desc {
-      margin: 10px 0 20px;
-      .version-tab {
-        display: flex;
-        box-shadow: -3px -3px 7px #ffffff73,
-        3px 3px 5px rgba(94,104,121,0.288);
-
-        li {
-          flex: 1;
-          margin: 0 10px 0 0;
-          padding: 10px;
-          background-color: $container-bg; //#e7e7e7;
-          box-shadow: -3px -3px 7px #ffffff73,
-          3px 3px 5px rgba(94,104,121,0.288);
-          font-size: 13px;
-          text-align: center;
-          align-items: center;
-          cursor: pointer;
-
-          &:nth-last-child(1) {
-            margin: 0;
-          }
-
-          &:hover, &.selected-tab {
-            box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
-          }
-        }
-      }
-
-      .desc-text {
-        height: 130px;
-        padding: 50px 42px;
-        margin: 20px 0 0;
-        border-radius: 10px;
-        text-align: center;
-        box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
-      }
-    }
+    
 
     .rate {
       padding: 10px 20px;
@@ -344,5 +244,89 @@
     padding: 5px 10px;
     box-shadow: -3px -3px 7px #ffffff73,
     3px 3px 5px rgba(94,104,121,0.288);
+  }
+
+  .desc {
+    margin: 10px 0 20px;
+    .version-tab {
+      display: flex;
+      box-shadow: -3px -3px 7px #ffffff73,
+      3px 3px 5px rgba(94,104,121,0.288);
+
+      li {
+        flex: 1;
+        margin: 0 10px 0 0;
+        padding: 10px;
+        background-color: $container-bg; //#e7e7e7;
+        box-shadow: -3px -3px 7px #ffffff73,
+        3px 3px 5px rgba(94,104,121,0.288);
+        font-size: 13px;
+        text-align: center;
+        align-items: center;
+        cursor: pointer;
+
+        &:nth-last-child(1) {
+          margin: 0;
+        }
+
+        &:hover, &.selected-tab {
+          box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
+        }
+      }
+    }
+
+    .desc-text {
+      height: 130px;
+      padding: 50px 42px;
+      margin: 20px 0 0;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
+    }
+  }
+
+  .evolution {
+    box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
+    padding: 0 0 18px;
+    margin: 0 0 20px;
+    .evolution-image {
+      display: flex;
+      margin: 16px 0 0;
+
+      li {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        // box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
+        .hidden {
+          opacity: 0;
+        }
+
+
+        .pic {
+          position: relative;
+          width: 100px;
+          height: 100px;
+          text-align: center;
+          background-color: $container-bg;
+          box-shadow: -3px -3px 7px #ffffff73,
+          3px 3px 5px rgba(94,104,121,0.288);
+          cursor: pointer;
+
+          &:hover {
+            box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
+          }
+
+          .tool-tip {
+            @include tooltip (83px, 16px, -5px, 22px, 6px, 13px);
+          }
+
+          &:hover .tool-tip {
+            visibility: visible;
+          }
+        }
+      }
+    }
   }
 }

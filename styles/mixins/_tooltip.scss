@@ -1,0 +1,25 @@
+@mixin tooltip( $top, $left,$arrowTop, $arrowLeft, $paddingTopBottom, $paddingSide) {
+  visibility: hidden;
+  position: absolute;
+  top: $top;
+  left: $left;
+  padding: $paddingTopBottom $paddingSide;
+  background-color: #3d3b3bcf;
+  color: white;
+  font-size: 13px;
+  border-radius: 4px;
+  z-index: 1;
+  transition: all 0.3s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    border-bottom: 7px solid #3d3b3bdc;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    left: $arrowLeft;
+    top: $arrowTop;
+  }
+}
