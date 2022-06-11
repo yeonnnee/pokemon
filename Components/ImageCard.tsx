@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import detailStyle from '../styles/detail.module.scss';
+
 interface ImageCardPorps {
   width: number,
   height: number,
@@ -19,7 +20,8 @@ const ImageCard = (props: ImageCardPorps) => {
         {
           src ? <Image priority width={width} height={height} src={src} alt={alt ? alt : 'image'}/> : <span> No Image </span>
         }
-        <p className={ detailStyle["pic-name"] }>{ nameKr }</p>
+        <div className={detailStyle["tool-tip"]}>{ nameKr }</div>
+        
       </div>
     </Link>
 

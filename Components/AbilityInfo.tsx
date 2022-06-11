@@ -16,10 +16,10 @@ const AbilityInfo = (props:AbilityProps) => {
         {
           abilities.map((ability, index) =>
           <li key={index}>
-              <div className={`${detailStyle["ability-name"]}`}>
-                {ability.isHidden ? <span>*</span> : null} {ability.name.name}
-                <div className={detailStyle["tool-tip"]}>숨겨진 특성</div>  
-              </div>
+            <div className={`${detailStyle["ability-name"]}`}>
+              {ability.isHidden ? <span>*</span> : null} {ability.name.name}
+              <div className={detailStyle["tool-tip"]}>숨겨진 특성</div>  
+            </div>
             <div className={`${detailStyle["ability-desc"]}`}>{ability.text}</div>
           </li>)
         }

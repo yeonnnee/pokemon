@@ -11,7 +11,7 @@ import ImageSection from "../../../components/ImageSection";
 import DefaultInfo from "../../../components/DefaultInfo";
 import DetailInfo from "../../../components/DetailInfo";
 import AbilityInfo from "../../../components/AbilityInfo";
-import PokemonDesc from "../../../components/PokemonDesc";
+import EvolutionInfo from "../../../components/EvolutionInfo";
 
 const Detail = () => {
   const router = useRouter();
@@ -217,7 +217,7 @@ const Detail = () => {
     <>
       { !data ? <p>Loading...</p> :
         <div className={detailStyle.detail}>
-          <ImageSection images={data.images} pokemonIdx={pokemonIdx} pokemonName={data.nameKr} evolution={data.evloution_chain}/>
+          <ImageSection images={data.images} pokemonIdx={pokemonIdx} pokemonName={data.nameKr} desc={data.desc}/>
       
           <section className={detailStyle["pokemon-info-section"]}>
             {/* 기본정보 */}
@@ -229,8 +229,8 @@ const Detail = () => {
             {/* 특성 */}
             <AbilityInfo abilities={data.abilitiesKr}/>
 
-            {/* 특징 */}
-            <PokemonDesc desc={data.desc} />
+            {/* 진화 */}
+            <EvolutionInfo evolution={data.evloution_chain.evolution} />
 
             {/* 종족치 */}
             <div className={` ${detailStyle.section}`}>
