@@ -205,6 +205,7 @@
     }
 
     .desc {
+      margin: 10px 0 20px;
       .version-tab {
         display: flex;
         box-shadow: -3px -3px 7px #ffffff73,
@@ -244,15 +245,11 @@
 
     .rate {
       padding: 10px 20px;
-      // background: $container-bg;
-      border-radius: 10px;
-      // box-shadow: -3px -3px 7px #ffffff73,
-      // 3px 3px 5px rgba(94,104,121,0.288);
       box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
+
       .graph-section {
         display: flex;
         align-items: center;
-
 
         p {
           display: inline-block;

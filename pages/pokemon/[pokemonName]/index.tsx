@@ -11,12 +11,12 @@ import ImageSection from "../../../components/ImageSection";
 import DefaultInfo from "../../../components/DefaultInfo";
 import DetailInfo from "../../../components/DetailInfo";
 import AbilityInfo from "../../../components/AbilityInfo";
+import PokemonDesc from "../../../components/PokemonDesc";
 
 const Detail = () => {
   const router = useRouter();
   const [pokemonName, setPokemonName] = useState<string | string[] | undefined>(router.query.pokemonName);
   const [data, setData] = useState<PokemonDetail | null>(null);
-  const [selectedVersion, setSelectedVersion] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const pokemonIdx = usePokemonIdx(data?.order || 0);
 
@@ -229,14 +229,8 @@ const Detail = () => {
             {/* 특성 */}
             <AbilityInfo abilities={data.abilitiesKr}/>
 
-
             {/* 특징 */}
-            <div className={`${detailStyle.desc} ${detailStyle.section}`}>
-              <ul className={detailStyle["version-tab"]}>
-                {data?.desc.map((desc, index) => <li key={`version-${index}`} onClick={()=>setSelectedVersion(index)} className={selectedVersion === index ? `${detailStyle["selected-tab"]}` : ''}>{desc.version.name.toUpperCase() }</li>)}
-              </ul>
-              <p className={detailStyle["desc-text"]}>{data?.desc[selectedVersion].flavor_text}</p>
-            </div>
+            <PokemonDesc desc={data.desc} />
 
             {/* 종족치 */}
             <div className={` ${detailStyle.section}`}>
