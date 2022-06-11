@@ -19,7 +19,7 @@ const ImageSection = (props: ImageSectionProps) => {
       {/* 프로필 이미지 */}
 
       <div className={detailStyle.profile}>
-        <span className={detailStyle.order}>No.{pokemonIdx}</span>
+        <span className={detailStyle.order}>{ pokemonIdx !== '-' ? `No.${pokemonIdx}` : '다이맥스'}</span>
         <div className={detailStyle.name}>
           <span>{pokemonName}</span>
         </div>
