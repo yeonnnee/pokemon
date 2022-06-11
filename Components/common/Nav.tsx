@@ -7,7 +7,7 @@ const Nav = () => {
   return(
     <nav className={NavStyle.nav}>
       <div className={NavStyle.logo} >
-        <Link href={`/pokemon`}>
+        <Link href={`/`}>
           <a>
             <Image src="/main_logo.png" alt="logo" width={150} height={50} />
           </a>

@@ -260,7 +260,7 @@ const Detail = () => {
 
           </div>
           <div className={detailStyle["btn-section"]}>
-            <Link href="/pokemon">
+            <Link href="/">
               <button className={detailStyle.btn}>목록으로</button>
             </Link>
           </div>
