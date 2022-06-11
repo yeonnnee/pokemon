@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import detailStyle from '../../../styles/detail.module.scss';
-import { PokemonDetail, PokemonDetailApiRes, PokemonStat } from "../../../types/detail";
+import { EvolutionData, PokemonDetail, PokemonDetailApiRes, PokemonStat } from "../../../types/detail";
 import { PokemonSpeciesApiRes } from "../../../types/speices";
 import { AbilityApiRes } from "../../../types/ability";
 import usePokemonIdx from "../../../hooks/usePokemonIdx";
@@ -77,7 +77,7 @@ const Detail = () => {
   const getEvolutionChain = useCallback(async (url:string) => {
     const evolution: EvolutionApiRes = await fetch(url).then(data => data.json());
     const firstEvolution = evolution.chain.evolves_to[0];
-    const finalEvolution = evolution.chain.evolves_to[0].evolves_to[0];
+    const finalEvolution = evolution.chain.evolves_to[0]?.evolves_to[0];
 
     const initialData = {
       id: null,
@@ -92,7 +92,9 @@ const Detail = () => {
     const isMega = lastLevelUp.name ? await getDetailData(`${lastLevelUp.name}-mega`).then(res => true).catch(err => false) : false;
     const isGmax = lastLevelUp.name ? await getDetailData(`${lastLevelUp.name}-gmax`).then(res => true).catch(err => false) : false;
 
-    return { evolution: [beforeEvolution, firstLevelUp, lastLevelUp], isMega: isMega, isGmax: isGmax};
+    const evolutionInfo = [beforeEvolution, firstLevelUp, lastLevelUp].filter(info=>info.id);
+
+    return { evolution: evolutionInfo, isMega: isMega, isGmax: isGmax };
   }, [getEvolutionData,getDetailData]);
 
 

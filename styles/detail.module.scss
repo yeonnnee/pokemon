@@ -104,8 +104,9 @@
           }
 
           .ability-name {
-            min-width: 100px;
-            padding: 10px;
+            min-width: 138px;
+            padding: 10px 20px;
+            text-align: left;
             border-right: 1px solid #d6d4d4;
             position: relative;
 
@@ -289,20 +290,20 @@
     box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
     padding: 0 0 18px;
     margin: 0 0 20px;
+    
     .evolution-image {
       display: flex;
       margin: 16px 0 0;
-
+      
       li {
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: space-around;
-        // box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
+
         .hidden {
           opacity: 0;
         }
-
 
         .pic {
           position: relative;
