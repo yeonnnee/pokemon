@@ -10,7 +10,7 @@
 
   .image-section {
     width: 50%;
-    padding: 20px;
+    padding: 0 20px;
   
     .profile {
       margin: 0 0 20px;
@@ -22,10 +22,10 @@
       .name {
         font-size: 35px;
       }
+    }
 
-      .profile-image {
-        text-align: center;
-      }
+    .profile-image {
+      text-align: center;
     }
   }
 

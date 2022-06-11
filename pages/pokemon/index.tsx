@@ -174,9 +174,7 @@ const Main = (props:PokemonsApiRes) => {
 
   return (
     <div className={mainStyle.main}>
-      <div className={mainStyle.logo}>
-        <Image src="/main_logo.png" alt="logo"  width={300} height={130} />
-      </div>
+ 
       <div className={mainStyle['search-section']}>
         <div className={mainStyle['search-bar']}>
           <FontAwesomeIcon icon={ faSearch } className={mainStyle['search-icon']}/>
@@ -185,7 +183,7 @@ const Main = (props:PokemonsApiRes) => {
         </div>
       </div>
 
-      <div className={mainStyle.filter}>
+      {/* <div className={mainStyle.filter}>
         <input className={ mainStyle["filter-btn"] } type="checkbox" id="filter" />
         <label className={mainStyle["filter-label"]} htmlFor="filter">Type</label>
 
@@ -209,7 +207,7 @@ const Main = (props:PokemonsApiRes) => {
           </ul>
         </div>
         
-      </div>
+      </div> */}
       { 
         pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>검색 결과가 없습니다.</p> :
         <ul className={mainStyle['pokemon-list']}>

@@ -17,15 +17,17 @@ const ImageSection = (props: ImageSectionProps) => {
   return (
     <section className={detailStyle["image-section"]}>
       {/* 프로필 이미지 */}
+
       <div className={detailStyle.profile}>
         <span className={detailStyle.order}>No.{pokemonIdx}</span>
         <div className={detailStyle.name}>
           <span>{pokemonName}</span>
         </div>
-        <div className={detailStyle["profile-image"]}>
-          <Image priority width={400} height={400} src={ images.other["official-artwork"].front_default || ''} alt={pokemonName}/>
-        </div>
       </div>
+
+      <div className={detailStyle["profile-image"]}>
+          <Image priority width={500} height={500} src={ images.other["official-artwork"].front_default || ''} alt={pokemonName}/>
+        </div>
 
       {/* 특징 */}
       <PokemonDesc desc={desc} />
