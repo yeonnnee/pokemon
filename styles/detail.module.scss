@@ -3,10 +3,14 @@
 @import './mixins/tooltip';
 
 .detail {
-  display: flex;
-  padding: 20px 50px;
-  height: 100%;
-  align-items: center;
+  padding:  0 0 30px;
+
+  .container {
+    display: flex;
+    padding: 20px 50px;
+    height: 100%;
+    align-items: center;
+  }
 
   .image-section {
     width: 50%;
@@ -224,19 +228,6 @@
     .category {
       margin: 0 0 10px;
     }
-
-
-    .btn-section {
-      text-align: center;
-      .btn {
-        padding: 10px 20px;
-        font-weight: bold;
-        background-color: $container-bg; //#e7e7e7;
-        box-shadow: -3px -3px 7px #ffffff73,
-        3px 3px 5px rgba(94,104,121,0.288);
-      }
-
-    }
   }
 
   .section-title {
@@ -329,5 +320,26 @@
         }
       }
     }
+  }
+
+
+  .btn-section {
+    text-align: center;
+
+    .btn {
+      padding: 10px 20px;
+      font-weight: bold;
+      background-color: $dragon-label;
+      border-radius: 20px;
+      box-shadow: -3px -3px 7px #ffffff73,
+      3px 3px 0px 0px #213e62;
+
+
+      &:hover {
+        box-shadow: -3px -3px 7px #ffffff73,
+        3px 3px 8px 0px #213e62;
+      }
+    }
+
   }
 }
