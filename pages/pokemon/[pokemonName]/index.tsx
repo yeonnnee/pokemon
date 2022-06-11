@@ -12,6 +12,7 @@ import DefaultInfo from "../../../components/DefaultInfo";
 import DetailInfo from "../../../components/DetailInfo";
 import AbilityInfo from "../../../components/AbilityInfo";
 import EvolutionInfo from "../../../components/EvolutionInfo";
+import Loader from "../../../components/common/Loader";
 
 const Detail = () => {
   const router = useRouter();
@@ -217,51 +218,55 @@ const Detail = () => {
 
   return (
     <>
-      { !data ? <p>Loading...</p> :
+      {!data ? <Loader text={'정보를 불러오는 중입니다...'} /> :
         <div className={detailStyle.detail}>
-          <ImageSection images={data.images} pokemonIdx={pokemonIdx} pokemonName={data.nameKr} desc={data.desc}/>
-      
-          <section className={detailStyle["pokemon-info-section"]}>
-            {/* 기본정보 */}
-            <DefaultInfo image={data.images.front_default} pokemonName={data.nameKr} pokemonIdx={pokemonIdx} types={data.types} generation={data.generation}/>
+          <div className={detailStyle.container}>
+            <ImageSection images={data.images} pokemonIdx={pokemonIdx} pokemonName={data.nameKr} desc={data.desc}/>
+        
+            <section className={detailStyle["pokemon-info-section"]}>
+              {/* 기본정보 */}
+              <DefaultInfo image={data.images.front_default} pokemonName={data.nameKr} pokemonIdx={pokemonIdx} types={data.types} generation={data.generation}/>
 
-            {/* 세부정보 */}
-            <DetailInfo genera={data.genera[0].genus} height={data.height} weight={data.weight} form={data.evloution_chain}/>
+              {/* 세부정보 */}
+              <DetailInfo genera={data.genera[0].genus} height={data.height} weight={data.weight} form={data.evloution_chain}/>
 
-            {/* 특성 */}
-            <AbilityInfo abilities={data.abilitiesKr}/>
+              {/* 특성 */}
+              <AbilityInfo abilities={data.abilitiesKr}/>
 
-            {/* 진화 */}
-            <EvolutionInfo evolution={data.evloution_chain.evolution} />
+              {/* 진화 */}
+              <EvolutionInfo evolution={data.evloution_chain.evolution} />
 
-            {/* 종족치 */}
-            <div className={` ${detailStyle.section}`}>
-              <p className={detailStyle["section-title"]}>종족치</p>
+              {/* 종족치 */}
+              <div className={` ${detailStyle.section}`}>
+                <p className={detailStyle["section-title"]}>종족치</p>
 
-              <div className={detailStyle.rate}>
-                {data?.stats.map((stat: PokemonStat, index: number) => {
-                  return (
-                    <div className={detailStyle['graph-section']} key={`stat-${index}`}>
-                      <p className={detailStyle['graph-label']}>{ stat.label }</p>
-                      <div className={ detailStyle.graph }>
-                        <div ref={el => (barRef.current[index] = el)} className={`${detailStyle['graph-bar']} ${detailStyle[`${stat.stat.name}-bar`]}`}></div>
+                <div className={detailStyle.rate}>
+                  {data?.stats.map((stat: PokemonStat, index: number) => {
+                    return (
+                      <div className={detailStyle['graph-section']} key={`stat-${index}`}>
+                        <p className={detailStyle['graph-label']}>{ stat.label }</p>
+                        <div className={ detailStyle.graph }>
+                          <div ref={el => (barRef.current[index] = el)} className={`${detailStyle['graph-bar']} ${detailStyle[`${stat.stat.name}-bar`]}`}></div>
+                        </div>
+                        <p>{ stat.base_stat }</p>
                       </div>
-                      <p>{ stat.base_stat }</p>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
+                </div>
               </div>
-            </div>
 
-            <div className={detailStyle["btn-section"]}>
-              <Link href="/pokemon">
-                <button className={detailStyle.btn}>목록으로</button>
-              </Link>
-            </div>
-          </section>
 
+            </section>
+
+          </div>
+          <div className={detailStyle["btn-section"]}>
+            <Link href="/pokemon">
+              <button className={detailStyle.btn}>목록으로</button>
+            </Link>
+          </div>
         </div>
       }
+
     </>
   )
 }

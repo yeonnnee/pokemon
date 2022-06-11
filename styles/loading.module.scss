@@ -1,0 +1,33 @@
+
+@keyframes blinkText {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.5;
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 0;
+  }
+
+}
+
+.loading {
+  width: 100%;
+  text-align: center;
+  margin: 10% 0;
+  font-weight: bold;
+
+  p {
+    animation: blinkText 1s infinite;
+  }
+}
