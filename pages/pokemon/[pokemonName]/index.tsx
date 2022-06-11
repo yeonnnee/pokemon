@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import detailStyle from '../../../styles/detail.module.scss';
-import { EvolutionData, PokemonDetail, PokemonDetailApiRes, PokemonStat } from "../../../types/detail";
+import { PokemonDetail, PokemonDetailApiRes, PokemonStat } from "../../../types/detail";
 import { PokemonSpeciesApiRes } from "../../../types/speices";
 import { AbilityApiRes } from "../../../types/ability";
 import usePokemonIdx from "../../../hooks/usePokemonIdx";
@@ -100,33 +100,6 @@ const Detail = () => {
 
 
 
-
-  function convertTypeName(name: string) {
-    switch (name) {
-      case 'normal': return '노말';
-      case 'fighting': return '격투';
-      case 'flying': return '비행';
-      case 'poison': return '독';
-      case 'ground': return '땅';
-      case 'rock': return '바위';
-      case 'bug': return '벌레';
-      case 'ghost': return '고스트';
-      case 'steel': return '강철';
-      case 'fire': return '불꽃';
-      case 'water': return '물';
-      case 'grass': return '풀';
-      case 'electric': return '전기';
-      case 'psychic': return '에스퍼';
-      case 'ice': return '얼음';
-      case 'dragon': return '드레곤';
-      case 'dark': return '악';
-      case 'fairy': return '페어리';
-      case 'unknown': return 'unKnown';
-      case 'shadow': return '다크 ';
-      default: return '';
-    }
-  }
-
   const getFullName = useCallback((nameKr: string) => {
     const isGmax = pokemonName?.includes('gmax');
     const isMega = pokemonName?.includes('mega');
@@ -180,7 +153,7 @@ const Detail = () => {
       order: detailData.order,
       weight: detailData.weight,
       height: detailData.height,
-      types: detailData.types.map(type => {return {...type.type, nameKr: convertTypeName(type.type.name)}}),
+      types: detailData.types,
       images: detailData.sprites,
       evloution_chain: evolutionChain,
       abilitiesKr: abilitiesKr,
@@ -254,10 +227,7 @@ const Detail = () => {
                   })}
                 </div>
               </div>
-
-
             </section>
-
           </div>
           <div className={detailStyle["btn-section"]}>
             <Link href="/">
@@ -266,7 +236,6 @@ const Detail = () => {
           </div>
         </div>
       }
-
     </>
   )
 }

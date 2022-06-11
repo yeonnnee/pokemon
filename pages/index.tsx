@@ -8,8 +8,6 @@ import { PokemonDetailApiRes } from '../types/detail';
 import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../types/pokemons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { CustomPokemonType, PokemonTypesApiRes } from '../types/pokemonTypes';
-
 
 interface TotalState {
   totalCount: number,
@@ -20,13 +18,18 @@ interface SearchState {
   searchString: string,
   isSearching: boolean
 }
-const Main = (props:PokemonsApiRes) => {
+
+interface MainProps {
+  data: PokemonsApiRes,
+  total: PokemonsApiRes
+}
+
+const Main = (props:MainProps) => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [total, setTotal] = useState<TotalState>({totalCount: 0, data: []});
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<SearchState>({searchString: '', isSearching: false});
   const [itemCount, setItemCount] = useState<number>(0);
-  const [types, setTypes] = useState<CustomPokemonType[]>([]);
 
   const target = useRef<HTMLDivElement>(null);
 
@@ -84,13 +87,6 @@ const Main = (props:PokemonsApiRes) => {
     await getMorePokemons(itemCount + 50);
   }, [getMorePokemons,itemCount]);
 
-
-
-  const getTotalPokemons = async () => {
-    const res: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${total.totalCount}&offset=0`).then(res => res.json());
-    return res.results;
-  }
-
   async function resetSeachCondition() {
     if (search.isSearching) {
       setPokemons([]);
@@ -108,62 +104,20 @@ const Main = (props:PokemonsApiRes) => {
     setPokemons([]);
     setLoading(true);
     setSearch({ ...search, isSearching: true });
-    let totalPokemons: ResourceForPokemon[] | null = null;
 
-    if (total.data.length === 0) {
-      totalPokemons = await getTotalPokemons();
-      setTotal({ ...total, data: totalPokemons });
-    }
-
-    const data = await getPokemons(totalPokemons || total.data);
+    const data = await getPokemons(total.data);
     const result = data.filter(pokemon => pokemon.nameKr.includes(search.searchString));
 
     setPokemons(result);
     setLoading(false);
   }
 
-  function convertTypeName(name: string) {
-    switch (name) {
-      case 'normal': return '노말';
-      case 'fighting': return '격투';
-      case 'flying': return '비행';
-      case 'poison': return '독';
-      case 'ground': return '땅';
-      case 'rock': return '바위';
-      case 'bug': return '벌레';
-      case 'ghost': return '고스트';
-      case 'steel': return '강철';
-      case 'fire': return '불꽃';
-      case 'water': return '물';
-      case 'grass': return '풀';
-      case 'electric': return '전기';
-      case 'psychic': return '에스퍼';
-      case 'ice': return '얼음';
-      case 'dragon': return '드레곤';
-      case 'dark': return '악';
-      case 'fairy': return '페어리';
-      case 'unknown': return 'unKnown';
-      case 'shadow': return '다크 ';
-      default: return '';
-    }
-  }
-
-  const fetchTypes = useCallback(async () => {
-    const res:PokemonTypesApiRes = await fetch("https://pokeapi.co/api/v2/type").then(res => res.json());
-    const result = res.results.map(result => {
-      return {
-        ...result,
-        nameKr: convertTypeName(result.name)
-      }
-    });
-    setTypes(result);
-  }, []);
 
   useEffect(() => {
-    fetchData(props.results);
-    fetchTypes();
-    setTotal({totalCount: props.count, data:[]});
-  },[fetchData, props, fetchTypes]);
+    fetchData(props.data.results);
+    setTotal({ totalCount: props.data.count, data: props.total.results });
+
+  },[fetchData, props]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(checkIntersect, {threshold:1});
@@ -225,11 +179,47 @@ const Main = (props:PokemonsApiRes) => {
 
 // 데이터가 있어야 화면을 그릴 수 있으므로 SSG 방식으로 렌더링
 export const getStaticProps: GetStaticProps = async(context) => {
-  const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=50&offset=0");
-  const pokemons = await res.json();
+  const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=50&offset=0").then(res => res.json());
+  const total: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${res.count}&offset=0`).then(res => res.json());
+
+  // function convertTypeName(name: string) {
+  //   switch (name) {
+  //     case 'normal': return '노말';
+  //     case 'fighting': return '격투';
+  //     case 'flying': return '비행';
+  //     case 'poison': return '독';
+  //     case 'ground': return '땅';
+  //     case 'rock': return '바위';
+  //     case 'bug': return '벌레';
+  //     case 'ghost': return '고스트';
+  //     case 'steel': return '강철';
+  //     case 'fire': return '불꽃';
+  //     case 'water': return '물';
+  //     case 'grass': return '풀';
+  //     case 'electric': return '전기';
+  //     case 'psychic': return '에스퍼';
+  //     case 'ice': return '얼음';
+  //     case 'dragon': return '드레곤';
+  //     case 'dark': return '악';
+  //     case 'fairy': return '페어리';
+  //     case 'unknown': return 'unKnown';
+  //     case 'shadow': return '다크 ';
+  //     default: return '';
+  //   }
+  // }
+
+  // const fetchTypes = async () => {
+  //   const res:PokemonTypesApiRes = await fetch("https://pokeapi.co/api/v2/type").then(res => res.json());
+  //   const result = res.results.map(result => {
+  //     return {
+  //       ...result,
+  //       nameKr: convertTypeName(result.name)
+  //     }
+  //   });
+  // };
 
   return {
-    props: { ...pokemons }
+    props: { total:total, data: res }
   }
 }
 

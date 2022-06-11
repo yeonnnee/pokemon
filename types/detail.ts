@@ -13,7 +13,7 @@ export interface PokemonDetail {
   order: number,
   height: number,
   weight: number,
-  types: CustomPokemonType[],
+  types: PokemonType[],
   images: PokemonSprites,
   evloution_chain: {
     evolution: EvolutionData[],
