@@ -3,13 +3,13 @@
 @import './mixins/tooltip';
 
 .detail {
-  padding:  0 0 30px;
+  padding: 0 0 30px;
 
   .container {
     display: flex;
-    padding: 20px 50px;
-    height: 100%;
     align-items: center;
+    height: 100%;
+    padding: 20px 50px;
   }
 
   .image-section {
@@ -21,7 +21,7 @@
 
       .order {
         font-size: 20px;
-        color: rgb(173, 171, 171);
+        color: $gray-font;
       }
   
       .name {
@@ -45,20 +45,21 @@
     .detail-info, .default-info {
 
       ul {
+        @include container-shadow();
+
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         width: 100%;
         min-width: 500px;
         text-align: center;
-        box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
 
         li {
           width: 25%;
           padding: 10px;
-          border: 1px solid #d6d4d4;
-          margin: 0 -1px 0 0;
-          // box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
+          border: 1px solid $gray-border;
+          border-right: none;
+
           .category-title {
             font-size: 13px;
             margin: 0 0 10px;
@@ -93,14 +94,14 @@
         display: block;
 
         li {
+          position: relative;
           display: flex;
           width: 100%;
-          position: relative;
           padding: 0;
           border-bottom: none;
 
           &:nth-last-child(1) {
-            border-bottom: 1px solid #d6d4d4;
+            border-bottom: 1px solid $gray-border;
           }
 
           .ability-desc {
@@ -109,11 +110,11 @@
           }
 
           .ability-name {
+            position: relative;
             min-width: 138px;
             padding: 10px 20px;
             text-align: left;
-            border-right: 1px solid #d6d4d4;
-            position: relative;
+            border-right: 1px solid $gray-border;
 
             .tool-tip {
               @include tooltip (28px, -2px, -6px, 7px, 10px, 14px);
@@ -121,9 +122,9 @@
 
             span {
               position: absolute;
-              color: red;
               left: 9px;
               top: 6px;
+              color: red;
               cursor: pointer;
 
               &:hover ~ .tool-tip {
@@ -138,11 +139,12 @@
     .default-info {
       ul {
         li {
+          width: 20%;
           padding: 0;
+
           .category-title {
             margin: 10px 0;
           }
-          width: 20%;
         }
       }
     }
@@ -150,8 +152,8 @@
     
 
     .rate {
+      @include container-shadow();
       padding: 10px 20px;
-      box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
 
       .graph-section {
         display: flex;
@@ -159,24 +161,24 @@
 
         p {
           display: inline-block;
+          width: 90px;
           line-height: 1.7;
           text-align: center;
-          width: 90px;
         }
 
         .graph-label {
-          text-align: left;
           width: 120px;
+          text-align: left;
 
         }
         .graph {
           @include graph-shadow();
+          position: relative;
           display: inline-block;
-          margin: 0 10px;
           width: 80%;
+          margin: 0 10px;
           padding: 10px;
           border-radius: 10px;
-          position: relative;
 
           .graph-bar {
             position: absolute;
@@ -189,38 +191,31 @@
           }
 
           .happiness-bar {
-            background-color: $pink;
-            @include graph-bar($normal-shadow);
+            @include bar($pink);
           }
 
           .speed-bar {
-            background-color: $water-label;
-            @include graph-bar($normal-shadow);
+            @include bar($water-label);
           }
 
           .special-defense-bar {
-            background-color: $ghost-label;
-            @include graph-bar($normal-shadow);
+            @include bar($ghost-label);
           }
 
           .special-attack-bar {
-            background-color: $electric-label;
-            @include graph-bar($normal-shadow);
+            @include bar($electric-label);
           }
 
           .hp-bar {
-            background-color: $fire-label;
-            @include graph-bar($normal-shadow);
+            @include bar($fire-label);
           }
 
           .attack-bar {
-            background-color: $fighting-label;
-            @include graph-bar($normal-shadow);
+            @include bar($fighting-label);
           }
 
           .defense-bar {
-            background-color: $grass-label;
-            @include graph-bar($normal-shadow)
+            @include bar($grass-label);
           }
         }
       }
@@ -233,7 +228,6 @@
 
   .section-title {
     background: $container-bg;
-    // border-radius: 10px;
     padding: 5px 10px;
     box-shadow: -3px -3px 7px #ffffff73,
     3px 3px 5px rgba(94,104,121,0.288);
@@ -241,18 +235,17 @@
 
   .desc {
     margin: 10px 0 20px;
+
     .version-tab {
       display: flex;
-      box-shadow: -3px -3px 7px #ffffff73,
-      3px 3px 5px rgba(94,104,121,0.288);
 
       li {
+        @include sm-box-shadow();
+
         flex: 1;
         margin: 0 10px 0 0;
         padding: 10px;
-        background-color: $container-bg; //#e7e7e7;
-        box-shadow: -3px -3px 7px #ffffff73,
-        3px 3px 5px rgba(94,104,121,0.288);
+        background-color: $container-bg;
         font-size: 13px;
         text-align: center;
         align-items: center;
@@ -263,23 +256,24 @@
         }
 
         &:hover, &.selected-tab {
-          box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
+          @include container-shadow();
         }
       }
     }
 
     .desc-text {
+      @include container-shadow();
+
       height: 130px;
       padding: 50px 42px;
       margin: 20px 0 0;
       border-radius: 10px;
       text-align: center;
-      box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
     }
   }
 
   .evolution {
-    box-shadow: inset -2px -1px 7px rgba(199, 198, 198, 0.562), inset 1px 4px 5px rgb(94 104 121 / 29%);
+    @include container-shadow();
     padding: 0 0 18px;
     margin: 0 0 20px;
     
@@ -298,17 +292,17 @@
         }
 
         .pic {
+          @include sm-box-shadow();
+
           position: relative;
           width: 100px;
           height: 100px;
           text-align: center;
           background-color: $container-bg;
-          box-shadow: -3px -3px 7px #ffffff73,
-          3px 3px 5px rgba(94,104,121,0.288);
           cursor: pointer;
 
           &:hover {
-            box-shadow: inset -2px -1px 7px rgb(255 255 255 / 45%), inset 1px 4px 5px rgb(94 104 121 / 29%);
+            @include sm-box-inner-shadow();
           }
 
           .tool-tip {
@@ -328,17 +322,15 @@
     text-align: center;
 
     .btn {
+      @include btn-shadow();
+
       padding: 10px 20px;
       font-weight: bold;
       background-color: $dragon-label;
       border-radius: 20px;
-      box-shadow: -3px -3px 7px #ffffff73,
-      3px 3px 0px 0px #213e62;
-
 
       &:hover {
-        box-shadow: -3px -3px 7px #ffffff73,
-        3px 3px 8px 0px #213e62;
+        @include btn-hover-shadow();
       }
     }
 

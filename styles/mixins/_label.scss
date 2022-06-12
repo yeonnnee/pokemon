@@ -1,7 +1,0 @@
-@import '../mixins/shadow';
-
-
-@mixin label($label-name) {
-  background-color: $label-name;
-  @include label-shadow($normal-shadow);
-}
