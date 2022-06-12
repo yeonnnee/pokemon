@@ -13,7 +13,7 @@ import PokemonFilter from '../components/PokemonFilter';
 
 interface TotalState {
   totalCount: number,
-  data: ResourceForPokemon[]
+  data: Pokemon[]
 }
 
 interface SearchState {
@@ -39,6 +39,7 @@ const Main = (props:MainProps) => {
   
   const target = useRef<HTMLDivElement>(null);
 
+  // 거다이맥스, 메가 포켓몬인 경우 표기해주기
   const getFullName = useCallback((pokemonName: string, nameKr:string) => {
     const isGmax = pokemonName.includes('gmax');
     const isMega = pokemonName.includes('mega');
@@ -50,6 +51,7 @@ const Main = (props:MainProps) => {
   }, []);
 
 
+  // 데이터 받아서 customizing
   const getPokemons = useCallback(async (data: ResourceForPokemon[]) => {
     setLoading(true);
 
@@ -73,13 +75,21 @@ const Main = (props:MainProps) => {
     return pokemons;
   }, [getFullName]);
   
+  // 데이터 fetch
   const fetchData = useCallback(async (data: ResourceForPokemon[]) => {
     const pokemons = await getPokemons(data);
     setPokemons(pokemons);
     setItemCount(pokemons.length);
   }, [getPokemons]);
 
+  // 전체 데이터 fetch
+  const fetchTotalData = useCallback(async (data: PokemonsApiRes) => {
+    const pokemons = await getPokemons(data.results);
+    setTotal({ totalCount: data.count, data: pokemons});
+  }, [getPokemons]);
 
+
+  // 50개 추가 데이터 로드
   const getMorePokemons = useCallback(async (count:number) => {
     if (search.isSearching) return;
     const res: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${count}&offset=0`).then(res => res.json());
@@ -87,11 +97,15 @@ const Main = (props:MainProps) => {
     
   }, [fetchData, search]);
 
+  // 무한 스크롤 : 스크롤 하단 위치시 데이터 추가 로드
   const checkIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
     if (!entry.isIntersecting) return;
     await getMorePokemons(itemCount + 50);
   }, [getMorePokemons,itemCount]);
 
+
+
+  // 검색조건 초기화 (전체조회)
   async function resetSearchCondition() {
     if (search.isSearching) {
       setPokemons([]);
@@ -104,6 +118,7 @@ const Main = (props:MainProps) => {
     setFilter('all');
   }
 
+  // 검색
   async function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
     if (e.key !== 'Enter' || !search.searchString) return;
 
@@ -111,21 +126,60 @@ const Main = (props:MainProps) => {
     setLoading(true);
     setSearch({ ...search, isSearching: true });
 
-    const data = await getPokemons(total.data);
-    const result = data.filter(pokemon => pokemon.nameKr.includes(search.searchString));
 
-    setPokemons(result);
-    setLoading(false);
+    switch (filter) {
+      case 'all': {
+        const result = total.data.filter(pokemon => pokemon.nameKr.includes(search.searchString));
+        setPokemons(result);
+        setLoading(false);
+        return;
+      };
+      case 'gmaxPokemon': return getGmaxPokemons();
+      case 'megaPokemon': return getMegaPokemons();
+      default: {
+        setPokemons([]);
+        setLoading(false);
+        return;
+      }
+    }
   }
 
+  // 거다이맥스 필터
+  function getGmaxPokemons() {
+    setSearch({ ...search, isSearching: true });
+    
+    let gmaxPokemon = total.data.filter(data => data.nameKr.includes('거다이맥스'));
+    if (search.searchString) {
+      gmaxPokemon = gmaxPokemon.filter(data => data.nameKr.includes(search.searchString));
+    }
+    setPokemons(gmaxPokemon);
+    setFilter('gmaxPokemon');
+    setLoading(false);
 
+  }
+
+  // 메가포켓몬 필터
+  function getMegaPokemons() {
+    setSearch({ ...search, isSearching: true });
+    let megaPokemon = total.data.filter(data => data.nameKr.includes('메가'));
+    if (search.searchString) {
+      megaPokemon = megaPokemon.filter(data => data.nameKr.includes(search.searchString));
+    }
+    setPokemons(megaPokemon);
+    setFilter('megaPokemon');
+    setLoading(false);
+
+  }
+
+  // DATA FETCH
   useEffect(() => {
     fetchData(props.data.results);
-    setTotal({ totalCount: props.data.count, data: props.total.results });
+    fetchTotalData(props.total);
     setTypes(props.types);
 
-  },[fetchData, props]);
+  },[fetchData, props, fetchTotalData]);
 
+  // Intersection Observer API
   useEffect(() => {
     const observer = new IntersectionObserver(checkIntersect, {threshold:1});
     if (target.current) observer.observe(target.current);
@@ -143,7 +197,14 @@ const Main = (props:MainProps) => {
         </div>
       </div>
 
-      <PokemonFilter resetSearchCondition={resetSearchCondition} types={types} setFilter={setFilter} filter={filter} />
+      <PokemonFilter
+        resetSearchCondition={resetSearchCondition}
+        types={types}
+        setFilter={setFilter}
+        filter={filter}
+        getGmaxPokemons={getGmaxPokemons}
+        getMegaPokemons={getMegaPokemons}
+      />
 
       { 
         pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>검색 결과가 없습니다.</p> :
@@ -161,7 +222,8 @@ const Main = (props:MainProps) => {
   )
 }
 
-// 데이터가 있어야 화면을 그릴 수 있으므로 SSG 방식으로 렌더링
+// 데이터가 있어야 화면을 그릴 수 있으므로 SSG 방식으로 렌더링 
+
 export const getStaticProps: GetStaticProps = async(context) => {
   const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=50&offset=0").then(res => res.json());
   const total: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${res.count}&offset=0`).then(res => res.json());
