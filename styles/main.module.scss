@@ -117,32 +117,51 @@
             border-bottom: 1px solid $shadow-label;
           }
         }
-  
-        .item {
-          float: left;
-          margin: 5px 10px;
-          border: 1px solid $shadow-label;
-          border-radius: 5px;
-          padding: 5px 10px;
-          width: 43%;
-          margin: 10px;
 
+        .option-list {
+          .item {
+            float: left;
+            width: 20%;
 
-          &:hover {
+            &:nth-child(n+2) {
+              margin: 10px 10px 10px 0;
+            }
+
+            &:nth-child(n+1) {
+              margin: 10px 0 10px 10px;
+            }
+
+            label {
+              display: inline-block;
+              width: 77px;
+              height: 29px;
+              line-height: 1.7;
+              border: 1px solid $shadow-label;
+              border-radius: 5px;
+              cursor: pointer;
+    
+              &:hover {
+                @include sm-box-shadow();
+              }
+            }
+          }
+
+          &:nth-child(2) {
+            .item {
+              width: 44%;
+              label {
+                width: 128px;
+              }
+            }
+          }
+
+          
+          input[type="checkbox"]:checked ~ label{
+            @include sm-box-shadow();
             border: 1px solid $dragon-label;
             color: $dragon-label;
           }
-        }
 
-        .type-list {
-          .item {
-            width: 20%;
-            margin: 10px 5px;
-
-            label {
-              cursor: pointer;
-            }
-          }
         }
       }
 
@@ -169,7 +188,6 @@
     .hidden {
       visibility: hidden;
       width: 53%;
-
       height: 0;
     }
   }

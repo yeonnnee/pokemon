@@ -14,11 +14,14 @@ import PokemonFilter from '../components/PokemonFilter';
 interface TotalState {
   totalCount: number,
   data: Pokemon[]
+  originData: ResourceForPokemon[]
 }
 
 interface SearchState {
   searchString: string,
-  isSearching: boolean
+  isSearching: boolean,
+  types: string[],
+  generations:string[]
 }
 
 interface MainProps {
@@ -29,9 +32,9 @@ interface MainProps {
 
 const Main = (props:MainProps) => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [total, setTotal] = useState<TotalState>({totalCount: 0, data: []});
+  const [total, setTotal] = useState<TotalState>({totalCount: 0, data: [], originData: []});
   const [loading, setLoading] = useState<boolean>(true);
-  const [search, setSearch] = useState<SearchState>({searchString: '', isSearching: false});
+  const [search, setSearch] = useState<SearchState>({searchString: '', isSearching: false, types:[], generations:[]});
   const [itemCount, setItemCount] = useState<number>(0);
   const [types, setTypes] = useState<CustomPokemonType[]>([]);
   const [filter, setFilter] = useState<string>('all');
@@ -82,12 +85,6 @@ const Main = (props:MainProps) => {
     setItemCount(pokemons.length);
   }, [getPokemons]);
 
-  // 전체 데이터 fetch
-  const fetchTotalData = useCallback(async (data: PokemonsApiRes) => {
-    const pokemons = await getPokemons(data.results);
-    setTotal({ totalCount: data.count, data: pokemons});
-  }, [getPokemons]);
-
 
   // 50개 추가 데이터 로드
   const getMorePokemons = useCallback(async (count:number) => {
@@ -110,10 +107,10 @@ const Main = (props:MainProps) => {
     if (search.isSearching) {
       setPokemons([]);
       setLoading(true);
-      setSearch({ searchString: '', isSearching: false });
+      setSearch({ searchString: '', isSearching: false, generations:[], types:[] });
       await getMorePokemons(50);
     } else {
-      setSearch({ ...search, searchString:'' });
+      setSearch({ ...search, searchString:'', generations:[], types:[] });
     }
     setFilter('all');
   }
@@ -126,10 +123,11 @@ const Main = (props:MainProps) => {
     setLoading(true);
     setSearch({ ...search, isSearching: true });
 
+    const pokemons = total.data.length > 0 ? total.data : await getPokemons(total.originData);
 
     switch (filter) {
       case 'all': {
-        const result = total.data.filter(pokemon => pokemon.nameKr.includes(search.searchString));
+        const result = pokemons.filter(pokemon => pokemon.nameKr.includes(search.searchString));
         setPokemons(result);
         setLoading(false);
         return;
@@ -145,10 +143,11 @@ const Main = (props:MainProps) => {
   }
 
   // 거다이맥스 필터
-  function getGmaxPokemons() {
+  async function getGmaxPokemons() {
     setSearch({ ...search, isSearching: true });
+    const pokemons = total.data.length > 0 ? total.data : await getPokemons(total.originData);
     
-    let gmaxPokemon = total.data.filter(data => data.nameKr.includes('거다이맥스'));
+    let gmaxPokemon = pokemons.filter(data => data.nameKr.includes('거다이맥스'));
     if (search.searchString) {
       gmaxPokemon = gmaxPokemon.filter(data => data.nameKr.includes(search.searchString));
     }
@@ -159,9 +158,11 @@ const Main = (props:MainProps) => {
   }
 
   // 메가포켓몬 필터
-  function getMegaPokemons() {
+  async function getMegaPokemons() {
     setSearch({ ...search, isSearching: true });
-    let megaPokemon = total.data.filter(data => data.nameKr.includes('메가'));
+    const pokemons = total.data.length > 0 ? total.data : await getPokemons(total.originData);
+
+    let megaPokemon = pokemons.filter(data => data.nameKr.includes('메가'));
     if (search.searchString) {
       megaPokemon = megaPokemon.filter(data => data.nameKr.includes(search.searchString));
     }
@@ -174,10 +175,10 @@ const Main = (props:MainProps) => {
   // DATA FETCH
   useEffect(() => {
     fetchData(props.data.results);
-    fetchTotalData(props.total);
+    setTotal({ totalCount: props.data.count, originData: props.total.results, data: []});
     setTypes(props.types);
 
-  },[fetchData, props, fetchTotalData]);
+  },[fetchData, props]);
 
   // Intersection Observer API
   useEffect(() => {

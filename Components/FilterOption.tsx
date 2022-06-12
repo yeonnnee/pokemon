@@ -1,3 +1,4 @@
+import React, { ForwardedRef, Ref, RefObject, useRef } from 'react';
 import mainStyle from '../styles/main.module.scss'
 import { CustomPokemonType } from '../types/pokemonTypes';
 
@@ -7,16 +8,17 @@ interface FilterOptionProps {
 }
 
 const FilterOption = (props: FilterOptionProps) => {
-  const { category, options  } = props;
+  const { category, options, } = props;
 
   return(
-    <li className={mainStyle["type-list"]}>
+    <li className={mainStyle["option-list"]}>
       <p>{category}</p>
-    {
+      {
+     
       options.map((option, index) => {
         return (
-          <div key={index} className={ mainStyle["item"] }>
-            <input type="radio" id={option.name}/>
+          <div key={index} className={`${mainStyle.item}`}>
+            <input type="checkbox" id={option.name} />
             <label htmlFor={ option.name }> {option.nameKr} </label>
           </div>
         )
@@ -26,5 +28,7 @@ const FilterOption = (props: FilterOptionProps) => {
 
   )
 }
+
+FilterOption.displayName = "FilterOption";
 
 export default FilterOption;

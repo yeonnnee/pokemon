@@ -1,4 +1,6 @@
 
+import { type } from 'os';
+import { createRef, Ref, RefObject, useRef } from 'react';
 import mainStyle from '../styles/main.module.scss'
 import { CustomPokemonType } from '../types/pokemonTypes'
 import FilterOption from './FilterOption';
@@ -15,13 +17,19 @@ interface PokemonFilterProps {
 
 const PokemonFilter = (props: PokemonFilterProps) => {
   const { resetSearchCondition, setFilter, filter, types, getGmaxPokemons, getMegaPokemons } = props;
+
+  
   const generations = Array.from({ length: 7 }, (v, i) => {
     return {
-      name: `generation-${i + 1}`,
+      name: `${i + 1}`,
       nameKr: `${i + 1}세대 포켓몬`,
       url: ''
     }
   });
+
+  function filterPokemon() {
+   
+  }
 
   return(
     <div className={mainStyle["filter-section"]}>
@@ -39,7 +47,8 @@ const PokemonFilter = (props: PokemonFilterProps) => {
           <FilterOption category={'세대'} options={generations} />
         </ul>
         <div className={mainStyle["filter-btn"]}>
-          <button>필터 적용</button>
+          <button onClick={filterPokemon}>필터 적용</button>
+          {/* <button>닫기</button> */}
         </div>
       </div>
     </div>
