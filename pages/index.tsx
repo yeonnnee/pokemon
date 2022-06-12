@@ -8,6 +8,8 @@ import { PokemonDetailApiRes } from '../types/detail';
 import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../types/pokemons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { CustomPokemonType, PokemonTypesApiRes } from '../types/pokemonTypes';
+import PokemonFilter from '../components/PokemonFilter';
 
 interface TotalState {
   totalCount: number,
@@ -21,7 +23,8 @@ interface SearchState {
 
 interface MainProps {
   data: PokemonsApiRes,
-  total: PokemonsApiRes
+  total: PokemonsApiRes,
+  types: CustomPokemonType[]
 }
 
 const Main = (props:MainProps) => {
@@ -30,7 +33,10 @@ const Main = (props:MainProps) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<SearchState>({searchString: '', isSearching: false});
   const [itemCount, setItemCount] = useState<number>(0);
+  const [types, setTypes] = useState<CustomPokemonType[]>([]);
+  const [filter, setFilter] = useState<string>('all');
 
+  
   const target = useRef<HTMLDivElement>(null);
 
   const getFullName = useCallback((pokemonName: string, nameKr:string) => {
@@ -71,7 +77,6 @@ const Main = (props:MainProps) => {
     const pokemons = await getPokemons(data);
     setPokemons(pokemons);
     setItemCount(pokemons.length);
-
   }, [getPokemons]);
 
 
@@ -87,7 +92,7 @@ const Main = (props:MainProps) => {
     await getMorePokemons(itemCount + 50);
   }, [getMorePokemons,itemCount]);
 
-  async function resetSeachCondition() {
+  async function resetSearchCondition() {
     if (search.isSearching) {
       setPokemons([]);
       setLoading(true);
@@ -96,6 +101,7 @@ const Main = (props:MainProps) => {
     } else {
       setSearch({ ...search, searchString:'' });
     }
+    setFilter('all');
   }
 
   async function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
@@ -116,6 +122,7 @@ const Main = (props:MainProps) => {
   useEffect(() => {
     fetchData(props.data.results);
     setTotal({ totalCount: props.data.count, data: props.total.results });
+    setTypes(props.types);
 
   },[fetchData, props]);
 
@@ -132,35 +139,12 @@ const Main = (props:MainProps) => {
         <div className={mainStyle['search-bar']}>
           <FontAwesomeIcon icon={ faSearch } className={mainStyle['search-icon']}/>
           <input type="text" value={search.searchString} placeholder='포켓몬 이름을 입력해주세요' onChange={(e) => setSearch({ ...search, searchString: e.target.value })} onKeyUp={searchByPokemonName} />
-          {search.searchString ? <FontAwesomeIcon icon={faTimes} className={mainStyle['reset-icon']} onClick={ resetSeachCondition }/> : null }
+          {search.searchString ? <FontAwesomeIcon icon={faTimes} className={mainStyle['reset-icon']} onClick={ resetSearchCondition }/> : null }
         </div>
       </div>
 
-      {/* <div className={mainStyle.filter}>
-        <input className={ mainStyle["filter-btn"] } type="checkbox" id="filter" />
-        <label className={mainStyle["filter-label"]} htmlFor="filter">Type</label>
+      <PokemonFilter resetSearchCondition={resetSearchCondition} types={types} setFilter={setFilter} filter={filter} />
 
-        <div className={mainStyle["scroll-wrapper"]}>
-          <ul className={mainStyle["type-list"]}>
-              <li>
-                <input type="radio" id="all"/>
-                <label htmlFor="all"> 전체 </label>
-              </li>
-            {
-              types.map((type, index) => {
-                return (
-                  <li key={index}>
-                    <input type="radio" id={ type.name }/>
-                    <label htmlFor={ type.name }> {type.nameKr} </label>
-                  </li>
-                )
-              })
-            }
-
-          </ul>
-        </div>
-        
-      </div> */}
       { 
         pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>검색 결과가 없습니다.</p> :
         <ul className={mainStyle['pokemon-list']}>
@@ -181,45 +165,42 @@ const Main = (props:MainProps) => {
 export const getStaticProps: GetStaticProps = async(context) => {
   const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=50&offset=0").then(res => res.json());
   const total: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${res.count}&offset=0`).then(res => res.json());
-
-  // function convertTypeName(name: string) {
-  //   switch (name) {
-  //     case 'normal': return '노말';
-  //     case 'fighting': return '격투';
-  //     case 'flying': return '비행';
-  //     case 'poison': return '독';
-  //     case 'ground': return '땅';
-  //     case 'rock': return '바위';
-  //     case 'bug': return '벌레';
-  //     case 'ghost': return '고스트';
-  //     case 'steel': return '강철';
-  //     case 'fire': return '불꽃';
-  //     case 'water': return '물';
-  //     case 'grass': return '풀';
-  //     case 'electric': return '전기';
-  //     case 'psychic': return '에스퍼';
-  //     case 'ice': return '얼음';
-  //     case 'dragon': return '드레곤';
-  //     case 'dark': return '악';
-  //     case 'fairy': return '페어리';
-  //     case 'unknown': return 'unKnown';
-  //     case 'shadow': return '다크 ';
-  //     default: return '';
-  //   }
-  // }
-
-  // const fetchTypes = async () => {
-  //   const res:PokemonTypesApiRes = await fetch("https://pokeapi.co/api/v2/type").then(res => res.json());
-  //   const result = res.results.map(result => {
-  //     return {
-  //       ...result,
-  //       nameKr: convertTypeName(result.name)
-  //     }
-  //   });
-  // };
+  const types: PokemonTypesApiRes = await fetch("https://pokeapi.co/api/v2/type").then(res => res.json());
+  const customTypes = types.results.map(type => {
+    return {
+      ...type,
+      nameKr: convertTypeName(type.name)
+    }
+  });
+ 
+  function convertTypeName(name: string) {
+    switch (name) {
+      case 'normal': return '노말';
+      case 'fighting': return '격투';
+      case 'flying': return '비행';
+      case 'poison': return '독';
+      case 'ground': return '땅';
+      case 'rock': return '바위';
+      case 'bug': return '벌레';
+      case 'ghost': return '고스트';
+      case 'steel': return '강철';
+      case 'fire': return '불꽃';
+      case 'water': return '물';
+      case 'grass': return '풀';
+      case 'electric': return '전기';
+      case 'psychic': return '에스퍼';
+      case 'ice': return '얼음';
+      case 'dragon': return '드레곤';
+      case 'dark': return '악';
+      case 'fairy': return '페어리';
+      case 'unknown': return '?';
+      case 'shadow': return '다크 ';
+      default: return '';
+    }
+  }
 
   return {
-    props: { total:total, data: res }
+    props: { total:total, data: res, types: customTypes }
   }
 }
 
