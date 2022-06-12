@@ -1,6 +1,7 @@
 
 import mainStyle from '../styles/main.module.scss'
 import { CustomPokemonType } from '../types/pokemonTypes'
+import FilterOption from './FilterOption';
 
 
 interface PokemonFilterProps {
@@ -12,7 +13,13 @@ interface PokemonFilterProps {
 
 const PokemonFilter = (props: PokemonFilterProps) => {
   const { resetSearchCondition, setFilter, filter, types } = props;
-  const generations = Array.from({ length: 7 }, (v, i) => `${i + 1}세대 포켓몬`);
+  const generations = Array.from({ length: 7 }, (v, i) => {
+    return {
+      name: `generation-${i + 1}`,
+      nameKr: `${i + 1}세대 포켓몬`,
+      url: ''
+    }
+  });
   console.log(generations)
 
   return(
@@ -27,33 +34,8 @@ const PokemonFilter = (props: PokemonFilterProps) => {
 
       <div className={filter === 'category' ? mainStyle["category-container"] : mainStyle.hidden}>
         <ul className={mainStyle["category-list"]}>
-          <li className={mainStyle["type-list"]}>
-            <p>타입</p>
-            {
-              types.map((type, index) => {
-                return (
-                  <div key={index} className={ mainStyle["item"] }>
-                    <input type="radio" id={ type.name }/>
-                    <label htmlFor={ type.name }> {type.nameKr} </label>
-                  </div>
-                )
-              })
-            }
-          </li>
-
-          <li>
-            <p>세대</p>
-            {
-              generations.map((generation, index) => {
-                return (
-                  <div key={index} className={mainStyle["item"]}>
-                  <input type="radio" id={`generation-${index + 1}`} />
-                  <label htmlFor={`generation-${index + 1}`}> {generation} </label>
-                </div>
-                )
-              })
-            }
-            </li>
+          <FilterOption category={'타입'} options={types} />
+          <FilterOption category={'세대'} options={generations} />
         </ul>
         <div className={mainStyle["filter-btn"]}>
           <button>필터 적용</button>
