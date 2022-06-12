@@ -1,103 +1,84 @@
 @import './variables/colors';
 @import './mixins/shadow';
+@import './mixins/label';
 
 
 .normal {
-  background-color: $normal-label;
-  @include label-shadow($normal-shadow);
+  @include label($normal-label);
 }
 
 .fighting {
-  background-color: $fighting-label;
-  @include label-shadow($normal-shadow);
+  @include label($fighting-label);
 }
 
 .flying {
-  background-color: $flying-label;
-  @include label-shadow($normal-shadow);
+  @include label($flying-label);
 }
 
 .poison {
-  background-color: $poison-label;
-  @include label-shadow($normal-shadow);
+  @include label($poison-label);
 }
 
 .ground {
-  background-color: $ground-label;
-  @include label-shadow($normal-shadow);
+  @include label($ground-label);
 }
 
 .rock {
-  background-color: $rock-label;
-  @include label-shadow($normal-shadow);
+  @include label($poison-label);
 }
 
 .bug {
-  background-color: $bug-label;
-  @include label-shadow($normal-shadow);
+  @include label($poison-label);
 }
 
 .ghost {
-  background-color: $ghost-label;
-  @include label-shadow($normal-shadow);
+  @include label($ghost-label);
 }
 
 .steel {
-  background-color: $steel-label;
-  @include label-shadow($normal-shadow);
+  @include label($steel-label);
 }
 
 .fire {
-  background-color: $fire-label;
-  @include label-shadow($normal-shadow);
+  @include label($fire-label);
 }
 
 .water {
-  background-color: $water-label;
-  @include label-shadow($normal-shadow);
+  @include label($water-label);
 }
 
 .grass {
-  background-color: $grass-label;
-  @include label-shadow($normal-shadow);
+  @include label( $grass-label);
 }
 
 .electric {
-  background-color: $electric-label;
-  @include label-shadow($normal-shadow);
+  @include label( $electric-label);
 }
 
 .psychic {
-  background-color: $psychic-label;
-  @include label-shadow($normal-shadow);
+  @include label( $psychic-label);
 }
 
 .ice {
-  background-color: $ice-label;
-  @include label-shadow($normal-shadow);
+  @include label( $ice-label );
 }
 
 .dragon {
-  background-color: $dragon-label;
-  @include label-shadow($normal-shadow);
+  @include label($dragon-label);
 }
 
 .fairy {
-  background-color: $fairy-label;
-  @include label-shadow($normal-shadow);
+  @include label($fairy-label);
 }
 
 .unknown {
-  background-color: $unknown-label;
-  @include label-shadow($normal-shadow);
+  @include label($unknown-label);
 }
 
 .shadow {
-  background-color: $shadow-label;
-  @include label-shadow($normal-shadow);
+  @include label($shadow-label);
 }
 
 .dark {
-  background-color: $dark-label;
-  @include label-shadow($normal-shadow);
+  @include label($dark-label);
 }
