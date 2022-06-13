@@ -79,13 +79,14 @@ const Main = (props: MainProps) => {
     return data;
   }
 
-  function getPokemonObj(name:string, nameKr:string, images:PokemonSprites, types:PokemonType[], order: number) {
+  function getPokemonObj(name:string, nameKr:string, images:PokemonSprites, types:PokemonType[], order: number, color: string) {
     return {
       name: name,
       nameKr: nameKr,
       images: images,
       types: types,
-      order: order
+      order: order,
+      color: color
     }
   }
 
@@ -100,7 +101,7 @@ const Main = (props: MainProps) => {
       const nameKr: PokemonName = species.names.filter((d: PokemonName) => d.language.name === 'ko')[0];
       const fullName = getFullName(detail.name, nameKr.name);
 
-      const result = getPokemonObj(detail.name, fullName, detail.sprites, detail.types, detail.order);
+      const result = getPokemonObj(detail.name, fullName, detail.sprites, detail.types, detail.order, species.color.name);
       return result;
     }));
     setLoading(false);

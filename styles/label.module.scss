@@ -3,11 +3,11 @@
 
 
 
-.normal {
+.normal, .brown {
   @include label($normal-label);
 }
 
-.fighting {
+.fighting, .red {
   @include label($fighting-label);
 }
 
@@ -15,7 +15,7 @@
   @include label($flying-label);
 }
 
-.poison {
+.poison, .purple {
   @include label($poison-label);
 }
 
@@ -24,18 +24,18 @@
 }
 
 .rock {
-  @include label($poison-label);
+  @include label($rock-label);
 }
 
 .bug {
-  @include label($poison-label);
+  @include label($bug-label);
 }
 
 .ghost {
   @include label($ghost-label);
 }
 
-.steel {
+.steel, .gray {
   @include label($steel-label);
 }
 
@@ -43,15 +43,15 @@
   @include label($fire-label);
 }
 
-.water {
+.water, .blue {
   @include label($water-label);
 }
 
-.grass {
+.grass, .green {
   @include label( $grass-label);
 }
 
-.electric {
+.electric, .yellow {
   @include label( $electric-label);
 }
 
@@ -67,7 +67,7 @@
   @include label($dragon-label);
 }
 
-.fairy {
+.fairy, .pink {
   @include label($fairy-label);
 }
 
@@ -75,10 +75,14 @@
   @include label($unknown-label);
 }
 
-.shadow {
+.shadow, .black {
   @include label($shadow-label);
 }
 
 .dark {
   @include label($dark-label);
+}
+
+.white {
+  @include label($background-color);
 }
