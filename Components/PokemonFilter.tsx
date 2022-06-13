@@ -1,6 +1,5 @@
-
-import { type } from 'os';
-import { createRef, Ref, RefObject, useRef } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
+import { SearchState } from '../pages';
 import mainStyle from '../styles/main.module.scss'
 import { CustomPokemonType } from '../types/pokemonTypes'
 import FilterOption from './FilterOption';
@@ -10,14 +9,17 @@ interface PokemonFilterProps {
   resetSearchCondition: () => void,
   setFilter: (category: string) => void,
   getGmaxPokemons: () => void,
-  getMegaPokemons:()=> void,
+  getMegaPokemons: () => void,
+  // setSearch: Dispatch<SetStateAction<SearchState>>,
+  searchByCategory: (type:string[], gen:string[]) => void,
   filter: string,
   types: CustomPokemonType[]
 }
 
 const PokemonFilter = (props: PokemonFilterProps) => {
-  const { resetSearchCondition, setFilter, filter, types, getGmaxPokemons, getMegaPokemons } = props;
-
+  const { resetSearchCondition, setFilter,searchByCategory, filter, types, getGmaxPokemons, getMegaPokemons } = props;
+  let typeConditions: string[] = [];
+  let generationConditions: string[] = [];
   
   const generations = Array.from({ length: 7 }, (v, i) => {
     return {
@@ -28,7 +30,27 @@ const PokemonFilter = (props: PokemonFilterProps) => {
   });
 
   function filterPokemon() {
-   
+    searchByCategory(typeConditions, generationConditions);
+  }
+
+  function filterType(e: React.MouseEvent<HTMLLabelElement>) {
+    const target = e.target as HTMLLabelElement;
+    const type = target.htmlFor;
+    if (typeConditions.includes(type)) {
+      typeConditions = typeConditions.filter(condition => condition !== type);
+    } else {
+      typeConditions.push(type);
+    }
+  }
+
+  function filterGeneration(e: React.MouseEvent<HTMLLabelElement>) {
+    const target = e.target as HTMLLabelElement;
+    const generation = target.htmlFor;
+    if (generationConditions.includes(generation)) {
+      generationConditions = generationConditions.filter(gen => gen !== generation);
+    } else {
+      generationConditions.push(generation);
+    }
   }
 
   return(
@@ -43,8 +65,8 @@ const PokemonFilter = (props: PokemonFilterProps) => {
 
       <div className={filter === 'category' ? mainStyle["category-container"] : mainStyle.hidden}>
         <ul className={mainStyle["category-list"]}>
-          <FilterOption category={'타입'} options={types} />
-          <FilterOption category={'세대'} options={generations} />
+          <FilterOption category={'타입'} options={types} clickOption={filterType} />
+          <FilterOption category={'세대'} options={generations} clickOption={filterGeneration} />
         </ul>
         <div className={mainStyle["filter-btn"]}>
           <button onClick={filterPokemon}>필터 적용</button>

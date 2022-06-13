@@ -3,13 +3,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import PokemonCard from '../components/PokemonCard';
 
 import mainStyle from '../styles/main.module.scss'
-import { PokemonName } from '../types/speices';
-import { PokemonDetailApiRes } from '../types/detail';
+import { PokemonName, PokemonSpeciesApiRes } from '../types/speices';
+import { PokemonDetailApiRes, PokemonSprites, PokemonType } from '../types/detail';
 import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../types/pokemons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { CustomPokemonType, PokemonTypesApiRes } from '../types/pokemonTypes';
+import { CustomPokemonType, PokemonTypesApiRes, TypeDetailApiRes } from '../types/pokemonTypes';
 import PokemonFilter from '../components/PokemonFilter';
+import { GenerationInfoApiRes } from '../types/generation';
 
 interface TotalState {
   totalCount: number,
@@ -17,11 +18,15 @@ interface TotalState {
   originData: ResourceForPokemon[]
 }
 
-interface SearchState {
+export interface SearchState {
   searchString: string,
-  isSearching: boolean,
-  types: string[],
-  generations:string[]
+  category: {
+    types: string[],
+    generations: string[],
+  },
+  enableGmax: boolean,
+  enableMega: boolean,
+  isAll: boolean
 }
 
 interface MainProps {
@@ -30,11 +35,21 @@ interface MainProps {
   types: CustomPokemonType[]
 }
 
-const Main = (props:MainProps) => {
+const Main = (props: MainProps) => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [total, setTotal] = useState<TotalState>({totalCount: 0, data: [], originData: []});
+  const [total, setTotal] = useState<TotalState>({ totalCount: 0, data: [], originData: [] });
   const [loading, setLoading] = useState<boolean>(true);
-  const [search, setSearch] = useState<SearchState>({searchString: '', isSearching: false, types:[], generations:[]});
+  
+  const [search, setSearch] = useState<SearchState>({
+    searchString: '',
+    category: {
+      types: [],
+      generations: [],
+    },
+    enableGmax: false,
+    enableMega: false,
+    isAll: true
+  });
   const [itemCount, setItemCount] = useState<number>(0);
   const [types, setTypes] = useState<CustomPokemonType[]>([]);
   const [filter, setFilter] = useState<string>('all');
@@ -43,7 +58,7 @@ const Main = (props:MainProps) => {
   const target = useRef<HTMLDivElement>(null);
 
   // 거다이맥스, 메가 포켓몬인 경우 표기해주기
-  const getFullName = useCallback((pokemonName: string, nameKr:string) => {
+  const getFullName = useCallback((pokemonName: string, nameKr: string) => {
     const isGmax = pokemonName.includes('gmax');
     const isMega = pokemonName.includes('mega');
 
@@ -54,23 +69,38 @@ const Main = (props:MainProps) => {
   }, []);
 
 
+  async function getDetailData(url:string) {
+    const data = await fetch(url).then(result => result.json());
+    return data;
+  }
+
+  async function getSpeciesData(url:string) {
+    const data = await fetch(url).then(data => data.json());
+    return data;
+  }
+
+  function getPokemonObj(name:string, nameKr:string, images:PokemonSprites, types:PokemonType[], order: number) {
+    return {
+      name: name,
+      nameKr: nameKr,
+      images: images,
+      types: types,
+      order: order
+    }
+  }
+
+
   // 데이터 받아서 customizing
   const getPokemons = useCallback(async (data: ResourceForPokemon[]) => {
     setLoading(true);
 
-    const pokemons = await Promise.all( data.map(async (pokemon) => {
-      const detail:PokemonDetailApiRes = await fetch(pokemon.url).then(result => result.json());
-      const species = await fetch(detail.species.url).then(data => data.json());
-      const nameKr: PokemonName = await species.names.filter((d: PokemonName) => d.language.name === 'ko')[0];
+    const pokemons = await Promise.all(data.map(async (pokemon) => {
+      const detail: PokemonDetailApiRes = await getDetailData(pokemon.url);
+      const species:PokemonSpeciesApiRes = await getSpeciesData(detail.species.url);
+      const nameKr: PokemonName = species.names.filter((d: PokemonName) => d.language.name === 'ko')[0];
       const fullName = getFullName(detail.name, nameKr.name);
 
-      const result = {
-        name: detail.name,
-        nameKr: fullName,
-        images: detail.sprites,
-        types: detail.types,
-        order: detail.order
-      }
+      const result = getPokemonObj(detail.name, fullName, detail.sprites, detail.types, detail.order);
       return result;
     }));
     setLoading(false);
@@ -87,8 +117,8 @@ const Main = (props:MainProps) => {
 
 
   // 50개 추가 데이터 로드
-  const getMorePokemons = useCallback(async (count:number) => {
-    if (search.isSearching) return;
+  const getMorePokemons = useCallback(async (count: number) => {
+    if (search.searchString || !search.isAll) return;
     const res: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${count}&offset=0`).then(res => res.json());
     await fetchData(res.results);
     
@@ -98,30 +128,115 @@ const Main = (props:MainProps) => {
   const checkIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
     if (!entry.isIntersecting) return;
     await getMorePokemons(itemCount + 50);
-  }, [getMorePokemons,itemCount]);
+  }, [getMorePokemons, itemCount]);
 
 
 
   // 검색조건 초기화 (전체조회)
   async function resetSearchCondition() {
-    if (search.isSearching) {
+    if (search.searchString || !search.isAll) {
       setPokemons([]);
       setLoading(true);
-      setSearch({ searchString: '', isSearching: false, generations:[], types:[] });
+      setSearch({
+        searchString: '',
+        category: {
+          types: [],
+          generations: [],
+        },
+        enableGmax: false,
+        enableMega: false,
+        isAll: true
+      });
       await getMorePokemons(50);
-    } else {
-      setSearch({ ...search, searchString:'', generations:[], types:[] });
     }
     setFilter('all');
+    setLoading(false);
   }
 
-  // 검색
-  async function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
-    if (e.key !== 'Enter' || !search.searchString) return;
+  async function filterByTypes(types:string[]) {
+    const pokemon = await Promise.all(types.map(async (type) => {
+      const res = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+      const data: TypeDetailApiRes = await res.json();
+      const result = data.pokemon.map(pokemon => { return { ...pokemon.pokemon } });
 
+      return result;
+    }));
+
+    return pokemon;
+  }
+
+  async function filterByGeneration(generations:string[]) {
+    const pokemon = await Promise.all(generations.map(async (gen) => {
+      const res = await fetch(`https://pokeapi.co/api/v2/generation/${gen}`);
+      const data: GenerationInfoApiRes = await res.json();
+      return data.pokemon_species;
+    }));
+
+
+    return pokemon;
+  }
+
+
+  // 필터조회
+
+  async function searchByCategory(types:string[], generations:string[]) {
+    setSearch((prev) => { return { ...prev, category: { types: types, generations: generations } } });
+    let filteredByTypes: ResourceForPokemon[] = [];
+    let filteredByGen: ResourceForPokemon[] = [];
+
+    if (types.length > 0) {
+      const result = await filterByTypes(types);
+      filteredByTypes = result.reduce(function (acc, cur) {
+        return acc.concat(cur);
+      });
+    }
+
+    if (generations.length > 0) {
+      const result = await filterByGeneration(generations);
+      const integrateArr = result.reduce(function (acc, cur) {
+        return acc.concat(cur);
+      });
+      const genData = integrateArr.map((gen) => {
+        return total.originData.filter(d => d.name === gen.name)[0];
+      });
+      filteredByGen = genData;
+
+    }
+
+    if (filteredByGen.length >= filteredByTypes.length) {
+      const filterResult = filteredByGen.filter(genPokemon => {
+        let flag = false;
+        filteredByTypes.forEach(type => {
+          if (type.name === genPokemon.name) {
+            flag = true;
+          }
+        });
+        return flag ? genPokemon : null;
+      });
+
+      fetchData(filterResult)
+    } else {
+      const filterResult = filteredByTypes.filter(genPokemon => {
+        let flag = false;
+        filteredByGen.forEach(type => {
+          if (type.name === genPokemon.name) {
+            flag = true;
+          }
+        });
+        return flag ? genPokemon : null;
+      })
+
+
+      fetchData(filterResult)
+    }
+  }
+
+
+  // 검색
+  async function searchPokemon() {
     setPokemons([]);
     setLoading(true);
-    setSearch({ ...search, isSearching: true });
+    setLoading(true);
 
     const pokemons = total.data.length > 0 ? total.data : await getPokemons(total.originData);
 
@@ -141,10 +256,19 @@ const Main = (props:MainProps) => {
       }
     }
   }
+  async function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
+    if (e.key !== 'Enter' || !search.searchString) return;
+    searchPokemon();
+    
+  }
 
   // 거다이맥스 필터
   async function getGmaxPokemons() {
-    setSearch({ ...search, isSearching: true });
+    setSearch({ ...search, enableGmax: true, enableMega: false, isAll: false });
+    setFilter('gmaxPokemon');    
+    setLoading(true);
+    setPokemons([]);
+
     const pokemons = total.data.length > 0 ? total.data : await getPokemons(total.originData);
     
     let gmaxPokemon = pokemons.filter(data => data.nameKr.includes('거다이맥스'));
@@ -152,14 +276,17 @@ const Main = (props:MainProps) => {
       gmaxPokemon = gmaxPokemon.filter(data => data.nameKr.includes(search.searchString));
     }
     setPokemons(gmaxPokemon);
-    setFilter('gmaxPokemon');
     setLoading(false);
 
   }
 
   // 메가포켓몬 필터
   async function getMegaPokemons() {
-    setSearch({ ...search, isSearching: true });
+    setSearch({ ...search, enableMega: true, enableGmax:false, isAll: false });
+    setFilter('megaPokemon');
+    setLoading(true);
+    setPokemons([]);
+
     const pokemons = total.data.length > 0 ? total.data : await getPokemons(total.originData);
 
     let megaPokemon = pokemons.filter(data => data.nameKr.includes('메가'));
@@ -167,7 +294,6 @@ const Main = (props:MainProps) => {
       megaPokemon = megaPokemon.filter(data => data.nameKr.includes(search.searchString));
     }
     setPokemons(megaPokemon);
-    setFilter('megaPokemon');
     setLoading(false);
 
   }
@@ -205,6 +331,7 @@ const Main = (props:MainProps) => {
         filter={filter}
         getGmaxPokemons={getGmaxPokemons}
         getMegaPokemons={getMegaPokemons}
+        searchByCategory={searchByCategory}
       />
 
       { 
