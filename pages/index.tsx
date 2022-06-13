@@ -231,7 +231,7 @@ const Main = (props: MainProps) => {
   
       filteredByGen = filteredByGenPokemons.map((gen) => {
         return total.originData.filter(d => d.name === gen.name)[0];
-      });
+      }).filter(el => el !== undefined);
     }
 
     // 필터 결과
