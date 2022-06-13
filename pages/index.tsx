@@ -162,7 +162,11 @@ const Main = (props: MainProps) => {
       return result;
     }));
 
-    return pokemon;
+    const filteredArr = pokemon.reduce(function (acc, cur) {
+      return acc.concat(cur);
+    });
+
+    return filteredArr;
   }
 
   async function filterByGeneration(generations:string[]) {
@@ -173,62 +177,75 @@ const Main = (props: MainProps) => {
     }));
 
 
-    return pokemon;
+    const filteredArr = pokemon.reduce(function (acc, cur) {
+      return acc.concat(cur);
+    });
+
+    return filteredArr;
   }
 
 
-  // 필터조회
+  function compareData(filteredByGen:ResourceForPokemon[], filteredByTypes:ResourceForPokemon[]) {
+    let standardArr: ResourceForPokemon[] = [];
+    let targetArr: ResourceForPokemon[] = [];
 
+    if (filteredByGen.length >= filteredByTypes.length) {
+      standardArr = filteredByGen;
+      targetArr = filteredByTypes;
+    } else {
+      standardArr = filteredByTypes;
+      targetArr = filteredByGen;
+    }
+
+    const filterResult = standardArr.filter(standardArrItem => {
+      let flag = false;
+
+      targetArr.forEach(targetArrItem => {
+        if (targetArrItem.name === standardArrItem.name) {
+          flag = true;
+        }
+      });
+      return flag;
+    });
+
+    return filterResult;
+  }
+
+  // 필터조회
   async function searchByCategory(types:string[], generations:string[]) {
-    setSearch((prev) => { return { ...prev, category: { types: types, generations: generations } } });
+    setSearch((prev) => { return { ...prev, category: { types: types, generations: generations }, isAll: false } });
+    
     let filteredByTypes: ResourceForPokemon[] = [];
     let filteredByGen: ResourceForPokemon[] = [];
 
+    // 타입 필터
     if (types.length > 0) {
-      const result = await filterByTypes(types);
-      filteredByTypes = result.reduce(function (acc, cur) {
-        return acc.concat(cur);
-      });
+      filteredByTypes = await filterByTypes(types);
     }
 
+    // 세대 필터
     if (generations.length > 0) {
-      const result = await filterByGeneration(generations);
-      const integrateArr = result.reduce(function (acc, cur) {
-        return acc.concat(cur);
-      });
-      const genData = integrateArr.map((gen) => {
+      const filteredByGenPokemons = await filterByGeneration(generations);
+  
+      filteredByGen = filteredByGenPokemons.map((gen) => {
         return total.originData.filter(d => d.name === gen.name)[0];
       });
-      filteredByGen = genData;
-
     }
 
-    if (filteredByGen.length >= filteredByTypes.length) {
-      const filterResult = filteredByGen.filter(genPokemon => {
-        let flag = false;
-        filteredByTypes.forEach(type => {
-          if (type.name === genPokemon.name) {
-            flag = true;
-          }
-        });
-        return flag ? genPokemon : null;
-      });
-
-      fetchData(filterResult)
+    // 필터 결과
+    let filteredResult: ResourceForPokemon[] = [];
+    
+    if (filteredByTypes.length > 0 && filteredByGen.length > 0) {
+      filteredResult = compareData(filteredByGen, filteredByTypes);
+    } else if (types.length > 0 && generations.length == 0) {
+      filteredResult = filteredByTypes;
+    } else if (generations.length > 0 && types.length == 0) {
+      filteredResult = filteredByGen;
     } else {
-      const filterResult = filteredByTypes.filter(genPokemon => {
-        let flag = false;
-        filteredByGen.forEach(type => {
-          if (type.name === genPokemon.name) {
-            flag = true;
-          }
-        });
-        return flag ? genPokemon : null;
-      })
-
-
-      fetchData(filterResult)
+      return;
     }
+
+    fetchData(filteredResult);
   }
 
 
