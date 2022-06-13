@@ -214,7 +214,8 @@ const Main = (props: MainProps) => {
   // 필터조회
   async function searchByCategory(types:string[] = search.category.types, generations:string[] = search.category.generations) {
     setSearch((prev) => { return { ...prev, category: { types: types, generations: generations }, isAll: false } });
-    
+    setLoading(true);
+    setPokemons([]);
     let filteredByTypes: ResourceForPokemon[] = [];
     let filteredByGen: ResourceForPokemon[] = [];
 
@@ -252,6 +253,7 @@ const Main = (props: MainProps) => {
     } 
 
     setPokemons(filteredResult);
+    setLoading(false);
   }
 
 
@@ -292,9 +294,12 @@ const Main = (props: MainProps) => {
     setFilter('gmaxPokemon');    
     setLoading(true);
     setPokemons([]);
+    
+    const isFilteredByTypes = search.category.types.length > 0;
+    const isFilteredByGen = search.category.generations.length > 0;
 
     const totalPokemons = total.data.length > 0 ? total.data : await getPokemons(total.originData);
-    const standardPokemons = search.isAll ? totalPokemons : pokemons;
+    const standardPokemons = isFilteredByTypes || isFilteredByGen ? pokemons : totalPokemons;
     
     let gmaxPokemon = standardPokemons.filter(data => data.nameKr.includes('거다이맥스'));
     if (search.searchString) {
@@ -312,8 +317,11 @@ const Main = (props: MainProps) => {
     setLoading(true);
     setPokemons([]);
 
+    const isFilteredByTypes = search.category.types.length > 0;
+    const isFilteredByGen = search.category.generations.length > 0;
+
     const totalPokemons = total.data.length > 0 ? total.data : await getPokemons(total.originData);
-    const standardPokemons = search.isAll ? totalPokemons : pokemons;
+    const standardPokemons = isFilteredByTypes || isFilteredByGen ? pokemons : totalPokemons;
 
     let megaPokemon = standardPokemons.filter(data => data.nameKr.includes('메가'));
     if (search.searchString) {
