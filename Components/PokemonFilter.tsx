@@ -1,7 +1,7 @@
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import mainStyle from '../styles/main.module.scss'
 import { CustomPokemonType } from '../types/pokemonTypes'
 import FilterOption from './FilterOption';
@@ -11,57 +11,46 @@ interface PokemonFilterProps {
   resetSearchCondition: () => void,
   getGmaxPokemons: () => void,
   getMegaPokemons: () => void,
-  searchByCategory: (type:string[], gen:string[]) => void,
+  searchWithFilters: (type:string[], gen:string[], enableGmax:boolean, enableMega: boolean) => void,
   types: CustomPokemonType[]
 }
 
-export interface FilterOptions {
-  category: string,
-  options: CustomPokemonType[]
+export interface OptionItem {
+  name: string;
+  nameKr: string;
+  url: string;
+  isChecked: boolean;
 }
 
+export interface FilterCategory {
+  category: string,
+  options: OptionItem[],
+  isMulti: boolean,
+  fn: (option: OptionItem, ref: HTMLInputElement | null) => void
+}
+
+
 const PokemonFilter = (props: PokemonFilterProps) => {
-  const { resetSearchCondition, searchByCategory, types, getGmaxPokemons, getMegaPokemons } = props;
+  const { resetSearchCondition, searchWithFilters, types, getGmaxPokemons, getMegaPokemons } = props;
+  const [checkedTypes, setCheckedTypes] = useState<string[]>([]);
+  const [checkedGenerations, setCheckedGenerations] = useState<string[]>([]);
   const filterIconRef = useRef<HTMLInputElement>(null);
 
-  let typeConditions: string[] = [];
-  let generationConditions: string[] = [];
 
+  let enableMega:boolean = false;
+  let enableGmax:boolean = false;
   
   const generations = Array.from({ length: 7 }, (v, i) => {
     return {
       name: `${i + 1}`,
       nameKr: `${i + 1}세대 포켓몬`,
-      url: ''
+      url: '',
+      isChecked: false,
     }
   });
 
 
-  const filterOptions:FilterOptions[] = [
-    {
-      category: '타입',
-      options: types
-    },
-    {
-      category: '세대',
-      options: generations
-    },
-    {
-      category: '형태',
-      options: [
-        {
-          name: 'gmax',
-          nameKr: '다이아맥스',
-          url: ''
-        },
-        {
-          name: 'mega',
-          nameKr: '메가진화',
-          url: ''
-        },
-      ]
-    }
-  ]
+  
 
   // filter 드롭다운 닫기
   function closeFilter() {
@@ -71,28 +60,50 @@ const PokemonFilter = (props: PokemonFilterProps) => {
 
 
   function filterPokemon() {
-    searchByCategory(typeConditions, generationConditions);
+    // searchWithFilters(typeConditions, generationConditions, enableGmax, enableMega);
   }
 
-  function filterType(e: React.MouseEvent<HTMLLabelElement>) {
-    const target = e.target as HTMLLabelElement;
-    const type = target.htmlFor;
-    if (typeConditions.includes(type)) {
-      typeConditions = typeConditions.filter(condition => condition !== type);
-    } else {
-      typeConditions.push(type);
+  function selectType(option: OptionItem, ref: HTMLInputElement | null) {
+    option.isChecked = !option.isChecked;
+
+    console.log(filterOptions[0].options)
+  }
+
+  function selectGeneration(option: OptionItem, ref: HTMLInputElement | null) {
+    option.isChecked = !option.isChecked;
+  }
+
+  function selectForm(option: OptionItem, ref: HTMLInputElement | null) {
+    if (!ref) return;
+
+    ref.checked = false;
+    option.isChecked = !option.isChecked;
+  }
+
+  function getOptionItem(name: string, nameKr: string, url: string, isChecked: boolean):OptionItem {
+    return {
+      name: name,
+      nameKr: nameKr,
+      url: url,
+      isChecked: isChecked
     }
   }
 
-  function filterGeneration(e: React.MouseEvent<HTMLLabelElement>) {
-    const target = e.target as HTMLLabelElement;
-    const generation = target.htmlFor;
-    if (generationConditions.includes(generation)) {
-      generationConditions = generationConditions.filter(gen => gen !== generation);
-    } else {
-      generationConditions.push(generation);
+  function getFilterOptionObj(category: string, options: OptionItem[], isMulti:boolean, fn: (option: OptionItem, ref: HTMLInputElement | null)=>void) {
+    return {
+      category: category,
+      options: options,
+      isMulti: isMulti,
+      fn:fn 
     }
   }
+
+  const filterOptions: FilterCategory[] = [
+    getFilterOptionObj('타입', types.map(type => { return { ...type, isChecked: false } }), true, selectType),
+    getFilterOptionObj('세대', generations, true, selectGeneration),
+    getFilterOptionObj('형태', [getOptionItem('gmax', '다이아맥스', '', false), getOptionItem('mega', '메가진화', '', false)], false, selectForm),
+  ];
+
 
   return (
     <div className={mainStyle.filter}>
@@ -111,7 +122,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
                     <Image width={20} height={20} src={`/pokeball.png`} alt={'icon'} />
                     <span>{op.category}</span>
                   </div>
-                  <FilterOption options={op.options} clickOption={filterType} />
+                  <FilterOption category={op} />
                 </li>
               )
             })
@@ -119,7 +130,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
           <li className={mainStyle.category}>
             <div className={mainStyle["filter-btn"]}>
             <button >적용</button>
-            <button  onClick={closeFilter}>닫기</button>
+            <button onClick={closeFilter}>닫기</button>
             </div>
 
           </li>
