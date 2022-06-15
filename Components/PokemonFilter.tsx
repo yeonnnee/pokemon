@@ -1,5 +1,7 @@
-import React, { Dispatch, SetStateAction } from 'react';
-import { SearchState } from '../pages';
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
+import { useRef } from 'react';
 import mainStyle from '../styles/main.module.scss'
 import { CustomPokemonType } from '../types/pokemonTypes'
 import FilterOption from './FilterOption';
@@ -7,19 +9,24 @@ import FilterOption from './FilterOption';
 
 interface PokemonFilterProps {
   resetSearchCondition: () => void,
-  setFilter: (category: string) => void,
   getGmaxPokemons: () => void,
   getMegaPokemons: () => void,
-  // setSearch: Dispatch<SetStateAction<SearchState>>,
   searchByCategory: (type:string[], gen:string[]) => void,
-  filter: string,
   types: CustomPokemonType[]
 }
 
+export interface FilterOptions {
+  category: string,
+  options: CustomPokemonType[]
+}
+
 const PokemonFilter = (props: PokemonFilterProps) => {
-  const { resetSearchCondition, setFilter,searchByCategory, filter, types, getGmaxPokemons, getMegaPokemons } = props;
+  const { resetSearchCondition, searchByCategory, types, getGmaxPokemons, getMegaPokemons } = props;
+  const filterIconRef = useRef<HTMLInputElement>(null);
+
   let typeConditions: string[] = [];
   let generationConditions: string[] = [];
+
   
   const generations = Array.from({ length: 7 }, (v, i) => {
     return {
@@ -28,6 +35,40 @@ const PokemonFilter = (props: PokemonFilterProps) => {
       url: ''
     }
   });
+
+
+  const filterOptions:FilterOptions[] = [
+    {
+      category: '타입',
+      options: types
+    },
+    {
+      category: '세대',
+      options: generations
+    },
+    {
+      category: '형태',
+      options: [
+        {
+          name: 'gmax',
+          nameKr: '다이아맥스',
+          url: ''
+        },
+        {
+          name: 'mega',
+          nameKr: '메가진화',
+          url: ''
+        },
+      ]
+    }
+  ]
+
+  // filter 드롭다운 닫기
+  function closeFilter() {
+    if (!filterIconRef.current) return;
+    filterIconRef.current.checked = false;
+  }
+
 
   function filterPokemon() {
     searchByCategory(typeConditions, generationConditions);
@@ -53,25 +94,36 @@ const PokemonFilter = (props: PokemonFilterProps) => {
     }
   }
 
-  return(
-    <div className={mainStyle["filter-section"]}>
+  return (
+    <div className={mainStyle.filter}>
+      <input type="checkbox" id="filter" className={mainStyle["filter-icon"]} ref={filterIconRef} />
+      <label htmlFor="filter" className={mainStyle["filter-icon-label"]}>
+        Filters <FontAwesomeIcon icon={faAngleDown} className={mainStyle['filter-arrow']}/>
+      </label>
+      
+      <div className={mainStyle["filter-section"]}>
+        <ul className={mainStyle.option}>
+          {
+            filterOptions.map((op, index) => {
+              return (
+                <li key={index} className={mainStyle.category}>
+                  <div className={mainStyle["category-title"]}>
+                    <Image width={20} height={20} src={`/pokeball.png`} alt={'icon'} />
+                    <span>{op.category}</span>
+                  </div>
+                  <FilterOption options={op.options} clickOption={filterType} />
+                </li>
+              )
+            })
+          }
+          <li className={mainStyle.category}>
+            <div className={mainStyle["filter-btn"]}>
+            <button >적용</button>
+            <button  onClick={closeFilter}>닫기</button>
+            </div>
 
-      <ul className={mainStyle.option}>
-        <li className={filter === 'all' ? mainStyle["active"] : ''} onClick={resetSearchCondition}>전체</li>
-        <li className={filter === 'category' ? mainStyle["active"] : ''} onClick={()=>setFilter('category')}>카테고리</li>
-        <li className={filter === 'megaPokemon' ? mainStyle["active"] : ''} onClick={getMegaPokemons}>메가진화 포켓몬</li>
-        <li className={filter === 'gmaxPokemon' ? mainStyle["active"] : ''} onClick={getGmaxPokemons}>다이맥스 포켓몬</li>
-      </ul>
-
-      <div className={filter === 'category' ? mainStyle["category-container"] : mainStyle.hidden}>
-        <ul className={mainStyle["category-list"]}>
-          <FilterOption category={'타입'} options={types} clickOption={filterType} />
-          <FilterOption category={'세대'} options={generations} clickOption={filterGeneration} />
+          </li>
         </ul>
-        <div className={mainStyle["filter-btn"]}>
-          <button onClick={filterPokemon}>필터 적용</button>
-          {/* <button>닫기</button> */}
-        </div>
       </div>
     </div>
   )
