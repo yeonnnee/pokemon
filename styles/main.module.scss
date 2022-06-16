@@ -63,7 +63,25 @@
         color: $pink;
         margin: 0 0 0 10px;
       }
+
+      .filter-condition-list {
+        display: inline-block;
+        margin: 0 0 0 20px;
+
+        span {
+          @include sm-box-shadow();
+          padding: 2px 10px;
+          border-radius: 10px;
+          border: 1px solid $dragon-label;
+          font-size: 14px;
+          color: $strong-inset-shadow;
+          cursor: default;
+        }
+      }
     }
+
+
+
 
     .filter-section {
       width: 100%;

@@ -351,8 +351,14 @@ const Main = (props: MainProps) => {
               <div className={mainStyle.count}>
                 <p>포켓몬</p>
                 <span>{pokemons.length}</span>
+                <ul className={mainStyle["filter-condition-list"]}>
+                  {filterCategory.map(category => category.options.map((op, index) => {
+                    return op.isChecked ? <span key={index} className={mainStyle["filter-label"]}>{op.nameKr}</span> : null;
+                  }))}
+                </ul>
               </div>
             }
+
             <PokemonFilter
               filterCategory={filterCategory}
               searchWithFilters={searchWithFilters}
