@@ -11,6 +11,7 @@ import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { CustomPokemonType, PokemonTypesApiRes, TypeDetailApiRes } from '../types/pokemonTypes';
 import PokemonFilter from '../components/PokemonFilter';
 import { GenerationInfoApiRes } from '../types/generation';
+import useFilterCategory from '../hooks/useFilterCategory';
 
 interface TotalState {
   totalCount: number,
@@ -20,8 +21,8 @@ interface TotalState {
 
 export interface SearchState {
   searchString: string,
-  types: string[],
-  generations: string[],
+  types: (string | null)[],
+  generations: (string | null)[],
   enableGmax: boolean,
   enableMega: boolean,
   isAll: boolean
@@ -33,11 +34,11 @@ interface MainProps {
   types: CustomPokemonType[]
 }
 
+
 const Main = (props: MainProps) => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [total, setTotal] = useState<TotalState>({ totalCount: 0, data: [], originData: [] });
   const [loading, setLoading] = useState<boolean>(true);
-  
   const [search, setSearch] = useState<SearchState>({
     searchString: '',
     types: [],
@@ -48,7 +49,7 @@ const Main = (props: MainProps) => {
   });
   const [itemCount, setItemCount] = useState<number>(0);
   const [types, setTypes] = useState<CustomPokemonType[]>([]);
-
+  const filterCategory = useFilterCategory(types);
   
   const target = useRef<HTMLDivElement>(null);
 
@@ -146,7 +147,7 @@ const Main = (props: MainProps) => {
     setLoading(false);
   }
 
-  async function filterByTypes(types:string[]) {
+  async function filterByTypes(types: (string | null)[]) {
     const pokemon = await Promise.all(types.map(async (type) => {
       const res = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
       const data: TypeDetailApiRes = await res.json();
@@ -162,7 +163,7 @@ const Main = (props: MainProps) => {
     return filteredArr;
   }
 
-  async function filterByGeneration(generations:string[]) {
+  async function filterByGeneration(generations: (string | null)[]) {    
     const pokemon = await Promise.all(generations.map(async (gen) => {
       const res = await fetch(`https://pokeapi.co/api/v2/generation/${gen}`);
       const data: GenerationInfoApiRes = await res.json();
@@ -205,10 +206,14 @@ const Main = (props: MainProps) => {
   }
 
   // 필터조회
-  async function searchWithFilters(types:string[], generations:string[], enableGmax:boolean, enableMega:boolean) {
+  async function searchWithFilters(types: (string|null)[], generations: (string|null)[], enableGmax: boolean, enableMega: boolean) {
+    if (types === search.types && generations === search.generations && enableGmax === search.enableGmax && enableMega === search.enableGmax) return;
+    console.log(types, generations,enableGmax, enableGmax )
+    console.log('search', search);
     setSearch((prev) => { return { ...prev, types, generations, enableGmax, enableMega, isAll: false } });
     setLoading(true);
     setPokemons([]);
+
     let filteredByTypes: ResourceForPokemon[] = [];
     let filteredByGen: ResourceForPokemon[] = [];
 
@@ -236,8 +241,6 @@ const Main = (props: MainProps) => {
       filteredResult =  await getPokemons(filteredByTypes);
     } else if (generations.length > 0 && types.length == 0) {
       filteredResult = await getPokemons(filteredByGen);
-    } else {
-      return;
     }
 
     if (enableMega) {
@@ -341,9 +344,7 @@ const Main = (props: MainProps) => {
 
         <PokemonFilter
           resetSearchCondition={resetSearchCondition}
-          types={types}
-          getGmaxPokemons={getGmaxPokemons}
-          getMegaPokemons={getMegaPokemons}
+          filterCategory={filterCategory}
           searchWithFilters={searchWithFilters}
         />
       </div>

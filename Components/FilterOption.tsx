@@ -1,16 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import mainStyle from '../styles/main.module.scss'
-import { OptionItem } from './PokemonFilter';
+import { FilterCategory } from '../hooks/useFilterCategory';
 
-interface Options {
-  category: string ;
-  options: OptionItem[];
-  isMulti: boolean;
-  fn: ((option: OptionItem, ref: HTMLInputElement | null) => void); 
-}
+import mainStyle from '../styles/main.module.scss'
+
 
 interface FilterOptionProps {
-  category: Options
+  category: FilterCategory
 }
 
 const FilterOption = (props: FilterOptionProps) => {
