@@ -135,16 +135,6 @@ const Detail = () => {
       }
     });
 
-    const hapiness = {
-      url: '',
-      base_stat: speciesData.base_happiness,
-      stat: { name: 'happiness', url: '' },
-      label: 'Happiness'
-    };
-
-    stats.push(hapiness);
-
-
     const result = {
       name: speciesData.name,
       nameKr: nameKr, 
