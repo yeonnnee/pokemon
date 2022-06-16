@@ -351,11 +351,6 @@ const Main = (props: MainProps) => {
               <div className={mainStyle.count}>
                 <p>포켓몬</p>
                 <span>{pokemons.length}</span>
-                <ul className={mainStyle["filter-condition-list"]}>
-                  {filterCategory.map(category => category.options.map((op, index) => {
-                    return op.isChecked ? <span key={index} className={mainStyle["filter-label"]}>{op.nameKr}</span> : null;
-                  }))}
-                </ul>
               </div>
             }
 
@@ -366,7 +361,11 @@ const Main = (props: MainProps) => {
           </div>
         : null
       }
-
+      <ul className={mainStyle["filter-condition-list"]}>
+        {filterCategory.map(category => category.options.map((op, index) => {
+          return op.isChecked ? <span key={index} className={mainStyle["filter-label"]}>{op.nameKr}</span> : null;
+        }))}
+      </ul>
 
       { 
         pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>검색 결과가 없습니다.</p> :
