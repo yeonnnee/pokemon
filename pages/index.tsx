@@ -1,7 +1,6 @@
 import type { GetStaticProps } from 'next'
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PokemonCard from '../components/PokemonCard';
-
 import mainStyle from '../styles/main.module.scss'
 import { PokemonName, PokemonSpeciesApiRes } from '../types/speices';
 import { PokemonDetailApiRes, PokemonSprites, PokemonType } from '../types/detail';
@@ -49,8 +48,8 @@ const Main = (props: MainProps) => {
   });
   const [itemCount, setItemCount] = useState<number>(0);
   const [types, setTypes] = useState<CustomPokemonType[]>([]);
-  const filterCategory = useFilterCategory(types);
-  
+ 
+  const filterCategory = useFilterCategory(types); 
   const target = useRef<HTMLDivElement>(null);
 
   // 거다이맥스, 메가 포켓몬인 경우 표기해주기
@@ -86,7 +85,6 @@ const Main = (props: MainProps) => {
     }
   }
 
-
   // 데이터 받아서 customizing
   const getPokemons = useCallback(async (data: ResourceForPokemon[]) => {
     setLoading(true);
@@ -96,7 +94,6 @@ const Main = (props: MainProps) => {
       const species:PokemonSpeciesApiRes = await getSpeciesData(detail.species.url);
       const nameKr: PokemonName = species.names.filter((d: PokemonName) => d.language.name === 'ko')[0];
       const fullName = getFullName(detail.name, nameKr.name);
-
       const result = getPokemonObj(detail.name, fullName, detail.sprites, detail.types, detail.order, species.color.name);
       return result;
     }));
@@ -135,17 +132,14 @@ const Main = (props: MainProps) => {
       setPokemons([]);
       setLoading(true);
       setSearch({
+        ...search,
         searchString: '',
-        types: [],
-        generations: [],
-        enableGmax: false,
-        enableMega: false,
-        isAll: true
       });
-      await getMorePokemons(50);
+      await searchPokemon();
     }
     setLoading(false);
   }
+
 
   async function filterByTypes(types: (string | null)[]) {
     const pokemon = await Promise.all(types.map(async (type) => {
@@ -206,10 +200,13 @@ const Main = (props: MainProps) => {
   }
 
   // 필터조회
-  async function searchWithFilters(types: (string|null)[], generations: (string|null)[], enableGmax: boolean, enableMega: boolean) {
-    if (types === search.types && generations === search.generations && enableGmax === search.enableGmax && enableMega === search.enableGmax) return;
+  async function searchWithFilters(types: (string|null)[], generations: (string|null)[], enableGmax: boolean, enableMega: boolean, isAll: boolean) {    
+    setSearch((prev) => { return { ...prev, types, generations, enableGmax, enableMega, isAll: isAll } });
 
-    setSearch((prev) => { return { ...prev, types, generations, enableGmax, enableMega, isAll: false } });
+    if (isAll) {
+      return searchPokemon();
+    }
+
     setLoading(true);
     setPokemons([]);
 
@@ -273,13 +270,12 @@ const Main = (props: MainProps) => {
       setLoading(false);
       return;
     } else {
-      searchWithFilters(search.types, search.generations, search.enableGmax, search.enableMega);
+      searchWithFilters(search.types, search.generations, search.enableGmax, search.enableMega, false);
     }
   }
   async function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
     if (e.key !== 'Enter' || !search.searchString) return;
     searchPokemon();
-    
   }
 
   // 거다이맥스 필터
@@ -343,29 +339,28 @@ const Main = (props: MainProps) => {
         </div>
       </div>
 
-      <ul className={mainStyle['filter-label']}>
-        <li>필터</li>
-      </ul>
+      {
+        !loading && pokemons.length > 0 ? 
+          <div className={mainStyle['filter-container']}>
+            {search.isAll ?
+              <div className={mainStyle.count}>
+                <p>포켓몬</p>
+                <span>{total.totalCount}</span>
+              </div>
+              :
+              <div className={mainStyle.count}>
+                <p>포켓몬</p>
+                <span>{pokemons.length}</span>
+              </div>
+            }
+            <PokemonFilter
+              filterCategory={filterCategory}
+              searchWithFilters={searchWithFilters}
+            />
+          </div>
+        : null
+      }
 
-      <div className={mainStyle['filter-container']}>
-        {!loading ? search.isAll ?
-          <div className={mainStyle.count}>
-            <p>포켓몬</p>
-            <span>{total.totalCount}</span>
-          </div>
-          :
-          <div className={mainStyle.count}>
-            <p>포켓몬</p>
-            <span>{pokemons.length}</span>
-          </div>
-          : null
-        }
-        <PokemonFilter
-          resetSearchCondition={resetSearchCondition}
-          filterCategory={filterCategory}
-          searchWithFilters={searchWithFilters}
-        />
-      </div>
 
       { 
         pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>검색 결과가 없습니다.</p> :

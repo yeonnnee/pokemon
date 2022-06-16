@@ -84,7 +84,18 @@
           text-align: left;
   
           &:nth-child(1) {
-            padding: 10px 10px 0;
+            padding: 10px 13px 0;
+            text-align: right;
+
+            .reset-icon {
+              font-size: 13px;
+            }
+
+            button {
+              &:hover, &:hover ~ .reset-icon {
+                color: $pink;
+              }
+            }
           }
   
           &:nth-last-child(1) {

@@ -19,8 +19,6 @@ export interface FilterCategory {
 
 function useFilterCategory( types:CustomPokemonType[]) {
   const [filterCategory, setFilterCategory] = useState<FilterCategory[]>([]);
-  
-
 
   function getOptionItem(name: string, nameKr: string, url: string, isChecked: boolean):OptionItem {
     return {

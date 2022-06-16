@@ -1,23 +1,24 @@
-import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import { useRef } from 'react';
+import { MutableRefObject, useRef } from 'react';
 import { FilterCategory } from '../hooks/useFilterCategory';
 import mainStyle from '../styles/main.module.scss'
 import FilterOption from './FilterOption';
 
 
 interface PokemonFilterProps {
-  resetSearchCondition: () => void,
-  searchWithFilters: (type:(string|null)[], gen:(string|null)[], enableGmax:boolean, enableMega: boolean) => void,
+  searchWithFilters: (type:(string|null)[], gen:(string|null)[], enableGmax:boolean, enableMega: boolean, isAll: boolean) => void,
   filterCategory: FilterCategory[]
 }
 
 
 const PokemonFilter = (props: PokemonFilterProps) => {
-  const { resetSearchCondition, searchWithFilters, filterCategory} = props;
+  const { searchWithFilters, filterCategory} = props;
   const filterIconRef = useRef<HTMLInputElement>(null);
-
+  const typeCheckBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
+  const generationCheckBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
+  const formCheckBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
   
   // filter 드롭다운 닫기
   function closeFilter() {
@@ -25,6 +26,28 @@ const PokemonFilter = (props: PokemonFilterProps) => {
     filterIconRef.current.checked = false;
   }
 
+  function cancelCheckBoxChecked(refs: MutableRefObject<HTMLInputElement[] | null[]>) {
+    refs.current.forEach(ref => {
+      if (!ref) return;
+      ref.checked = false;
+    });
+  }
+
+  function resetFilterCondition() {
+    filterCategory.forEach(op => op.options.forEach(option => option.isChecked = false));
+    cancelCheckBoxChecked(typeCheckBoxRefs);
+    cancelCheckBoxChecked(generationCheckBoxRefs);
+    cancelCheckBoxChecked(formCheckBoxRefs);
+  }
+
+  function getRefs(op: FilterCategory) {
+    switch (op.category) {
+      case '타입': return typeCheckBoxRefs;
+      case '세대': return generationCheckBoxRefs;
+      case '형태': return formCheckBoxRefs;
+      default: return typeCheckBoxRefs;
+    }
+  }
 
   function getFilterConditions(categoryNm: string) {
     const checkedOptions = filterCategory.filter(options => options.category === categoryNm)[0];
@@ -39,7 +62,14 @@ const PokemonFilter = (props: PokemonFilterProps) => {
     const enableMega = formCondition.length > 0 && formCondition[0] === 'mega';
     const enableGmax = formCondition.length > 0 && formCondition[0] === 'gmax';
 
-    searchWithFilters(typeConditions, generationConditions, enableGmax, enableMega);
+    let isAll: boolean = false;
+    if (typeConditions.length === 0 && generationConditions.length === 0 && !enableMega && !enableGmax) {
+      isAll = true;
+    } else {
+      isAll = false;
+    }
+    searchWithFilters(typeConditions, generationConditions, enableGmax, enableMega, isAll);
+
     closeFilter();
   }
 
@@ -54,6 +84,10 @@ const PokemonFilter = (props: PokemonFilterProps) => {
       
       <div className={mainStyle["filter-section"]}>
         <ul className={mainStyle.option}>
+          <li className={mainStyle.category}>
+            <button onClick={resetFilterCondition}>초기화</button>
+            <FontAwesomeIcon onClick={resetFilterCondition} icon={faRedoAlt} className={mainStyle['reset-icon']}/>
+          </li>
           {
             filterCategory.map((op, index) => {
               return (
@@ -62,17 +96,16 @@ const PokemonFilter = (props: PokemonFilterProps) => {
                     <Image width={20} height={20} src={`/pokeball.png`} alt={'icon'} />
                     <span>{op.category}</span>
                   </div>
-                  <FilterOption category={op} />
+                  <FilterOption category={op} checkBoxRefs={getRefs(op)} />
                 </li>
               )
             })
           }
           <li className={mainStyle.category}>
             <div className={mainStyle["filter-btn"]}>
-            <button onClick={filterPokemon}>적용</button>
-            <button onClick={closeFilter}>닫기</button>
+              <button onClick={filterPokemon}>적용</button>
+              <button onClick={closeFilter}>닫기</button>
             </div>
-
           </li>
         </ul>
       </div>
