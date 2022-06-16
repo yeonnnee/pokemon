@@ -208,8 +208,7 @@ const Main = (props: MainProps) => {
   // 필터조회
   async function searchWithFilters(types: (string|null)[], generations: (string|null)[], enableGmax: boolean, enableMega: boolean) {
     if (types === search.types && generations === search.generations && enableGmax === search.enableGmax && enableMega === search.enableGmax) return;
-    console.log(types, generations,enableGmax, enableGmax )
-    console.log('search', search);
+
     setSearch((prev) => { return { ...prev, types, generations, enableGmax, enableMega, isAll: false } });
     setLoading(true);
     setPokemons([]);
@@ -332,28 +331,41 @@ const Main = (props: MainProps) => {
     return () => observer && observer.disconnect();
   }, [checkIntersect]);
 
+
+
   return (
     <div className={mainStyle.main}>
- 
       <div className={mainStyle['search-section']}>
         <div className={mainStyle['search-bar']}>
           <FontAwesomeIcon icon={ faSearch } className={mainStyle['search-icon']}/>
           <input type="text" value={search.searchString} placeholder='포켓몬 이름을 입력해주세요' onChange={(e) => setSearch({ ...search, searchString: e.target.value })} onKeyUp={searchByPokemonName} />
           {search.searchString ? <FontAwesomeIcon icon={faTimes} className={mainStyle['reset-icon']} onClick={ resetSearchCondition }/> : null }
         </div>
-
-        <PokemonFilter
-          resetSearchCondition={resetSearchCondition}
-          filterCategory={filterCategory}
-          searchWithFilters={searchWithFilters}
-        />
       </div>
 
       <ul className={mainStyle['filter-label']}>
         <li>필터</li>
       </ul>
 
-      <div>{!loading ? search.isAll ? `포켓몬 ${total.totalCount}` :  !search.isAll ? `포켓몬 ${pokemons.length}` : null : null}</div>
+      <div className={mainStyle['filter-container']}>
+        {!loading ? search.isAll ?
+          <div className={mainStyle.count}>
+            <p>포켓몬</p>
+            <span>{total.totalCount}</span>
+          </div>
+          :
+          <div className={mainStyle.count}>
+            <p>포켓몬</p>
+            <span>{pokemons.length}</span>
+          </div>
+          : null
+        }
+        <PokemonFilter
+          resetSearchCondition={resetSearchCondition}
+          filterCategory={filterCategory}
+          searchWithFilters={searchWithFilters}
+        />
+      </div>
 
       { 
         pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>검색 결과가 없습니다.</p> :

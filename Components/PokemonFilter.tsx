@@ -1,10 +1,9 @@
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { FilterCategory } from '../hooks/useFilterCategory';
 import mainStyle from '../styles/main.module.scss'
-import { CustomPokemonType } from '../types/pokemonTypes'
 import FilterOption from './FilterOption';
 
 
@@ -41,7 +40,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
     const enableGmax = formCondition.length > 0 && formCondition[0] === 'gmax';
 
     searchWithFilters(typeConditions, generationConditions, enableGmax, enableMega);
-    closeFilter()
+    closeFilter();
   }
 
 
