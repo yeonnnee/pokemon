@@ -10,15 +10,13 @@ export interface PokemonDetail {
   nameKr: string,
   names: PokemonName[],
   desc: FlavorTextEntry[],
-  order: number,
+  id: number,
   height: number,
   weight: number,
   types: PokemonType[],
   images: PokemonSprites,
   evloution_chain: {
     evolution: EvolutionData[],
-    isMega: boolean,
-    isGmax: boolean
   }
   abilities?: AbilityApiRes[],
   abilitiesKr: AbilityDetail[],

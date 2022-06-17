@@ -17,6 +17,6 @@ export interface Pokemon {
   nameKr: string,
   images: PokemonSprites,
   types: PokemonType[],
-  order: number,
+  id: number,
   color: string
 }

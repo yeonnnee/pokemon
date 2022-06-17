@@ -13,8 +13,21 @@ import DetailInfo from "../../../components/DetailInfo";
 import AbilityInfo from "../../../components/AbilityInfo";
 import EvolutionInfo from "../../../components/EvolutionInfo";
 import Loader from "../../../components/common/Loader";
+import { PokemonsApiRes, ResourceForPokemon } from "../../../types/pokemons";
+import { GetStaticProps } from "next";
 
-const Detail = () => {
+interface DetailProps {
+  data: {
+    detail: PokemonDetailApiRes,
+    species: PokemonSpeciesApiRes,
+    isMega: boolean,
+    isGmax: boolean,
+    hasDifferVersion: boolean
+  }
+
+}
+
+const Detail = (props: DetailProps) => {
   const router = useRouter();
   const [pokemonName, setPokemonName] = useState<string | string[] | undefined>(router.query.pokemonName);
   const [data, setData] = useState<PokemonDetail | null>(null);
@@ -44,19 +57,6 @@ const Detail = () => {
       default: return '';
     }
   }
-
-  const getSpeciesData = useCallback(async (pokemonName:string | string[]) => {
-    const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`);
-    const species: PokemonSpeciesApiRes = await speciesRes.json();
-    return species;
-  }, []);
-
-  const getDetailData = useCallback(async(pokemonName:string | string[]) => {
-    const detailRes = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
-    const detail:PokemonDetailApiRes = await detailRes.json();
-    return detail;
-  },[]);
-
   
 
   const getEvolutionData = useCallback(async (url: string, index: number) => {
@@ -68,7 +68,8 @@ const Detail = () => {
         id: index,
         name: data.name,
         nameKr: data.names.filter(name => name.language.name === 'ko')[0].name,
-        image: detail.sprites.front_default
+        image: detail.sprites.front_default,
+        isMega: data.forms_switchable
       }
     });
     return result;
@@ -90,13 +91,10 @@ const Detail = () => {
     const beforeEvolution = await getEvolutionData(evolution.chain.species.url, 1);
     const firstLevelUp = firstEvolution ? await getEvolutionData(firstEvolution.species.url, 2) : initialData;
     const lastLevelUp = finalEvolution ? await getEvolutionData(finalEvolution.species.url, 3) : initialData;
-    const isMega = lastLevelUp.name ? await getDetailData(`${lastLevelUp.name}-mega`).then(res => true).catch(err => false) : false;
-    const isGmax = lastLevelUp.name ? await getDetailData(`${lastLevelUp.name}-gmax`).then(res => true).catch(err => false) : false;
-
     const evolutionInfo = [beforeEvolution, firstLevelUp, lastLevelUp].filter(info=>info.id);
 
-    return { evolution: evolutionInfo, isMega: isMega, isGmax: isGmax };
-  }, [getEvolutionData,getDetailData]);
+    return { evolution: evolutionInfo };
+  }, [getEvolutionData]);
 
 
 
@@ -164,14 +162,10 @@ const Detail = () => {
   }, [getEvolutionChain, paintGraphBar, getFullName]);
 
 
-  const fetchData = useCallback(async () => {
-    if (!pokemonName) return;
+  const fetchData = useCallback(() => {
+    customData(props.data.detail, props.data.species);
 
-    const detailData = await getDetailData(pokemonName);
-    const speciesData = await getSpeciesData(detailData.species.name);
-    customData(detailData, speciesData);
-
-  }, [getDetailData, getSpeciesData, pokemonName,customData]);
+  }, [customData, props.data]);
 
 
   useEffect(() => {
@@ -191,7 +185,7 @@ const Detail = () => {
               <DefaultInfo image={data.images.front_default} pokemonName={data.nameKr} pokemonIdx={pokemonIdx} types={data.types} generation={data.generation}/>
 
               {/* 세부정보 */}
-              <DetailInfo genera={data.genera[0].genus} height={data.height} weight={data.weight} form={data.evloution_chain}/>
+              <DetailInfo genera={data.genera[0].genus} height={data.height} weight={data.weight} form={data.evloution_chain} isGmax={props.data.isGmax} isMega={props.data.isMega} />
 
               {/* 특성 */}
               <AbilityInfo abilities={data.abilitiesKr}/>
@@ -230,5 +224,45 @@ const Detail = () => {
   )
 }
 
+// 데이터기반으로 얼만큼의 html 페이지가 필요한지를 알려주기 위해 getStaticPaths 사용
+export async function getStaticPaths() {
+  const totalCount = await fetch("https://pokeapi.co/api/v2/pokemon?limit=0&offset=0").then(res => res.json());
+  const res:PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${totalCount.count}&offset=0`).then(res => res.json());
+  const pokemons = res.results;
+
+  const paths = pokemons.map(pokemon => {
+    return {
+      params: { pokemonName: pokemon.name, pokemons },
+    }
+  });
+
+  return {
+    paths,
+    fallback: false // path와 일치되지 않는 경우 404 반환
+  };
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const pokemonName = context.params?.pokemonName;
+  
+  const totalCount = await fetch("https://pokeapi.co/api/v2/pokemon?limit=0&offset=0").then(res => res.json());
+  const res:PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${totalCount.count}&offset=0`).then(res => res.json());
+  const pokemons = res.results;
+
+  // Form 정보
+  const forms = pokemonName ? pokemons.map(pokemon => {if(pokemon.name.includes(pokemonName as string)) {return pokemon.name}}) : [];
+  const isMega = forms.filter(form => form?.includes('mega')).length > 0;
+  const isGmax = forms.filter(form => form?.includes('gmax')).length > 0;
+  const hasDifferVersion = forms.filter(form => form?.includes('mega')).length > 1;
+
+  // 포켓몬 정보
+  const detail = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`).then(res => res.json());
+  const species = await fetch(detail.species.url).then(res => res.json());
+
+
+  return {
+    props: { data: {detail, species, isMega, isGmax, hasDifferVersion} }
+  }
+}
 
 export default Detail;
