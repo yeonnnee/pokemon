@@ -26,7 +26,7 @@ const ImageSection = (props: ImageSectionProps) => {
       </div>
 
       <div className={detailStyle["profile-image"]}>
-          <Image priority width={500} height={500} src={ images.other["official-artwork"].front_default || ''} alt={pokemonName}/>
+          <Image priority width={500} height={500} src={ images.other["official-artwork"].front_default || images.front_default} alt={pokemonName}/>
         </div>
 
       {/* 특징 */}

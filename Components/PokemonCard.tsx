@@ -16,7 +16,7 @@ const PokemonCard = (pokemon:Pokemon, key: number) => {
         <div className={cardStyle.info}>{pokemon.nameKr}</div>
         {
           pokemon.images.other["official-artwork"].front_default
-            ? <Image width={150} height={150} src={pokemon.images.other["official-artwork"].front_default} alt={pokemon.name} />
+            ? <Image width={150} height={150} src={pokemon.images.other["official-artwork"].front_default || pokemon.images.front_default} alt={pokemon.name} />
             : null
         }
       </li>
