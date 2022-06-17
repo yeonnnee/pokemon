@@ -62,7 +62,7 @@ const Main = (props: MainProps) => {
     const superSize = pokemonName.includes('super');
     const small = pokemonName.includes('small');
     const percentage = pokemonName.includes('50') || pokemonName.includes('10');
-    const perfect = pokemonName.includes('perfect');
+    const complete = pokemonName.includes('complete');
 
     if (rapid) label = '(연격의 태세)';
     if (single) label = '(일격의 태세)';
@@ -71,7 +71,7 @@ const Main = (props: MainProps) => {
     if (average) label = '(Average)';
     if (superSize) label = '(Super)';
     if (percentage) label = `(${pokemonName.split('-')[1]}%폼)`;
-    if (perfect) label = `(퍼펰트폼)`;
+    if (complete) label = `(퍼펙트폼)`;
 
     return label;
   }
