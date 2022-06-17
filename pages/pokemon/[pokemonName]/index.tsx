@@ -19,7 +19,7 @@ const Detail = () => {
   const [pokemonName, setPokemonName] = useState<string | string[] | undefined>(router.query.pokemonName);
   const [data, setData] = useState<PokemonDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const pokemonIdx = usePokemonIdx(data?.order || 0);
+  const pokemonIdx = usePokemonIdx(data?.id || 0);
 
   const barRef = useRef<HTMLDivElement[] | null[]>([]);
 
@@ -140,7 +140,7 @@ const Detail = () => {
       nameKr: nameKr, 
       names: speciesData.names,
       desc: pokemonDesc,
-      order: detailData.order,
+      id: detailData.id,
       weight: detailData.weight,
       height: detailData.height,
       types: detailData.types,

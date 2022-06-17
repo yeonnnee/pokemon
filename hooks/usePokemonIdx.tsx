@@ -4,6 +4,8 @@ function usePokemonIdx(pokemonOrder: number) {
   const [pokemonIdx, setPokemonIdx] = useState<string>('');
   
   useEffect(() => {
+
+    console.log(pokemonOrder)
     if (pokemonOrder < 0) {
       return setPokemonIdx('-');
     }

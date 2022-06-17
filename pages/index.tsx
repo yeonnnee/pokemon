@@ -74,13 +74,13 @@ const Main = (props: MainProps) => {
     return data;
   }
 
-  function getPokemonObj(name:string, nameKr:string, images:PokemonSprites, types:PokemonType[], order: number, color: string) {
+  function getPokemonObj(name:string, nameKr:string, images:PokemonSprites, types:PokemonType[], id: number, color: string) {
     return {
       name: name,
       nameKr: nameKr,
       images: images,
       types: types,
-      order: order,
+      id: id,
       color: color
     }
   }
@@ -94,7 +94,7 @@ const Main = (props: MainProps) => {
       const species:PokemonSpeciesApiRes = await getSpeciesData(detail.species.url);
       const nameKr: PokemonName = species.names.filter((d: PokemonName) => d.language.name === 'ko')[0];
       const fullName = getFullName(detail.name, nameKr.name);
-      const result = getPokemonObj(detail.name, fullName, detail.sprites, detail.types, detail.order, species.color.name);
+      const result = getPokemonObj(detail.name, fullName, detail.sprites, detail.types, detail.id, species.color.name);
       return result;
     }));
     setLoading(false);
@@ -340,7 +340,7 @@ const Main = (props: MainProps) => {
       </div>
 
       {
-        !loading && pokemons.length > 0 ? 
+        !loading ? 
           <div className={mainStyle['filter-container']}>
             {search.isAll ?
               <div className={mainStyle.count}>
@@ -361,11 +361,17 @@ const Main = (props: MainProps) => {
           </div>
         : null
       }
-      <ul className={mainStyle["filter-condition-list"]}>
-        {filterCategory.map(category => category.options.map((op, index) => {
-          return op.isChecked ? <span key={index} className={mainStyle["filter-label"]}>{op.nameKr}</span> : null;
-        }))}
-      </ul>
+
+      {
+        !loading ? 
+        <ul className={mainStyle["filter-condition-list"]}>
+          {filterCategory.map(category => category.options.map((op, index) => {
+            return op.isChecked ? <span key={index} className={mainStyle["filter-label"]}>{op.nameKr}</span> : null;
+          }))}
+        </ul>
+        : null
+      }
+
 
       { 
         pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>검색 결과가 없습니다.</p> :

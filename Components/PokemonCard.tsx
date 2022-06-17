@@ -7,7 +7,7 @@ import usePokemonIdx from "../hooks/usePokemonIdx";
 
 
 const PokemonCard = (pokemon:Pokemon, key: number) => {
-  const pokemonIdx = usePokemonIdx(pokemon.order);
+  const pokemonIdx = usePokemonIdx(pokemon.id);
 
   return(
     <Link href={`/pokemon/${pokemon.name}`}>
