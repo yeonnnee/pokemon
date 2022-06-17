@@ -12,7 +12,7 @@ const PokemonCard = (pokemon:Pokemon, key: number) => {
   return(
     <Link href={`/pokemon/${pokemon.name}`}>
       <li className={cardStyle.card}>
-        <span className={`${cardStyle.info} ${labelStyle[`${pokemon.color}`]}`}>{ pokemonIdx !== '-' ? `No.${pokemonIdx}` : '다이맥스'}</span>
+        <span className={`${cardStyle.info} ${labelStyle[`${pokemon.color}`]}`}>{ pokemonIdx !== '-' ? `No.${pokemonIdx}` : '거다이맥스'}</span>
         <div className={cardStyle.info}>{pokemon.nameKr}</div>
         {
           pokemon.images.other["official-artwork"].front_default

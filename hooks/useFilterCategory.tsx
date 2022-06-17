@@ -62,7 +62,7 @@ function useFilterCategory( types:CustomPokemonType[]) {
     const filterOptions: FilterCategory[] = [
       getFilterOptionObj('타입', types.map(type => { return { ...type, isChecked: false } }), true, selectMultiOption),
       getFilterOptionObj('세대', generations, true, selectMultiOption),
-      getFilterOptionObj('형태', [getOptionItem('gmax', '다이아맥스', '', false), getOptionItem('mega', '메가진화', '', false)], false, selectSingleOption),
+      getFilterOptionObj('형태', [getOptionItem('gmax', '거다이맥스', '', false), getOptionItem('mega', '메가진화', '', false)], false, selectSingleOption),
     ];
 
     setFilterCategory(filterOptions);
