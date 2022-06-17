@@ -52,21 +52,44 @@ const Main = (props: MainProps) => {
   const filterCategory = useFilterCategory(types); 
   const target = useRef<HTMLDivElement>(null);
 
+
+  function getPokemonForm(pokemonName: string) {
+    let label;
+    const rapid = pokemonName.includes('rapid-strike'); // 연격의 태세
+    const single = pokemonName.includes('single-strike'); // 일격의 태세
+    const large = pokemonName.includes('large');
+    const average = pokemonName.includes('average');
+    const superSize = pokemonName.includes('super');
+    const small = pokemonName.includes('small');
+
+    if (rapid) label = '(연격의 태세)';
+    if (single) label = '(일격의 태세)';
+    if (large) label = '(L)';
+    if (small) label = '(S)';
+    if (average) label = '(Average)';
+    if (superSize) label = '(Super)';
+
+    return label;
+  }
+
   // 거다이맥스, 메가 포켓몬인 경우 표기해주기
   const getFullName = useCallback((pokemonName: string, nameKr: string) => {
     const pokemonForm = pokemonName.split('-');
-    const isGmax = pokemonForm[1] === 'gmax';
-    const isMega = pokemonForm[1] === 'mega';
+    const isGmax = pokemonName.includes('gmax');
+    const isMega = pokemonName.includes('mega');
+    const form = getPokemonForm(pokemonName);
 
-    if (isGmax) return `${nameKr} (거다이맥스)`;
+    if (isGmax) return `거다이맥스 ${nameKr} ${form || ''}`;
     if (isMega) {
       if (pokemonForm.length > 2) {
-        return `메가${nameKr}-${pokemonForm[2].toUpperCase()}`;
+        const megaKeywordIdx = pokemonForm.indexOf('mega');
+        return `메가${nameKr}-${pokemonForm[megaKeywordIdx + 1].toUpperCase()}`;
       } else {
         return `메가${nameKr}`;
       }
     }
-    return nameKr;
+
+    return form ? `${nameKr} ${form}` : nameKr;
   }, []);
 
 
@@ -244,15 +267,9 @@ const Main = (props: MainProps) => {
     } else if (generations.length > 0 && types.length == 0) {
       filteredResult = await getPokemons(filteredByGen);
     }
+  
 
-    if (enableMega) {
-      filteredResult = await getMegaPokemons();
-    }
 
-    if (enableGmax) {
-      filteredResult = await getGmaxPokemons();
-    }
- 
     if (search.searchString) {
       filteredResult = filteredResult.filter(result => result.nameKr.includes(search.searchString));
     } 
@@ -290,15 +307,10 @@ const Main = (props: MainProps) => {
     setLoading(true);
     setPokemons([]);
     
-    const isFilteredByTypes = search.types.length > 0;
-    const isFilteredByGen = search.generations.length > 0;
-
-    const totalPokemons = total.data.length > 0 ? total.data : await getPokemons(total.originData);
-    const standardPokemons = isFilteredByTypes || isFilteredByGen ? pokemons : totalPokemons;
-    
-    let gmaxPokemon = standardPokemons.filter(data => data.nameKr.includes('거다이맥스'));
-
-    return gmaxPokemon;
+    const gmaxPokemons = total.originData.filter(pokemon => pokemon.name.includes('gmax'));
+    const gmaxPokemonsData = await getPokemons(gmaxPokemons);
+  
+    return gmaxPokemonsData;
   }
 
   // 메가포켓몬 필터
@@ -306,16 +318,11 @@ const Main = (props: MainProps) => {
     setSearch({ ...search, enableMega: true, enableGmax:false, isAll: false });
     setLoading(true);
     setPokemons([]);
+  
+    const megaPokemons = total.originData.filter(pokemon => pokemon.name.includes('mega'));
+    const megaPokemonsData = await getPokemons(megaPokemons);
 
-    const isFilteredByTypes = search.types.length > 0;
-    const isFilteredByGen = search.generations.length > 0;
-
-    const totalPokemons = total.data.length > 0 ? total.data : await getPokemons(total.originData);
-    const standardPokemons = isFilteredByTypes || isFilteredByGen ? pokemons : totalPokemons;
-
-    let megaPokemon = standardPokemons.filter(data => data.nameKr.includes('메가'));
-
-    return megaPokemon;
+    return megaPokemonsData;
   }
 
   // DATA FETCH
@@ -401,6 +408,8 @@ export const getStaticProps: GetStaticProps = async(context) => {
   const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=50&offset=0").then(res => res.json());
   const total: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${res.count}&offset=0`).then(res => res.json());
   const types: PokemonTypesApiRes = await fetch("https://pokeapi.co/api/v2/type").then(res => res.json());
+
+
   const customTypes = types.results.map(type => {
     return {
       ...type,
