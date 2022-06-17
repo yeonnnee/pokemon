@@ -54,12 +54,18 @@ const Main = (props: MainProps) => {
 
   // 거다이맥스, 메가 포켓몬인 경우 표기해주기
   const getFullName = useCallback((pokemonName: string, nameKr: string) => {
-    const isGmax = pokemonName.includes('gmax');
-    const isMega = pokemonName.includes('mega');
+    const pokemonForm = pokemonName.split('-');
+    const isGmax = pokemonForm[1] === 'gmax';
+    const isMega = pokemonForm[1] === 'mega';
 
     if (isGmax) return `${nameKr} (거다이맥스)`;
-    if (isMega) return `메가${nameKr}`;
-    
+    if (isMega) {
+      if (pokemonForm.length > 2) {
+        return `메가${nameKr}-${pokemonForm[2].toUpperCase()}`;
+      } else {
+        return `메가${nameKr}`;
+      }
+    }
     return nameKr;
   }, []);
 
