@@ -29,7 +29,6 @@ interface DetailProps {
 
 const Detail = (props: DetailProps) => {
   const router = useRouter();
-  const [pokemonName, setPokemonName] = useState<string | string[] | undefined>(router.query.pokemonName);
   const [data, setData] = useState<PokemonDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const pokemonIdx = usePokemonIdx(data?.id || 0);
@@ -96,17 +95,46 @@ const Detail = (props: DetailProps) => {
     return { evolution: evolutionInfo };
   }, [getEvolutionData]);
 
+  function getPokemonForm(pokemonName: string) {
+    let label;
+    const rapid = pokemonName.includes('rapid-strike'); // 연격의 태세
+    const single = pokemonName.includes('single-strike'); // 일격의 태세
+    const large = pokemonName.includes('large');
+    const average = pokemonName.includes('average');
+    const superSize = pokemonName.includes('super');
+    const small = pokemonName.includes('small');
+    const percentage = pokemonName.includes('50') || pokemonName.includes('10');
+    const complete = pokemonName.includes('complete');
 
+    if (rapid) label = '(연격의 태세)';
+    if (single) label = '(일격의 태세)';
+    if (large) label = '(L)';
+    if (small) label = '(S)';
+    if (average) label = '(Average)';
+    if (superSize) label = '(Super)';
+    if (percentage) label = `(${pokemonName.split('-')[1]}%폼)`;
+    if (complete) label = `(퍼펙트폼)`;
+
+    return label;
+  }
 
   const getFullName = useCallback((nameKr: string) => {
-    const isGmax = pokemonName?.includes('gmax');
-    const isMega = pokemonName?.includes('mega');
-
-    if (isGmax) return `${nameKr} (거다이맥스)`;
-    if (isMega) return `메가${nameKr}`;
+    const pokemonName = props.data.detail.name;
+    const isMega = pokemonName.includes('mega');
+    const nameArr = pokemonName.split('-');
     
-    return nameKr;
-  }, [pokemonName]);
+    if (isMega) {
+      if (nameArr.length > 2) {
+        const megaKeywordIdx = nameArr.indexOf('mega');
+        return `메가${nameKr}-${nameArr[megaKeywordIdx + 1].toUpperCase()}`;
+      } else {
+        return `메가${nameKr}`;
+      }
+    }
+    
+    const form = getPokemonForm(pokemonName);
+    return form ? `${nameKr} ${form}` : nameKr;
+  }, [props.data]);
 
 
   const customData = useCallback(async (detailData:PokemonDetailApiRes, speciesData: PokemonSpeciesApiRes) => {
@@ -162,16 +190,12 @@ const Detail = (props: DetailProps) => {
   }, [getEvolutionChain, paintGraphBar, getFullName]);
 
 
-  const fetchData = useCallback(() => {
-    customData(props.data.detail, props.data.species);
 
-  }, [customData, props.data]);
 
 
   useEffect(() => {
-    setPokemonName(router.query.pokemonName);
-    fetchData();
-  },[fetchData, router.query.pokemonName]);
+    customData(props.data.detail, props.data.species);
+  },[customData, props.data]);
 
   return (
     <>

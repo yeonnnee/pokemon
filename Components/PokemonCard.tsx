@@ -8,15 +8,16 @@ import usePokemonIdx from "../hooks/usePokemonIdx";
 
 const PokemonCard = (pokemon:Pokemon, key: number) => {
   const pokemonIdx = usePokemonIdx(pokemon.id);
+  const label = pokemon.name.includes('gmax') ? '거다이맥스' : `No.${pokemonIdx}`;
 
   return(
     <Link href={`/pokemon/${pokemon.name}`}>
       <li className={cardStyle.card}>
-        <span className={`${cardStyle.info} ${labelStyle[`${pokemon.color}`]}`}>{ pokemonIdx !== '-' ? `No.${pokemonIdx}` : '거다이맥스'}</span>
+        <span className={`${cardStyle.info} ${labelStyle[`${pokemon.color}`]}`}>{ label }</span>
         <div className={cardStyle.info}>{pokemon.nameKr}</div>
         {
           pokemon.images.other["official-artwork"].front_default
-            ? <Image width={150} height={150} src={pokemon.images.other["official-artwork"].front_default || pokemon.images.front_default} alt={pokemon.name} />
+            ? <Image width={150} height={150} src={pokemon.images.other["official-artwork"].front_default || pokemon.images.front_default || pokemon.images.front_shiny} alt={pokemon.name} />
             : null
         }
       </li>
