@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import detailStyle from '../../../styles/detail.module.scss';
-import { PokemonDetail, PokemonDetailApiRes, PokemonStat } from "../../../types/detail";
+import { EvolutionData, PokemonDetail, PokemonDetailApiRes, PokemonStat } from "../../../types/detail";
 import { PokemonSpeciesApiRes } from "../../../types/speices";
 import { AbilityApiRes } from "../../../types/ability";
 import usePokemonIdx from "../../../hooks/usePokemonIdx";
@@ -58,41 +58,54 @@ const Detail = (props: DetailProps) => {
   }
   
 
-  const getEvolutionData = useCallback(async (url: string, index: number) => {
+  const getEvolutionData = useCallback(async (url: string | null, seq: number) => {
+    const initialData = { id: 0, name: null, nameKr: null, image: null };
+    if (!url) return initialData;
+
     const result = await fetch(url).then(async (res) => {
       const data: PokemonSpeciesApiRes = await res.json();
       const detail: PokemonDetailApiRes = await fetch(data.varieties[0].pokemon.url).then(res => res.json());
 
       return {
-        id: index,
+        id: seq,
         name: data.name,
         nameKr: data.names.filter(name => name.language.name === 'ko')[0].name,
         image: detail.sprites.front_default,
-        isMega: data.forms_switchable
       }
     });
     return result;
   }, []);
 
 
-  const getEvolutionChain = useCallback(async (url:string) => {
-    const evolution: EvolutionApiRes = await fetch(url).then(data => data.json());
-    const firstEvolution = evolution.chain.evolves_to[0];
-    const finalEvolution = evolution.chain.evolves_to[0]?.evolves_to[0];
+  const getEvolutionChain = useCallback(async (url: string) => {
+    const res: EvolutionApiRes = await fetch(url).then(data => data.json());
+    const evolutionChain = res.chain.evolves_to;
+    const initialData = [{ id: 0, name: null, nameKr: null, image: null }];
 
-    const initialData = {
-      id: null,
-      name: null,
-      nameKr: null,
-      image: null,
-    };
+    if (evolutionChain.length === 0) return [initialData];
 
-    const beforeEvolution = await getEvolutionData(evolution.chain.species.url, 1);
-    const firstLevelUp = firstEvolution ? await getEvolutionData(firstEvolution.species.url, 2) : initialData;
-    const lastLevelUp = finalEvolution ? await getEvolutionData(finalEvolution.species.url, 3) : initialData;
-    const evolutionInfo = [beforeEvolution, firstLevelUp, lastLevelUp].filter(info=>info.id);
 
-    return { evolution: evolutionInfo };
+    if (evolutionChain.length > 1) {
+      // 이브이 진화
+      let cases: EvolutionData[][] = [];
+      const evolutionCases = await Promise.all(evolutionChain.map(async (chain, index) => {
+        const info = await getEvolutionData(chain.species.url, index);
+        return {
+          ...info,
+          item: chain.evolution_details[0].item,
+        }
+      }));
+      evolutionCases.forEach(data => { if (data.name) cases.push([data]) });
+
+      return cases;
+    } else {
+      const beforeLevelUp = await getEvolutionData(res.chain.species.url, 1);
+      const firstLevelUp = await getEvolutionData(evolutionChain[0].species.url, 2);
+      const lastLevelUp = await getEvolutionData(evolutionChain[0].evolves_to[0].species.url, 3);
+      const evolutionInfo = [beforeLevelUp, firstLevelUp, lastLevelUp].filter(info => info.name);
+      return [evolutionInfo];
+    }
+
   }, [getEvolutionData]);
 
   function getPokemonForm(pokemonName: string) {
@@ -209,13 +222,13 @@ const Detail = (props: DetailProps) => {
               <DefaultInfo image={data.images.front_default} pokemonName={data.nameKr} pokemonIdx={pokemonIdx} types={data.types} generation={data.generation}/>
 
               {/* 세부정보 */}
-              <DetailInfo genera={data.genera[0].genus} height={data.height} weight={data.weight} form={data.evloution_chain} isGmax={props.data.isGmax} isMega={props.data.isMega} />
+              <DetailInfo genera={data.genera[0].genus} height={data.height} weight={data.weight} />
 
               {/* 특성 */}
               <AbilityInfo abilities={data.abilitiesKr}/>
 
               {/* 진화 */}
-              <EvolutionInfo evolution={data.evloution_chain.evolution} />
+              <EvolutionInfo evolution={data.evloution_chain} />
 
               {/* 종족치 */}
               <div className={` ${detailStyle.section}`}>

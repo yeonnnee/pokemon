@@ -7,16 +7,11 @@ interface DetailInfoProps {
   genera: string,
   height: number,
   weight: number,
-  form: {
-    evolution: EvolutionData[],
-  },
-  isMega: boolean,
-  isGmax: boolean
 }
 
 const DetailInfo = (detailInfo: DetailInfoProps) => {
-  const { genera, height, weight, form, isMega, isGmax } = detailInfo;
-  const finalEvolutionName = form.evolution[form.evolution.length - 1].name;
+  const { genera, height, weight } = detailInfo;
+
 
   return(
     <div className={detailStyle['detail-info']}>
@@ -29,9 +24,7 @@ const DetailInfo = (detailInfo: DetailInfoProps) => {
         <li>
           <p className={detailStyle['category-title']}> 형태 </p>
             <div className={detailStyle['info-text-area']}>
-              { isGmax ? <Link href={`/pokemon/${finalEvolutionName}-gmax`}><a className={detailStyle.gmax}>거다이맥스</a></Link> : null }
-              {/* { isMega ? <Link href={`/pokemon/${finalEvolutionName}`}><a className={detailStyle.mega}>메가진화</a></Link> : null } */}
-              { !isMega && !isGmax ? <p>-</p> : null}
+  
             </div>
         </li>
       </ul>
