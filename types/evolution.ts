@@ -5,33 +5,25 @@ export interface EvolutionApiRes {
   baby_trigger_item: null,
   chain: {
     evolution_details: any[],
-    evolves_to: [
-      {
-        evolution_details: EvolutionDetail[],
-        evolves_to: [
-          {
-            evolution_details: EvolutionDetail[],
-            evolves_to: [],
-            is_baby: boolean,
-            species: ResourceForPokemon // 세번쨰 진화
-          }
-        ],
-        is_baby: false,
-        species: ResourceForPokemon // 두번째 진화
-      }
-    ],
+    evolves_to: EvolvesTo[],
     is_baby: false,
     species: ResourceForPokemon // 처음
   } 
 }
 
+
 export interface EvolvesTo {
   evolution_details: EvolutionDetail[],
-  evolves_to: {
-    evolution_details: EvolutionDetail[]
-  },
-  is_baby: boolean,
-  species: ResourceForPokemon
+  evolves_to: [
+    {
+      evolution_details: EvolutionDetail[],
+      evolves_to: [],
+      is_baby: boolean,
+      species: ResourceForPokemon // 세번쨰 진화
+    }
+  ],
+  is_baby: false,
+  species: ResourceForPokemon // 두번째 진화
 }
 
 export interface EvolutionDetail {
