@@ -42,7 +42,7 @@ function useFilterCategory( types:PokemonName[]) {
   }
 
   const getFilterOptions = useCallback(() => {
-    const generations = getGenerationArr(types[0].language.name);
+    // const generations = getGenerationArr(types[0].language.name);
 
     const filterOptions: FilterCategory[] = [
       getFilterOptionObj('타입', types.map(type => { return { ...type, isChecked: false } }), true, selectMultiOption),
