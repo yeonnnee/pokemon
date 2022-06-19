@@ -1,23 +1,83 @@
+import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useRef, useState } from "react";
 import NavStyle from '../../styles/nav.module.scss'
 
+interface SupportedLanguage {
+  name: string,
+  code: string,
+  url: string,
+}
+
 const Nav = () => {
+  const [selectedLang, setSelectedLang] = useState<SupportedLanguage>({
+    name: '한국어',
+    code: 'ko',
+    url: '/korea-icon.png',
+  });
+  const selectBoxRef = useRef<HTMLInputElement>(null);
+  const Router = useRouter();
+  const supportedLanguage = [
+    {
+      name: '한국어',
+      code: 'ko',
+      url: '/korea-icon.png',
+    },
+    {
+      name: 'English',
+      code: 'en',
+      url: '/Usa-icon.png',
+    },
+    {
+      name: '日本語',
+      code: 'ja',
+      url: '/Japan-icon.png',
+    }
+  ];
+
+  function changeLang(lang:SupportedLanguage) {
+    setSelectedLang(lang);
+
+    Router.push({ pathname: '/', query: { lang: lang.code } });
+    if (!selectBoxRef.current) return;
+    selectBoxRef.current.checked = false;
+  };
 
   return(
     <nav className={NavStyle.nav}>
-      <div className={NavStyle.logo} >
+      <div className={NavStyle.language}>
+        <input type="checkbox" id="select-language" className={NavStyle["selected-lang-box"]} ref={selectBoxRef} />
+        <label className={NavStyle["selected-lang"]} htmlFor="select-language">
+          <Image width={20} height={20} src={selectedLang.url} alt={selectedLang.name} />
+          <span>{`${selectedLang.name} (${selectedLang.code})`}</span>
+          <FontAwesomeIcon icon={faAngleDown} className={NavStyle['drop-down-icon']}/>
+        </label>
+
+        <ul>
+          {supportedLanguage.map((language, index) => {
+            return (
+              <li key={index} onClick={() => changeLang(language)}>
+                <Image width={20} height={20} src={language.url} alt={language.name} />
+                <span>{`${language.name} (${language.code})`}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+
+
+      <div className={NavStyle.intro} >
         <Link href={`/`}>
           <a>
-            <Image src="/main_logo.png" alt="logo" width={150} height={50} />
+            {/* <Image src="/main_logo.png" alt="logo" width={150} height={50} /> */}
+            <span className={NavStyle.logo}>Pokédex</span>
           </a>
         </Link>
-      </div>  
-    {/* 
-      <ul>
-        <li>검색</li>
-        <li>카테고리</li>
-      </ul> */}
+        <p className={NavStyle.desc}>What Pokémon are you looking for? <br /> Search for a Pokémon by name.</p>
+      </div>
     </nav>
   )
 }

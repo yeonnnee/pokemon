@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { CustomPokemonType } from "../types/pokemonTypes";
+import { PokemonName } from "../types/speices";
 
-
-export interface OptionItem {
-  name: string;
-  nameKr: string;
-  url: string;
+export interface OptionItem extends PokemonName {
   isChecked: boolean;
 }
 
@@ -13,34 +9,19 @@ export interface FilterCategory {
   category: string,
   options: OptionItem[],
   isMulti: boolean,
-  fn: (option: OptionItem, ref: HTMLInputElement | null) => void
+  fn: ( option: OptionItem, ref: HTMLInputElement | null, options?: OptionItem[] | undefined) => void
 }
 
 
-function useFilterCategory( types:CustomPokemonType[]) {
+function useFilterCategory( types:PokemonName[]) {
   const [filterCategory, setFilterCategory] = useState<FilterCategory[]>([]);
 
-  function getOptionItem(name: string, nameKr: string, url: string, isChecked: boolean):OptionItem {
-    return {
-      name: name,
-      nameKr: nameKr,
-      url: url,
-      isChecked: isChecked
-    }
-  }
-
-  function selectMultiOption(option: OptionItem, ref: HTMLInputElement | null) {
+  function selectMultiOption(option:OptionItem, ref:HTMLInputElement | null) {
     option.isChecked = !option.isChecked;
   }
 
-  function selectSingleOption(option: OptionItem, ref: HTMLInputElement | null) {
-    if (!ref) return;
+  function getFilterOptionObj(category:string, options:OptionItem[], isMulti:boolean, fn:( option: OptionItem, ref: HTMLInputElement | null, options?: OptionItem[] | undefined ) => void) {
 
-    ref.checked = false;
-    option.isChecked = !option.isChecked;
-  }
-
-  function getFilterOptionObj(category: string, options: OptionItem[], isMulti:boolean, fn: (option: OptionItem, ref: HTMLInputElement | null)=>void) {
     return {
       category: category,
       options: options,
@@ -49,20 +30,23 @@ function useFilterCategory( types:CustomPokemonType[]) {
     }
   }
 
-  const getFilterOptions = useCallback(() => {
-    const generations = Array.from({ length: 7 }, (v, i) => {
+  const getGenerationArr = (lang: string) => {
+    return Array.from({ length: 7 }, (v, i) => {
       return {
-        name: `${i + 1}`,
-        nameKr: `${i + 1}세대 포켓몬`,
+        language: lang,
+        name: lang === 'ko' ? `${i + 1}세대 포켓몬` :  `第${i + 1}世代ポケモン`,
         url: '',
         isChecked: false,
       }
     });
+  }
+
+  const getFilterOptions = useCallback(() => {
+    const generations = getGenerationArr(types[0].language.name);
 
     const filterOptions: FilterCategory[] = [
       getFilterOptionObj('타입', types.map(type => { return { ...type, isChecked: false } }), true, selectMultiOption),
-      getFilterOptionObj('세대', generations, true, selectMultiOption),
-      getFilterOptionObj('형태', [getOptionItem('gmax', '거다이맥스', '', false), getOptionItem('mega', '메가진화', '', false)], false, selectSingleOption),
+      // getFilterOptionObj('세대', generations, true, selectMultiOption),
     ];
 
     setFilterCategory(filterOptions);

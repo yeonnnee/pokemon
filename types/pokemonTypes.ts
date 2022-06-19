@@ -8,11 +8,6 @@ export interface PokemonTypesApiRes {
   results: ResourceForPokemon[];
 }
 
-export interface CustomPokemonType {
-  name: string,
-  nameKr: string,
-  url: string
-}
 
 export interface TypeDetailApiRes {
   damage_relations: Damage,

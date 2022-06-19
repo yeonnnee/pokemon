@@ -8,19 +8,20 @@ interface ImageCardPorps {
   src: string | undefined | null,
   alt: string | undefined | null,
   name?: string | null,
-  nameKr?: string | null
+  translatedNm?: string | null
 }
 
 
 const ImageCard = (props: ImageCardPorps) => {
-  const { width, height, src, alt, name, nameKr } = props;
+  const { width, height, src, alt, name, translatedNm } = props;
+
   return (
     <Link href={`/pokemon/${name}`}>
       <div className={detailStyle.pic}>
         {
           src ? <Image priority width={width} height={height} src={src} alt={alt ? alt : 'image'}/> : <span> No Image </span>
         }
-        <div className={detailStyle["tool-tip"]}>{ nameKr }</div>
+        <div className={detailStyle["tool-tip"]}>{ translatedNm ? translatedNm : name }</div>
         
       </div>
     </Link>

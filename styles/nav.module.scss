@@ -1,21 +1,89 @@
+
+@import "./mixins/shadow";
+@import "./variables/colors";
+
 .nav {
-  padding: 10px 20px;
-  box-shadow: 6px 4px 14px #d9d9d8;
+  padding: 20px;
+  // box-shadow: 6px 4px 14px #d9d9d8;
 
-  .logo {
+  .intro {
     text-align: center;
+
+    .logo {
+      margin:  0 0 0 156px;
+      font-size: 50px;
+    }
+
+    .desc{
+      margin: 10px 0 0;
+      font-size: 13px;
+    }
   }
-  ul {
-    text-align: center;
 
+  .language {
+    padding: 10px 20px 0;
+    text-align: right;
+    position: relative;
 
-    li {
-      display: inline-block;
-      margin: 0 20px 0 0;
+    .selected-lang {
+      float: right;
+      display: flex;
+      justify-content: flex-end;
+      padding: 5px 10px;
+      border-bottom: 1px solid $shade-shadow;
+      cursor: pointer;
 
-      &:nth-last-child(1) {
-        margin: 0;
+      span {
+        margin: 0 0 0 5px;
+      }
+
+      &:hover {
+        color: $pink;
+        border-bottom: 1px solid #000;
+      }
+
+      .drop-down-icon {
+        margin: 5px 0 0 20px;
+        font-size: 13px;
+        transition: all 0.5s ease;
+      }
+    }
+
+    ul {
+      @include sm-box-shadow();
+      visibility:hidden;
+      position: absolute;
+      right: 20px;
+      top: 50px;
+      padding: 0 10px;
+      transition: all 0.3s ease;
+
+      
+      li {
+        padding: 5px 10px;
+        display: flex;
+        font-size: 15px;
+        cursor: pointer;
+
+        span {
+          margin: 0 0 0 5px;
+        }
+
+        &:hover {
+          color: $pink;
+        }
+      }
+    }
+
+    .selected-lang-box:checked ~ ul {
+      visibility: visible;
+    }
+
+    .selected-lang-box:checked ~ .selected-lang {
+      .drop-down-icon {
+        transform: rotateX(180deg);
       }
     }
   }
+
 }

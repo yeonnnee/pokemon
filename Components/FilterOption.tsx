@@ -25,6 +25,7 @@ const FilterOption = (props: FilterOptionProps) => {
 
   useEffect(() => {
     checkCheckBox();
+
   }, [checkCheckBox])
 
   return(
@@ -34,7 +35,7 @@ const FilterOption = (props: FilterOptionProps) => {
           return (
             <div key={index} className={`${mainStyle.item}`}>
               <input type="checkbox" id={option.name} ref={el => (checkBoxRefs.current[index] = el)} />
-              <label htmlFor={ option.name } onClick={()=> category.fn(option, checkBoxRefs.current[index === category.options.length - 1 ? index - 1 : index + 1 ])}> {option.nameKr} </label>
+              <label htmlFor={ option.name } onClick={()=> category.fn(option, checkBoxRefs.current[index === 0 || index < category.options.length - 1 ? index + 1 : index = -1 ],category.options)}> {option.name} </label>
             </div>
           )
         })

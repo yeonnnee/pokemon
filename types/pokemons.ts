@@ -14,7 +14,7 @@ export interface ResourceForPokemon {
 
 export interface Pokemon {
   name: string,
-  nameKr: string,
+  translatedNm: string | null,
   images: PokemonSprites,
   types: PokemonType[],
   id: number,
