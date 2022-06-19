@@ -11,6 +11,7 @@ import { CustomPokemonType, PokemonTypesApiRes, TypeDetailApiRes } from '../type
 import PokemonFilter from '../components/PokemonFilter';
 import { GenerationInfoApiRes } from '../types/generation';
 import useFilterCategory from '../hooks/useFilterCategory';
+import { useRouter } from 'next/router';
 
 interface TotalState {
   totalCount: number,
@@ -35,6 +36,8 @@ interface MainProps {
 
 
 const Main = (props: MainProps) => {
+  const Router = useRouter();
+  const [lang, setLang] = useState('kr');
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [total, setTotal] = useState<TotalState>({ totalCount: 0, data: [], originData: [] });
   const [loading, setLoading] = useState<boolean>(true);
@@ -329,13 +332,21 @@ const Main = (props: MainProps) => {
     return megaPokemonsData;
   }
 
+  function changeLang() {
+    Router.push({pathname:'/', query:{lang:"En"}});
+  }
+
   // DATA FETCH
   useEffect(() => {
-    fetchData(props.data.results);
+    const lang = Router.query.lang;
+
+    console.log(Router.query);
+    console.log(pokemons);
+
     setTotal({ totalCount: props.data.count, originData: props.total.results, data: []});
     setTypes(props.types);
 
-  },[fetchData, props]);
+  },[Router,pokemons, props]);
 
   // Intersection Observer API
   useEffect(() => {
@@ -355,6 +366,8 @@ const Main = (props: MainProps) => {
           {search.searchString ? <FontAwesomeIcon icon={faTimes} className={mainStyle['reset-icon']} onClick={ resetSearchCondition }/> : null }
         </div>
       </div>
+      
+      <button onClick={changeLang}>English</button>
 
       {
         !loading ? 
