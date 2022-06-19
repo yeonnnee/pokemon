@@ -9,16 +9,16 @@ import FilterOption from './FilterOption';
 
 interface PokemonFilterProps {
   searchWithFilters: (type:(string|null)[], gen:(string|null)[], enableGmax:boolean, enableMega: boolean, isAll: boolean) => void,
-  filterCategory: FilterCategory[]
+  filterCategory: FilterCategory[],
 }
 
 
 const PokemonFilter = (props: PokemonFilterProps) => {
-  const { searchWithFilters, filterCategory} = props;
+  const { searchWithFilters, filterCategory } = props;
+  const lang = filterCategory[0].options[0].language.name;
   const filterIconRef = useRef<HTMLInputElement>(null);
   const typeCheckBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
-  const generationCheckBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
-  const formCheckBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
+
   
   // filter 드롭다운 닫기
   function closeFilter() {
@@ -36,15 +36,11 @@ const PokemonFilter = (props: PokemonFilterProps) => {
   function resetFilterCondition() {
     filterCategory.forEach(op => op.options.forEach(option => option.isChecked = false));
     cancelCheckBoxChecked(typeCheckBoxRefs);
-    cancelCheckBoxChecked(generationCheckBoxRefs);
-    cancelCheckBoxChecked(formCheckBoxRefs);
   }
 
   function getRefs(op: FilterCategory) {
     switch (op.category) {
-      case '타입': return typeCheckBoxRefs;
-      case '세대': return generationCheckBoxRefs;
-      case '형태': return formCheckBoxRefs;
+      case 'type': return typeCheckBoxRefs;
       default: return typeCheckBoxRefs;
     }
   }
@@ -57,19 +53,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
 
   function filterPokemon() {
     const typeConditions = getFilterConditions('타입');
-    const generationConditions = getFilterConditions('세대');
-    const formCondition = getFilterConditions('형태');
-    const enableMega = formCondition.length > 0 && formCondition[0] === 'mega';
-    const enableGmax = formCondition.length > 0 && formCondition[0] === 'gmax';
-
-    let isAll: boolean = false;
-    if (typeConditions.length === 0 && generationConditions.length === 0 && !enableMega && !enableGmax) {
-      isAll = true;
-    } else {
-      isAll = false;
-    }
-    searchWithFilters(typeConditions, generationConditions, enableGmax, enableMega, isAll);
-
+    // searchWithFilters(typeConditions, generationConditions, enableGmax, enableMega, isAll);
     closeFilter();
   }
 
@@ -85,7 +69,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
       <div className={mainStyle["filter-section"]}>
         <ul className={mainStyle.option}>
           <li className={mainStyle.category}>
-            <button onClick={resetFilterCondition}>초기화</button>
+            <button onClick={resetFilterCondition}>{ lang === 'ko'? '초기화' : 'Reset' }</button>
             <FontAwesomeIcon onClick={resetFilterCondition} icon={faRedoAlt} className={mainStyle['reset-icon']}/>
           </li>
           {
@@ -103,8 +87,8 @@ const PokemonFilter = (props: PokemonFilterProps) => {
           }
           <li className={mainStyle.category}>
             <div className={mainStyle["filter-btn"]}>
-              <button onClick={filterPokemon}>적용</button>
-              <button onClick={closeFilter}>닫기</button>
+              <button onClick={filterPokemon}>{ lang === 'ko'? '적용' : 'Filter' }</button>
+              <button onClick={closeFilter}>{ lang === 'ko'? '닫기' : 'Close' }</button>
             </div>
           </li>
         </ul>

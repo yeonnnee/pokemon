@@ -12,6 +12,7 @@ import PokemonFilter from '../components/PokemonFilter';
 import { GenerationInfoApiRes } from '../types/generation';
 import useFilterCategory from '../hooks/useFilterCategory';
 import { useRouter } from 'next/router';
+import { placeholder, title } from '../translate/text';
 
 interface TotalState {
   totalCount: number,
@@ -51,19 +52,10 @@ const Main = (props: MainProps) => {
   });
   const [itemCount, setItemCount] = useState<number>(0);
   const [types, setTypes] = useState<PokemonName[]>([]);
- 
+  const titleTxt = title.filter(text => text.language === lang)[0];
+  const placeHolderText = placeholder.filter(placeholder => placeholder.language === lang)[0];
   const filterCategory = useFilterCategory(types); 
   const target = useRef<HTMLDivElement>(null);
-  const placeHolderText = getPlaceHolderText();
-
-  function getPlaceHolderText() {
-    switch (lang) {
-      case 'ko' : return '포켓몬 이름을 입력해주세요';
-      case 'en' : return 'Enter Pokemon name';
-      case 'ja' : return 'ポケモン名を入力してください';
-      default : return '포켓몬 이름을 입력해주세요';
-    }
-  }
 
   const getPokemonForm = useCallback((pokemonName: string) => {
     let label;
@@ -296,7 +288,7 @@ const Main = (props: MainProps) => {
       <div className={mainStyle['search-section']}>
         <div className={mainStyle['search-bar']}>
           <FontAwesomeIcon icon={ faSearch } className={mainStyle['search-icon']}/>
-          <input type="text" value={search.searchString} placeholder={placeHolderText} onChange={(e) => setSearch({ ...search, searchString: e.target.value })} onKeyUp={searchByPokemonName} />
+          <input type="text" value={search.searchString} placeholder={placeHolderText?.text || ''} onChange={(e) => setSearch({ ...search, searchString: e.target.value })} onKeyUp={searchByPokemonName} />
           {search.searchString ? <FontAwesomeIcon icon={faTimes} className={mainStyle['reset-icon']} onClick={ resetSearchCondition }/> : null }
         </div>
       </div>
@@ -306,12 +298,12 @@ const Main = (props: MainProps) => {
           <div className={mainStyle['filter-container']}>
             {search.isAll ?
               <div className={mainStyle.count}>
-                <p>{lang === 'en' ? 'Pokémon' : 'ko' ? '포켓몬' : 'ja' ? 'ポケモン' : '포켓몬'}</p>
+                <p>{titleTxt?.text}</p>
                 <span>{total.totalCount}</span>
               </div>
               :
               <div className={mainStyle.count}>
-                <p>{lang === 'en' ? 'Pokémon' : 'ko' ? '포켓몬' : 'ja' ? 'ポケモン' : '포켓몬'}</p>
+                <p>{titleTxt?.text}</p>
                 <span>{pokemons.length}</span>
               </div>
             }

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { categoryName } from "../translate/text";
 import { PokemonName } from "../types/speices";
 
 export interface OptionItem extends PokemonName {
@@ -42,10 +43,12 @@ function useFilterCategory( types:PokemonName[]) {
   }
 
   const getFilterOptions = useCallback(() => {
-    // const generations = getGenerationArr(types[0].language.name);
+    const lang = types[0]?.language.name;
+    const categories = categoryName.filter(category => category.language === lang);
+    const translatedCategoryNm = categories.filter(categoryList => categoryList.category === 'type')[0];
 
     const filterOptions: FilterCategory[] = [
-      getFilterOptionObj('타입', types.map(type => { return { ...type, isChecked: false } }), true, selectMultiOption),
+      getFilterOptionObj(translatedCategoryNm?.text, types.map(type => { return { ...type, isChecked: false } }), true, selectMultiOption),
       // getFilterOptionObj('세대', generations, true, selectMultiOption),
     ];
 
