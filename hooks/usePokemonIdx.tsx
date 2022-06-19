@@ -7,14 +7,7 @@ function usePokemonIdx(pokemonOrder: number) {
     if (pokemonOrder < 0) {
       return setPokemonIdx('-');
     }
-
-    if (pokemonOrder < 10) {
-      setPokemonIdx(`00${pokemonOrder}`);
-    } else if (pokemonOrder > 9 && pokemonOrder < 1000) {
-      setPokemonIdx(`0${pokemonOrder}`);
-    } else {
-      setPokemonIdx(pokemonOrder.toString());
-    }
+    setPokemonIdx(pokemonOrder.toString().padStart(3, '0'));
   }, [pokemonOrder]);
   return pokemonIdx;
 }
