@@ -23,9 +23,6 @@ interface TotalState {
 export interface SearchState {
   searchString: string,
   types: (string | null)[],
-  generations: (string | null)[],
-  enableGmax: boolean,
-  enableMega: boolean,
   isAll: boolean
 }
 
@@ -45,9 +42,6 @@ const Main = (props: MainProps) => {
   const [search, setSearch] = useState<SearchState>({
     searchString: '',
     types: [],
-    generations: [],
-    enableGmax: false,
-    enableMega: false,
     isAll: true
   });
   const [itemCount, setItemCount] = useState<number>(0);
@@ -245,12 +239,26 @@ const Main = (props: MainProps) => {
   }
 
 
-  //TODO: 검색
   async function searchPokemon() {
     setPokemons([]);
     setLoading(true);
-    setLoading(true);
 
+    const totalData = total.data.length > 0 ? total.data : await getPokemons(total.originData);
+    setTotal({ ...total, data: totalData });
+
+    const standardPokemons = search.types.length > 0 ? pokemons : totalData;
+    const results = getSearchResults(standardPokemons);
+
+    setPokemons(results);
+    setLoading(false);
+  }
+
+  function getSearchResults(standardPokemons: Pokemon[]) { 
+    if (lang === 'en') {
+      return standardPokemons.filter(pokemon => pokemon.name.includes(search.searchString));
+    } else {
+      return standardPokemons.filter(pokemon => pokemon.translatedNm?.includes(search.searchString));
+    }
   }
 
   async function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
