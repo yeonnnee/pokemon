@@ -32,24 +32,13 @@ function useFilterCategory( types:OptionItem[]) {
     }
   }
 
-  const getGenerationArr = (lang: string) => {
-    return Array.from({ length: 7 }, (v, i) => {
-      return {
-        language: lang,
-        name: lang === 'ko' ? `${i + 1}세대 포켓몬` :  `第${i + 1}世代ポケモン`,
-        url: '',
-        isChecked: false,
-      }
-    });
-  }
-
   const getFilterOptions = useCallback(() => {
     const lang = types[0]?.language.name;
     const categories = categoryName.filter(category => category.language === lang);
     const translatedCategoryNm = categories.filter(categoryList => categoryList.category === 'type')[0];
 
     const filterOptions: FilterCategory[] = [
-      getFilterOptionObj(translatedCategoryNm?.text, types.map(type => { return { ...type, isChecked: false } }), true, selectMultiOption),
+      getFilterOptionObj(translatedCategoryNm?.text, types.map(type => { return { ...type, isChecked: type.code === 'grass' } }), true, selectMultiOption),
     ];
 
     setFilterCategory(filterOptions);

@@ -7,7 +7,7 @@ import { PokemonDetailApiRes, PokemonSprites, PokemonType } from '../types/detai
 import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../types/pokemons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { PokemonTypesApiRes, TypeDetailApiRes } from '../types/pokemonTypes';
+import { PokemonTypesApiRes, TypeDetailApiRes, TypePokemon } from '../types/pokemonTypes';
 import PokemonFilter from '../components/PokemonFilter';
 import useFilterCategory, { OptionItem } from '../hooks/useFilterCategory';
 import { useRouter } from 'next/router';
@@ -15,8 +15,8 @@ import { placeholder, title } from '../translate/text';
 
 interface TotalState {
   totalCount: number,
-  data: Pokemon[]
-  originData: ResourceForPokemon[]
+  data: TypePokemon[]
+  originData: TypePokemon[]
 }
 
 export interface SearchState {
@@ -26,8 +26,7 @@ export interface SearchState {
 }
 
 interface MainProps {
-  data: PokemonsApiRes,
-  total: PokemonsApiRes,
+  data: TypePokemon[],
   types: OptionItem[][]
 }
 
@@ -119,11 +118,11 @@ const Main = (props: MainProps) => {
   }
 
   // 데이터 받아서 customizing
-  const getPokemons = useCallback(async (data: ResourceForPokemon[]) => {
+  const getPokemons = useCallback(async (data: TypePokemon[]) => {
     setLoading(true);
 
     const pokemons = await Promise.all(data.map(async (pokemon) => {
-      const detail: PokemonDetailApiRes = await getDetailData(pokemon.url);
+      const detail: PokemonDetailApiRes = await getDetailData(pokemon.pokemon.url);
       const species:PokemonSpeciesApiRes = await getSpeciesData(detail.species.url);
       const translatedNm: PokemonName = species.names.filter((d: PokemonName) => d.language.name === lang)[0];
       const fullName = lang !== 'en' ? getFullName(detail.name, translatedNm?.name) : null;
@@ -136,30 +135,24 @@ const Main = (props: MainProps) => {
   }, [getFullName, lang]);
   
   // 데이터 fetch
-  const fetchData = useCallback(async (data: ResourceForPokemon[]) => {
-    const pokemons = await getPokemons(data);
-    setPokemons(pokemons);
-    setItemCount(pokemons.length);
-  }, [getPokemons]);
+  const fetchData = useCallback(async (data: TypePokemon[]) => {
+    const fetchedData = await getPokemons(data);
+    setPokemons(pokemons.concat(fetchedData));
+    setItemCount(itemCount + 20);
 
+  }, [getPokemons,itemCount,  pokemons]);
 
-  // 50개 추가 데이터 로드
-  const getMorePokemons = useCallback(async (count: number) => {
-    if ( !loading) return;
-
-    const res: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${count}&offset=0`).then(res => res.json());
-    await fetchData(res.results);
-    
-  }, [fetchData, loading]);
 
   // 무한 스크롤 : 스크롤 하단 위치시 데이터 추가 로드
   const checkIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
     if (!entry.isIntersecting) return;
-    if (itemCount === 0 || !search.isAll || search.searchString || (search.isAll && !search.searchString)) return;
-
+    const nextPokemons = props.data.slice(itemCount, itemCount + 20);
+    
+    if (itemCount === 0 || nextPokemons.length === 0) return;
     setLoading(true);
-    await getMorePokemons(itemCount + 50);
-  }, [getMorePokemons, itemCount, search]);
+    await fetchData(nextPokemons);
+    console.log(nextPokemons)
+  }, [fetchData, props, itemCount]);
 
 
 
@@ -170,7 +163,9 @@ const Main = (props: MainProps) => {
       searchString: '',
       isAll: search.types.length > 0 ? false : true
     });
-
+    setPokemons([]);
+    setItemCount(0);
+    setTotal({ ...total, totalCount: 0 });
     if (search.types.length > 0) {
       searchWithFilters(search.types, true);
     }
@@ -197,18 +192,18 @@ const Main = (props: MainProps) => {
   async function searchWithFilters(selectedTypes: (string|null)[], isReset: boolean = false) {    
     setPokemons([]);
     setLoading(true);
-    
+    console.log('asd');
     if (selectedTypes.length === 0 || selectedTypes.length === types.length) {
       setSearch({ ...search, types: selectedTypes, isAll: true });
-      const totalData = total.data.length > 0 ? total.data.splice(0, 50) : await getPokemons(total.originData.splice(0, 50));
-      setPokemons(totalData);
+      // const totalData = total.data.length > 0 ? total.data.splice(0, 50) : await getPokemons(total.originData.splice(0, 50));
+      setPokemons([]);
       setLoading(false);
       return;
     }
 
     setSearch({ ...search, searchString: isReset ? '' : search.searchString, types: selectedTypes, isAll: false });
     const filteredPokemonsArr = await filterByTypes(selectedTypes);
-    const filteredPokemons = await getPokemons(filteredPokemonsArr);
+    const filteredPokemons = await getPokemons([]);
 
     if (!isReset && search.searchString) {
       const result = getSearchResults(filteredPokemons);
@@ -225,14 +220,15 @@ const Main = (props: MainProps) => {
     setPokemons([]);
     setLoading(true);
 
-    const totalData = total.data.length > 0 ? total.data : await getPokemons(total.originData);
+    // const totalData = total.data.length > 0 ? total.data : await getPokemons(total.originData);
+    const totalData = total.data;
     setTotal({ ...total, data: totalData });
 
     if (search.types.length > 0) {
       searchWithFilters(search.types);
       return;
     } else {
-      const results = getSearchResults(totalData);
+      const results = getSearchResults([]);
   
       setPokemons(results);
       setLoading(false);
@@ -242,9 +238,12 @@ const Main = (props: MainProps) => {
 
   function getSearchResults(standardPokemons: Pokemon[]) { 
     if (lang === 'en') {
-      return standardPokemons.filter(pokemon => pokemon.name.includes(search.searchString));
+      // return standardPokemons.filter(pokemon => pokemon.name.includes(search.searchString));
+      return [];
     } else {
-      return standardPokemons.filter(pokemon => pokemon.translatedNm?.includes(search.searchString));
+      // return standardPokemons.filter(pokemon => pokemon.translatedNm?.includes(search.searchString));
+      return [];
+    
     }
   }
 
@@ -260,14 +259,16 @@ const Main = (props: MainProps) => {
     const supportedLang = ['ko', 'en', 'ja'];
     
     if (!query || !supportedLang.includes(query)) Router.push({ pathname: '/', query: { lang: 'ko' } })
-    
+    if (!query || total.totalCount) return;
+  
+    console.log('reRendered');
     setLang(query);
     const filteredTypesByLang = props.types.map(typeInfo => typeInfo.filter(t => t.language.name === query)[0]);
-    fetchData(props.data.results);
-    setTotal({ totalCount: props.data.count, originData: props.total.results, data: []});
+    fetchData(props.data.splice(0, 20));
+    setTotal({ totalCount: props.data.length, originData: props.data, data: []});
     setTypes(filteredTypesByLang);
 
-  },[Router, fetchData, props]);
+  },[Router, fetchData, props, total]);
 
 
   // Intersection Observer API
@@ -335,10 +336,12 @@ const Main = (props: MainProps) => {
 // 데이터가 있어야 화면을 그릴 수 있으므로 SSG 방식으로 렌더링 
 
 export const getStaticProps: GetStaticProps = async(context) => {
-  const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=50&offset=0").then(res => res.json());
-  const total: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${res.count}&offset=0`).then(res => res.json());
+  // const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=0&offset=0").then(res => res.json());
+  // const total: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${res.count}&offset=0`).then(res => res.json());
+  // const totalData = total.results.filter(result => !result.name.includes('totem') || !result.name.includes('starter'));
+  const grassTypePokemon:TypeDetailApiRes = await fetch("https://pokeapi.co/api/v2/type/grass").then(res => res.json());
+  const pokemons = grassTypePokemon.pokemon.filter(pokemon => !pokemon.pokemon.name.includes('starter') && !pokemon.pokemon.name.includes('dada') && !pokemon.pokemon.name.includes('totem'));
   const types: PokemonTypesApiRes = await fetch("https://pokeapi.co/api/v2/type").then(res => res.json());
-
   const filteredTypeByLang = await Promise.all(types.results.map(async (type) => {
     const typeRes = await fetch(type.url).then(res => res.json());
 
@@ -364,7 +367,7 @@ export const getStaticProps: GetStaticProps = async(context) => {
   }));
 
   return {
-    props: { total:total, data: res, types: filteredTypeByLang }
+    props: { data: pokemons, types: filteredTypeByLang }
   }
 }
 

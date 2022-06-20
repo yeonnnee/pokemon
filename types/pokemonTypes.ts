@@ -22,7 +22,12 @@ export interface TypeDetailApiRes {
     damage_relations: Damage,
     generation: ResourceForPokemon,
   },
-  pokemon: {pokemon: ResourceForPokemon, slot: number} []
+  pokemon: TypePokemon[]
+}
+
+export interface TypePokemon {
+  pokemon: ResourceForPokemon,
+  slot: number
 }
 
 export interface Damage {

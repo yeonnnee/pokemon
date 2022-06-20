@@ -15,7 +15,7 @@ interface PokemonFilterProps {
 
 const PokemonFilter = (props: PokemonFilterProps) => {
   const { searchWithFilters, filterCategory } = props;
-  const lang = filterCategory[0].options[0].language.name;
+  const lang = filterCategory[0].options[0]?.language.name;
   const filterIconRef = useRef<HTMLInputElement>(null);
   const typeCheckBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
 
