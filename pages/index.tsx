@@ -23,7 +23,6 @@ export interface SearchState {
   searchString: string,
   types: (string | null)[],
   isAll: boolean,
-  isSearching: boolean
 }
 
 interface MainProps {
@@ -43,7 +42,6 @@ const Main = (props: MainProps) => {
     searchString: '',
     types: [],
     isAll: true,
-    isSearching: false
   });
   const [itemCount, setItemCount] = useState<number>(0);
   const [types, setTypes] = useState<OptionItem[]>([]);
@@ -157,7 +155,7 @@ const Main = (props: MainProps) => {
   // 무한 스크롤 : 스크롤 하단 위치시 데이터 추가 로드
   const checkIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
     if (!entry.isIntersecting) return;
-    if (itemCount === 0 || !search.isAll) return;
+    if (itemCount === 0 || !search.isAll || search.searchString || (search.isAll && !search.searchString)) return;
 
     setLoading(true);
     await getMorePokemons(itemCount + 50);
@@ -252,7 +250,6 @@ const Main = (props: MainProps) => {
 
   function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
     if (e.key !== 'Enter' || !search.searchString) return;
-    setSearch({ ...search, isSearching: true });
     searchPokemon();
   }
 
@@ -282,11 +279,12 @@ const Main = (props: MainProps) => {
 
 
   return (
+
     <div className={mainStyle.main}>
       <div className={mainStyle['search-section']}>
         <div className={mainStyle['search-bar']}>
           <FontAwesomeIcon icon={ faSearch } className={mainStyle['search-icon']}/>
-          <input type="text" value={search.searchString} placeholder={placeHolderText?.text || ''} onChange={(e) => setSearch({ ...search, searchString: e.target.value })} onKeyUp={searchByPokemonName} />
+          <input type="text" disabled={loading} value={search.searchString} placeholder={placeHolderText?.text || ''} onChange={(e) => setSearch({ ...search, searchString: e.target.value })} onKeyUp={searchByPokemonName} />
           {search.searchString ? <FontAwesomeIcon icon={faTimes} className={mainStyle['reset-icon']} onClick={ resetSearchCondition }/> : null }
         </div>
       </div>
@@ -294,17 +292,10 @@ const Main = (props: MainProps) => {
       {
         !loading ? 
           <div className={mainStyle['filter-container']}>
-            {search.isAll ?
-              <div className={mainStyle.count}>
-                <p>{titleTxt?.text}</p>
-                <span>{total.totalCount}</span>
-              </div>
-              :
-              <div className={mainStyle.count}>
-                <p>{titleTxt?.text}</p>
-                <span>{pokemons.length}</span>
-              </div>
-            }
+            <div className={mainStyle.count}>
+              <p>{titleTxt?.text}</p>
+              <span>{search.isAll ? total.totalCount : pokemons.length}</span>
+            </div>
 
             <PokemonFilter
               filterCategory={filterCategory}
