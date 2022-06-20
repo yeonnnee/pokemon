@@ -3,6 +3,7 @@ import { categoryName } from "../translate/text";
 import { PokemonName } from "../types/speices";
 
 export interface OptionItem extends PokemonName {
+  code: string;
   isChecked: boolean;
 }
 
@@ -14,7 +15,7 @@ export interface FilterCategory {
 }
 
 
-function useFilterCategory( types:PokemonName[]) {
+function useFilterCategory( types:OptionItem[]) {
   const [filterCategory, setFilterCategory] = useState<FilterCategory[]>([]);
 
   function selectMultiOption(option:OptionItem, ref:HTMLInputElement | null) {
@@ -49,7 +50,6 @@ function useFilterCategory( types:PokemonName[]) {
 
     const filterOptions: FilterCategory[] = [
       getFilterOptionObj(translatedCategoryNm?.text, types.map(type => { return { ...type, isChecked: false } }), true, selectMultiOption),
-      // getFilterOptionObj('세대', generations, true, selectMultiOption),
     ];
 
     setFilterCategory(filterOptions);

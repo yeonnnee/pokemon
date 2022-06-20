@@ -9,8 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { PokemonTypesApiRes, TypeDetailApiRes } from '../types/pokemonTypes';
 import PokemonFilter from '../components/PokemonFilter';
-import { GenerationInfoApiRes } from '../types/generation';
-import useFilterCategory from '../hooks/useFilterCategory';
+import useFilterCategory, { OptionItem } from '../hooks/useFilterCategory';
 import { useRouter } from 'next/router';
 import { placeholder, title } from '../translate/text';
 
@@ -23,13 +22,14 @@ interface TotalState {
 export interface SearchState {
   searchString: string,
   types: (string | null)[],
-  isAll: boolean
+  isAll: boolean,
+  isSearching: boolean
 }
 
 interface MainProps {
   data: PokemonsApiRes,
   total: PokemonsApiRes,
-  types: PokemonName[][]
+  types: OptionItem[][]
 }
 
 
@@ -42,10 +42,11 @@ const Main = (props: MainProps) => {
   const [search, setSearch] = useState<SearchState>({
     searchString: '',
     types: [],
-    isAll: true
+    isAll: true,
+    isSearching: false
   });
   const [itemCount, setItemCount] = useState<number>(0);
-  const [types, setTypes] = useState<PokemonName[]>([]);
+  const [types, setTypes] = useState<OptionItem[]>([]);
   const titleTxt = title.filter(text => text.language === lang)[0];
   const placeHolderText = placeholder.filter(placeholder => placeholder.language === lang)[0];
   const filterCategory = useFilterCategory(types); 
@@ -81,18 +82,21 @@ const Main = (props: MainProps) => {
     const isMega = pokemonName.includes('mega');
     const form = getPokemonForm(pokemonName);
 
-    if (isGmax) return `거다이맥스 ${translatedNm} ${form || ''}`;
+    const gmaxText = lang === 'ko' ? '거다이맥스' : 'ダイマックス';
+    const megaText = lang === 'ko' ? '메가' : 'メガ';
+
+    if (isGmax) return `${gmaxText} ${translatedNm} ${form || ''}`;
     if (isMega) {
       if (pokemonForm.length > 2) {
         const megaKeywordIdx = pokemonForm.indexOf('mega');
-        return `메가${translatedNm}-${pokemonForm[megaKeywordIdx + 1].toUpperCase()}`;
+        return `${megaText}${translatedNm}-${pokemonForm[megaKeywordIdx + 1].toUpperCase()}`;
       } else {
-        return `메가${translatedNm}`;
+        return `${megaText}${translatedNm}`;
       }
     }
 
     return form ? `${translatedNm} ${form}` : translatedNm;
-  }, [getPokemonForm]);
+  }, [getPokemonForm, lang]);
 
 
   async function getDetailData(url:string) {
@@ -143,33 +147,35 @@ const Main = (props: MainProps) => {
 
   // 50개 추가 데이터 로드
   const getMorePokemons = useCallback(async (count: number) => {
-    if (search.searchString || !search.isAll) return;
+    if ( !loading) return;
+
     const res: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${count}&offset=0`).then(res => res.json());
     await fetchData(res.results);
     
-  }, [fetchData, search]);
+  }, [fetchData, loading]);
 
   // 무한 스크롤 : 스크롤 하단 위치시 데이터 추가 로드
   const checkIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
     if (!entry.isIntersecting) return;
-    if (itemCount === 0) return;
+    if (itemCount === 0 || !search.isAll) return;
+
+    setLoading(true);
     await getMorePokemons(itemCount + 50);
-  }, [getMorePokemons, itemCount]);
+  }, [getMorePokemons, itemCount, search]);
 
 
 
   // 검색조건 초기화 (전체조회)
-  async function resetSearchCondition() {
-    if (search.searchString || !search.isAll) {
-      setPokemons([]);
-      setLoading(true);
-      setSearch({
-        ...search,
-        searchString: '',
-      });
-      await searchPokemon();
+  function resetSearchCondition() {
+    setSearch({
+      ...search,
+      searchString: '',
+      isAll: search.types.length > 0 ? false : true
+    });
+
+    if (search.types.length > 0) {
+      searchWithFilters(search.types, true);
     }
-    setLoading(false);
   }
 
 
@@ -189,52 +195,30 @@ const Main = (props: MainProps) => {
     return filteredArr;
   }
 
-  async function filterByGeneration(generations: (string | null)[]) {    
-    const pokemon = await Promise.all(generations.map(async (gen) => {
-      const res = await fetch(`https://pokeapi.co/api/v2/generation/${gen}`);
-      const data: GenerationInfoApiRes = await res.json();
-      return data.pokemon_species;
-    }));
-
-
-    const filteredArr = pokemon.reduce(function (acc, cur) {
-      return acc.concat(cur);
-    });
-
-    return filteredArr;
-  }
-
-
-  function compareData(filteredByGen:ResourceForPokemon[], filteredByTypes:ResourceForPokemon[]) {
-    let standardArr: ResourceForPokemon[] = [];
-    let targetArr: ResourceForPokemon[] = [];
-
-    if (filteredByGen.length >= filteredByTypes.length) {
-      standardArr = filteredByGen;
-      targetArr = filteredByTypes;
-    } else {
-      standardArr = filteredByTypes;
-      targetArr = filteredByGen;
+  //필터조회
+  async function searchWithFilters(selectedTypes: (string|null)[], isReset: boolean = false) {    
+    setPokemons([]);
+    setLoading(true);
+    
+    if (selectedTypes.length === 0 || selectedTypes.length === types.length) {
+      setSearch({ ...search, types: selectedTypes, isAll: true });
+      const totalData = total.data.length > 0 ? total.data.splice(0, 50) : await getPokemons(total.originData.splice(0, 50));
+      setPokemons(totalData);
+      setLoading(false);
+      return;
     }
 
-    const filterResult = standardArr.filter(standardArrItem => {
-      let flag = false;
+    setSearch({ ...search, searchString: isReset ? '' : search.searchString, types: selectedTypes, isAll: false });
+    const filteredPokemonsArr = await filterByTypes(selectedTypes);
+    const filteredPokemons = await getPokemons(filteredPokemonsArr);
 
-      targetArr.forEach(targetArrItem => {
-        if (targetArrItem.name === standardArrItem.name) {
-          flag = true;
-        }
-      });
-      return flag;
-    });
+    if (!isReset && search.searchString) {
+      const result = getSearchResults(filteredPokemons);
+      setPokemons(result);
+    } else {
+      setPokemons(filteredPokemons);
+    }
 
-    return filterResult;
-  }
-
-  //TODO:  필터조회
-  async function searchWithFilters(types: (string|null)[], generations: (string|null)[], enableGmax: boolean, enableMega: boolean, isAll: boolean) {    
-
-    setPokemons([]);
     setLoading(false);
   }
 
@@ -246,11 +230,16 @@ const Main = (props: MainProps) => {
     const totalData = total.data.length > 0 ? total.data : await getPokemons(total.originData);
     setTotal({ ...total, data: totalData });
 
-    const standardPokemons = search.types.length > 0 ? pokemons : totalData;
-    const results = getSearchResults(standardPokemons);
+    if (search.types.length > 0) {
+      searchWithFilters(search.types);
+      return;
+    } else {
+      const results = getSearchResults(totalData);
+  
+      setPokemons(results);
+      setLoading(false);
+    }
 
-    setPokemons(results);
-    setLoading(false);
   }
 
   function getSearchResults(standardPokemons: Pokemon[]) { 
@@ -261,8 +250,9 @@ const Main = (props: MainProps) => {
     }
   }
 
-  async function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
+  function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
     if (e.key !== 'Enter' || !search.searchString) return;
+    setSearch({ ...search, isSearching: true });
     searchPokemon();
   }
 
@@ -360,21 +350,26 @@ export const getStaticProps: GetStaticProps = async(context) => {
 
   const filteredTypeByLang = await Promise.all(types.results.map(async (type) => {
     const typeRes = await fetch(type.url).then(res => res.json());
+
     const typesWithLang = await typeRes.names.filter((name: any) => name.language.name == 'ko' || name.language.name == 'ja-Hrkt' || name.language.name == 'en');
-    const trimJaLangData = typesWithLang.map((t:PokemonName) => {
+    const trimLangData = typesWithLang.map((t:PokemonName) => {
       if (t.language.name === 'ja-Hrkt') {
         return {
           ...t,
+          code: typeRes.name,
           language: {
             ...t.language,
             name: 'ja'
           }
         }
       } else {
-        return t;
+        return {
+          ...t,
+          code: typeRes.name,
+        };
       }
     })
-    return trimJaLangData;
+    return trimLangData;
   }));
 
   return {

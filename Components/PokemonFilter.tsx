@@ -8,7 +8,7 @@ import FilterOption from './FilterOption';
 
 
 interface PokemonFilterProps {
-  searchWithFilters: (type:(string|null)[], gen:(string|null)[], enableGmax:boolean, enableMega: boolean, isAll: boolean) => void,
+  searchWithFilters: (type:(string|null)[]) => void,
   filterCategory: FilterCategory[],
 }
 
@@ -47,13 +47,13 @@ const PokemonFilter = (props: PokemonFilterProps) => {
 
   function getFilterConditions(categoryNm: string) {
     const checkedOptions = filterCategory.filter(options => options.category === categoryNm)[0];
-    const options = checkedOptions.options.map(op => op.isChecked ? op.name : null).filter(op => op);
+    const options = checkedOptions.options.map(op => op.isChecked ? op.code : null).filter(op => op);
     return options;
   }
 
   function filterPokemon() {
     const typeConditions = getFilterConditions('타입');
-    // searchWithFilters(typeConditions, generationConditions, enableGmax, enableMega, isAll);
+    searchWithFilters(typeConditions);
     closeFilter();
   }
 
