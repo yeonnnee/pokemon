@@ -32,7 +32,7 @@ interface MainProps {
 const Main = (props: MainProps) => {
   const Router = useRouter();
 
-  const [lang, setLang] = useState('ko');
+  const [lang, setLang] = useState('');
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [total, setTotal] = useState<TotalState>({ totalCount: 0, data: []});
   const [loading, setLoading] = useState<boolean>(true);
@@ -148,7 +148,7 @@ const Main = (props: MainProps) => {
     }
     
     const nextPokemons = total.data.slice(itemCount, itemCount + 20);
-    if ( total.totalCount === pokemons.length) return;
+    if ( total.totalCount  === pokemons.length) return;
     await fetchData(nextPokemons);
     setItemCount(itemCount + 20);
 
@@ -236,13 +236,13 @@ const Main = (props: MainProps) => {
 
     setLang(query);
 
-    if (total.data) return;
+    if (!lang) return;
     setItemCount(0);
     setPokemons([]);
   
     console.log('reRendered');
 
-  },[Router, total]);
+  },[Router, lang]);
 
 
   // Intersection Observer API
