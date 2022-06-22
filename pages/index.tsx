@@ -284,7 +284,7 @@ const Main = (props: MainProps) => {
         pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>{lang === 'ko' ? '검색 결과가 없습니다.' : 'No Results'}</p> :
         <ul className={mainStyle['pokemon-list']}>
           {
-            pokemons.map((pokemon, index) => {return <PokemonCard {...pokemon} key={index} />})
+              pokemons.map((pokemon, index) => { return <PokemonCard pokemon={pokemon} lang={lang} key={index} />})
           }
         </ul>
       }
