@@ -2,8 +2,8 @@ import { ResourceForPokemon } from "./pokemons"
 
 
 export interface PokemonSpeciesApiRes {
-  base_happiness: number, // v
-  capture_rate: number, // v 
+  base_happiness: number,
+  capture_rate: number, 
   color: ResourceForPokemon,
   egg_groups: ResourceForPokemon[],
   evolution_chain: {
@@ -14,7 +14,7 @@ export interface PokemonSpeciesApiRes {
   form_descriptions: any[],
   forms_switchable: boolean,
   gender_rate: number,
-  genera: Genera[], // v
+  genera: Genera[],
   generation: ResourceForPokemon,
   growth_rate: ResourceForPokemon,
   habitat: ResourceForPokemon,
@@ -25,7 +25,7 @@ export interface PokemonSpeciesApiRes {
   is_legendary: boolean,
   is_mythical: boolean,
   name: string,
-  names: PokemonName[], //v
+  names: PokemonName[],
   order: number,
   pal_park_encounters: PalParkEncounter[],
   pokedex_numbers: PokedexNumber[],
