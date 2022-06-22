@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import NavStyle from '../../styles/nav.module.scss'
 
 interface SupportedLanguage {
@@ -20,23 +20,29 @@ const Nav = () => {
   });
   const selectBoxRef = useRef<HTMLInputElement>(null);
   const Router = useRouter();
-  const supportedLanguage = [
-    {
-      name: '한국어',
-      code: 'ko',
-      url: '/korea-icon.png',
-    },
-    {
-      name: 'English',
-      code: 'en',
-      url: '/Usa-icon.png',
-    },
-    {
-      name: '日本語',
-      code: 'ja',
-      url: '/Japan-icon.png',
-    }
-  ];
+  const supportedLanguage = useMemo(() => getSupportedLanguage(),[]);
+
+
+  function getSupportedLanguage() {
+    return [
+      {
+        name: '한국어',
+        code: 'ko',
+        url: '/korea-icon.png',
+      },
+      {
+        name: 'English',
+        code: 'en',
+        url: '/Usa-icon.png',
+      },
+      {
+        name: '日本語',
+        code: 'ja',
+        url: '/Japan-icon.png',
+      }
+    ];
+  }
+  
 
   function changeLang(lang:SupportedLanguage) {
     setSelectedLang(lang);
@@ -45,6 +51,13 @@ const Nav = () => {
     if (!selectBoxRef.current) return;
     selectBoxRef.current.checked = false;
   };
+
+  useEffect(() => {
+    const query = Router.query.lang;
+    if (!query) return;
+    setSelectedLang(supportedLanguage.filter(lang => lang.code === query)[0]);
+
+  }, [Router, supportedLanguage]);
 
   return(
     <nav className={NavStyle.nav}>
