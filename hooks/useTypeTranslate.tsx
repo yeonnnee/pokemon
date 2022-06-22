@@ -8,12 +8,18 @@ function useTypeTranslate(types: PokemonType[], lang) {
   
 
   const convertTypeName = useCallback(async () => {
-    const typeNm = await Promise.all(types.map(async (type) => {
-      const res:TypeDetailApiRes = await fetch(type.type.url).then(res => res.json());
-      const name = res.names.filter(name => name.language.name === lang)[0].name;
-      return name;
-    }));
-    setTranslatedTypes(typeNm);
+    if (lang !== 'en') {
+      const typeNm = await Promise.all(types.map(async (type) => {
+        const res:TypeDetailApiRes = await fetch(type.type.url).then(res => res.json());
+        const name = res.names.filter(name => name.language.name === lang)[0].name;
+        return name;
+      }));
+      setTranslatedTypes(typeNm);
+
+    } else {
+      setTranslatedTypes(types.map(type => type.type.name.toUpperCase()));
+    }
+
   }, [types, lang]);
 
   useEffect(() => {
