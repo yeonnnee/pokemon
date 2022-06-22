@@ -46,8 +46,10 @@ const Nav = () => {
 
   function changeLang(lang:SupportedLanguage) {
     setSelectedLang(lang);
+    const currentPath = Router.query.pokemonName;
+    const pathName = currentPath ? `/pokemon/${currentPath}` : '/';
 
-    Router.push({ pathname: '/', query: { lang: lang.code } });
+    Router.push({ pathname: pathName, query: { lang: lang.code } });
     if (!selectBoxRef.current) return;
     selectBoxRef.current.checked = false;
   };
