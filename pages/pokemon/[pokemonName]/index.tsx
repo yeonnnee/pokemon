@@ -35,7 +35,7 @@ const Detail = (props: DetailProps) => {
   const [loading, setLoading] = useState(true);
   const [lang, setLang] = useState('');
   const translation = sectionTitleName.filter(category => category.language === lang);
-  const pokemonIdx = usePokemonIdx(data?.id || 0);
+  const pokemonIdx = usePokemonIdx(props.data.isGmax ? -1 : data?.id || 0);
 
   const barRef = useRef<HTMLDivElement[] | null[]>([]);
 
@@ -238,7 +238,7 @@ const Detail = (props: DetailProps) => {
               <AbilityInfo lang={lang} abilities={data.abilitiesKr} sectionTitle={translation.filter(category => category.category === 'ability')[0].text}/>
 
               {/* 진화 */}
-              <EvolutionInfo evolution={data.evloution_chain} sectionTitle={translation.filter(category => category.category === 'evolution')[0].text} />
+              <EvolutionInfo lang={lang} evolution={data.evloution_chain} sectionTitle={translation.filter(category => category.category === 'evolution')[0].text} />
 
               {/* 종족치 */}
               <div className={` ${detailStyle.section}`}>
@@ -263,8 +263,8 @@ const Detail = (props: DetailProps) => {
             </section>
           </div>
           <div className={detailStyle["btn-section"]}>
-            <Link href="/">
-              <button className={detailStyle.btn}>목록으로</button>
+            <Link href={`/?lang=${lang}`}>
+              <button className={detailStyle.btn}>{lang === 'ko' ? '목록으로' : 'Main'}</button>
             </Link>
           </div>
         </div>
