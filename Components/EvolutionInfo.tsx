@@ -7,11 +7,12 @@ import ImageCard from './ImageCard';
 
 interface EvolutionInfoProps {
   evolution: EvolutionData[][],
-  sectionTitle: string
+  sectionTitle: string,
+  lang: string
 }
 
 const EvolutionInfo = (props : EvolutionInfoProps) => {
-  const { evolution, sectionTitle } = props;
+  const { evolution, sectionTitle, lang } = props;
 
   console.log('eve', evolution);
 
@@ -30,7 +31,7 @@ const EvolutionInfo = (props : EvolutionInfoProps) => {
                   return chain.id ?
                     <React.Fragment key={`evolve-${chain.id}`}>
                       <li >
-                        <ImageCard width={100} height={100} src={chain.image} alt={chain.name} name={chain.name} translatedNm={chain.translatedNm}/>
+                        <ImageCard lang={lang} width={100} height={100} src={chain.image} alt={chain.name} name={chain.name} translatedNm={chain.translatedNm}/>
                       </li>
                       {
                         evolution[chain.id] ? <li><FontAwesomeIcon icon={faChevronRight} /></li> : null

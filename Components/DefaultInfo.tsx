@@ -27,7 +27,7 @@ const DefaultInfo = (detailInfo: DetailInfoProps) => {
       <p className={detailStyle['section-title']}>{sectionTitle}</p>
       <ul className={detailStyle.section}>
         <li>
-          <ImageCard width={80} height={80} src={image} alt={pokemonName} />
+          <ImageCard lang={lang} width={80} height={80} src={image} alt={pokemonName} />
         </li>
         <InfoContents title={lang === 'ko' ? '도감번호' : 'No'} text={ [pokemonIdx] }/>
         <InfoContents title={categoryName.filter(category => category.language === lang && category.category === 'name')[0].text} text={ [pokemonName] }/>

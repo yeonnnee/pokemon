@@ -101,21 +101,13 @@
             }
 
             .label {
+              @include btn-hover-shadow();
               border-radius: 4px;
               font-size: 14px;
               padding: 2px 7px;
               cursor: pointer;
             }
 
-            .gmax {
-              color: $fighting-label;
-              text-decoration-line: underline;
-            }
-
-            .mega {
-              color: $water-label;
-              text-decoration-line: underline;
-            }
           }
         }
       }
@@ -332,6 +324,7 @@
     .drop-down:checked ~ .version-tab {
       visibility: visible;
     }
+
     .desc-text {
       @include container-shadow();
 
@@ -393,15 +386,15 @@
     text-align: center;
 
     .btn {
-      @include btn-shadow();
+      @include btn-hover-shadow();
 
+      border: 1px solid $pink;
       padding: 10px 20px;
-      font-weight: bold;
-      background-color: $dragon-label;
+      background-color: $container-bg;
       border-radius: 20px;
 
       &:hover {
-        @include btn-hover-shadow();
+        @include input-shadow();
       }
     }
 

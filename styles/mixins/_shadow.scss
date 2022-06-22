@@ -48,8 +48,7 @@
 }
 
 @mixin btn-hover-shadow() {
-  box-shadow: -3px -3px 7px $base-shadow,
-  3px 3px 8px 0px #213e62;
+  box-shadow: -3px -3px 7px #ffffff73, 3px 3px 7px 0px #b7b8b9;
 }
 
 @mixin label($label-name) {

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import detailStyle from '../styles/detail.module.scss';
 
 interface ImageCardPorps {
+  lang: string,
   width: number,
   height: number,
   src: string | undefined | null,
@@ -13,10 +14,10 @@ interface ImageCardPorps {
 
 
 const ImageCard = (props: ImageCardPorps) => {
-  const { width, height, src, alt, name, translatedNm } = props;
+  const { lang, width, height, src, alt, name, translatedNm } = props;
 
   return (
-    <Link href={`/pokemon/${name}`}>
+    <Link href={`/pokemon/${name}?lang=${lang}`}>
       <div className={detailStyle.pic}>
         {
           src ? <Image priority width={width} height={height} src={src} alt={alt ? alt : 'image'}/> : <span> No Image </span>
