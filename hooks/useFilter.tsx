@@ -15,6 +15,7 @@ export interface Filter {
 
 function useFilter(types: OptionItem[][], lang:string) {
   const [filter, setFilter] = useState<Filter>(null);
+  const [supportLang, setSupportLang] = useState('');
 
   function selectOption(options:OptionItem[], selectedOption: OptionItem) {
     options.forEach(option => {
@@ -48,10 +49,10 @@ function useFilter(types: OptionItem[][], lang:string) {
 
 
   useEffect(() => {
-    if (filter) return;
+    if (supportLang === lang) return;
     
     getFilterOptions();
-  }, [getFilterOptions, filter]);
+  }, [getFilterOptions, supportLang, lang]);
 
   return filter;
 }
