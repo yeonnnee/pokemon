@@ -16,7 +16,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
   const { filterByType, category } = props;
 
   const filterIconRef = useRef<HTMLInputElement>(null);
-  const checkBoxRefs = useRef<HTMLInputElement[]>([]);
+  const checkBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
   const selectedOption = category.options.filter(op => op.isChecked)[0];
 
   console.log('filter', category);
