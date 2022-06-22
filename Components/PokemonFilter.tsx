@@ -4,7 +4,6 @@ import { MutableRefObject, useRef } from 'react';
 
 import { Filter, OptionItem } from '../hooks/useFilter';
 import mainStyle from '../styles/main.module.scss'
-// import FilterOption from './FilterOption';
 
 
 interface PokemonFilterProps {
@@ -17,7 +16,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
   const { filterByType, category } = props;
 
   const filterIconRef = useRef<HTMLInputElement>(null);
-  const checkBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
+  const checkBoxRefs = useRef<HTMLInputElement[]>([]);
   const selectedOption = category.options.filter(op => op.isChecked)[0];
 
   console.log('filter', category);
