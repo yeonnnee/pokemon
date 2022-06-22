@@ -8,13 +8,13 @@ import mainStyle from '../styles/main.module.scss'
 
 
 interface PokemonFilterProps {
-  searchWithFilters: (type:string) => void,
+  filterByType: (type:string) => void,
   category: Filter,
 }
 
 
 const PokemonFilter = (props: PokemonFilterProps) => {
-  const { searchWithFilters, category } = props;
+  const { filterByType, category } = props;
 
   const filterIconRef = useRef<HTMLInputElement>(null);
   const checkBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
@@ -39,7 +39,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
   function filterPokemon(option: OptionItem) {
     cancelCheckBoxChecked();
     category.fn(category.options, option);
-    searchWithFilters(option.code);
+    filterByType(option.code);
 
     closeFilter();
   }
