@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { PokemonType } from "../types/detail";
 import { TypeDetailApiRes } from "../types/pokemonTypes";
 
-function useTypeTranslate(types: PokemonType[], lang) {
+function useTypeTranslate(types: PokemonType[], lang:string ) {
   const [supportLang, setSupportLang] = useState('');
   const [translatedTypes, setTranslatedTypes] = useState<string[]>([]);
   
