@@ -277,7 +277,8 @@
 
   .desc {
     margin: 10px 0 20px;
-
+    position: relative;
+    text-align: right;
     @include respond-to(pad) {
       font-size: 13px;
 
@@ -285,32 +286,52 @@
         font-size: 13px;
       }
     }
-    .version-tab {
-      display: flex;
-      flex-wrap: wrap;
 
-      li {
-        @include sm-box-shadow();
+    .selected-version {
+      @include input-shadow();
+      display: inline-block;
+      border-radius: 10px;
+      padding: 6px 20px;
+      color: $pink;
+      cursor: pointer;
 
-        flex: 1;
-        margin: 0 10px 0 0;
-        padding: 10px;
-        background-color: $container-bg;
+      .drop-down-icon {
         font-size: 13px;
-        text-align: center;
-        align-items: center;
-        cursor: pointer;
+        margin: 0 0 0 14px;
+        transition: all 0.3s ease;
+      }
+    }
+  
+    .version-tab {
+      position: absolute;
+      right: 0;
+      top: 50px;
+      text-align: left;
+      background-color: $container-bg;
+      height: 200px;
+      overflow-y: scroll;
+      visibility: hidden;
+  
+      li {
+        padding: 5px 20px;
+        border-bottom: 1px solid $gray-border;
 
-        &:nth-last-child(1) {
-          margin: 0;
-        }
-
-        &:hover, &.selected-tab {
-          @include container-shadow();
+        &:hover {
+          background-color: $base-shadow;
+          color: $pink;
         }
       }
     }
 
+    .drop-down:checked ~ .selected-version {
+      .drop-down-icon {
+        transform: rotateX(180deg);
+      }
+    }
+
+    .drop-down:checked ~ .version-tab {
+      visibility: visible;
+    }
     .desc-text {
       @include container-shadow();
 

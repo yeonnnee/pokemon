@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useRef, useState } from 'react';
 import detailStyle from '../styles/detail.module.scss';
 import { FlavorTextEntry } from '../types/speices';
 
@@ -9,19 +11,36 @@ interface PokemonDescProps {
 
 const PokemonDesc = (props: PokemonDescProps) => {
   const { desc, sectionTitle } = props;
-  const [selectedVersion, setSelectedVersion] = useState<number>(0);
+  const [selectedVersion, setSelectedVersion] = useState<FlavorTextEntry>(desc[0]);
+  const dropdownRef = useRef<HTMLInputElement>(null);
+
+  function selectDescVersion(description: FlavorTextEntry) {
+    setSelectedVersion(description);
+
+    if (!dropdownRef.current) return;
+    dropdownRef.current.checked = false;
+  }
+
   return (
     <div className={detailStyle['detail-info']}>
       <p className={detailStyle['section-title']}>{ sectionTitle }</p>
       <div className={`${detailStyle.desc} ${detailStyle.section}`}>
+        <input type="checkbox" id="filter" className={detailStyle["drop-down"]} ref={dropdownRef} />
+        <label htmlFor="filter" className={detailStyle["selected-version"]}>
+          {selectedVersion.version.name.toUpperCase()} <FontAwesomeIcon icon={faAngleDown} className={detailStyle["drop-down-icon"]}/>
+        </label>
+
+
         <ul className={detailStyle["version-tab"]}>
-            {desc.map((text, index) =>
-              <li key={`version-${index}`} onClick={() => setSelectedVersion(index)} className={selectedVersion === index ? `${detailStyle["selected-tab"]}` : ''}>
-                {text.version.name.toUpperCase()}
-              </li>
-            )}
+          {desc.map((text, index) =>
+            <li key={`version-${index}`} onClick={()=>selectDescVersion(text)}>
+              <input type="checkbox" id={text.version.name}  />
+              <label htmlFor={ text.version.name || 'x' } >{text.version.name.toUpperCase()} </label>
+            </li>
+          )}
         </ul>
-        <p className={detailStyle["desc-text"]}>{desc[selectedVersion].flavor_text}</p>
+ 
+        <p className={detailStyle["desc-text"]}>{selectedVersion.flavor_text }</p>
       </div>
     </div>
   )
