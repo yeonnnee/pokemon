@@ -44,7 +44,7 @@ function useFilter(types: OptionItem[][], lang:string) {
     const typeFilter = getFilterOptionObj('Type', typeOptions);
     setFilter(typeFilter);
 
-  }, [types, lang,getFilterOptionObj]);
+  }, [types, lang, getFilterOptionObj]);
 
 
 
