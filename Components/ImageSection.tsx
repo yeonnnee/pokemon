@@ -21,8 +21,6 @@ const ImageSection = (props: ImageSectionProps) => {
   const queryPokemonNm = router.query.pokemonName as string;
   const label = useLabel(queryPokemonNm, lang, pokemonIdx);
 
-  console.log(label);
-
   return (
     <section className={detailStyle["image-section"]}>
       {/* 프로필 이미지 */}
