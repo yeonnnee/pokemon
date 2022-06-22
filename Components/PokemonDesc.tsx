@@ -3,15 +3,16 @@ import detailStyle from '../styles/detail.module.scss';
 import { FlavorTextEntry } from '../types/speices';
 
 interface PokemonDescProps {
-  desc: FlavorTextEntry[]
+  desc: FlavorTextEntry[],
+  sectionTitle: string
 }
 
 const PokemonDesc = (props: PokemonDescProps) => {
-  const { desc } = props;
+  const { desc, sectionTitle } = props;
   const [selectedVersion, setSelectedVersion] = useState<number>(0);
   return (
     <div className={detailStyle['detail-info']}>
-      <p className={detailStyle['section-title']}>도감 설명</p>
+      <p className={detailStyle['section-title']}>{ sectionTitle }</p>
       <div className={`${detailStyle.desc} ${detailStyle.section}`}>
         <ul className={detailStyle["version-tab"]}>
             {desc.map((text, index) =>

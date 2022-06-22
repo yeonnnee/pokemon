@@ -1,4 +1,6 @@
 import Image from 'next/image';
+import { useRouter } from 'next/router';
+import useLabel from '../hooks/useLabel';
 import detailStyle from '../styles/detail.module.scss';
 import { PokemonSprites } from '../types/detail';
 import { FlavorTextEntry } from '../types/speices';
@@ -8,18 +10,25 @@ interface ImageSectionProps {
   pokemonIdx: string,
   pokemonName: string,
   images: PokemonSprites,
-  desc: FlavorTextEntry[]
+  desc: FlavorTextEntry[],
+  sectionTitle: string,
+  lang:string
 }
 
 const ImageSection = (props: ImageSectionProps) => {
-  const { pokemonIdx, pokemonName, images, desc } = props;
+  const router = useRouter();
+  const { pokemonIdx, pokemonName, images, desc, sectionTitle, lang } = props;
+  const queryPokemonNm = router.query.pokemonName as string;
+  const label = useLabel(queryPokemonNm, lang, pokemonIdx);
+
+  console.log(label);
 
   return (
     <section className={detailStyle["image-section"]}>
       {/* 프로필 이미지 */}
 
       <div className={detailStyle.profile}>
-        <span className={detailStyle.order}>{ pokemonIdx !== '-' ? `No.${pokemonIdx}` : '다이맥스'}</span>
+        <span className={detailStyle.order}>{ label }</span>
         <div className={detailStyle.name}>
           <span>{pokemonName}</span>
         </div>
@@ -30,7 +39,7 @@ const ImageSection = (props: ImageSectionProps) => {
         </div>
 
       {/* 특징 */}
-      <PokemonDesc desc={desc} />
+      <PokemonDesc desc={desc} sectionTitle={ sectionTitle} />
       
     </section>
   )

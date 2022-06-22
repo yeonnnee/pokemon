@@ -15,6 +15,8 @@ import EvolutionInfo from "../../../components/EvolutionInfo";
 import Loader from "../../../components/common/Loader";
 import { PokemonsApiRes, ResourceForPokemon } from "../../../types/pokemons";
 import { GetStaticProps } from "next";
+import { sectionTitleName } from "../../../translate/text";
+
 
 interface DetailProps {
   data: {
@@ -31,6 +33,8 @@ const Detail = (props: DetailProps) => {
   const router = useRouter();
   const [data, setData] = useState<PokemonDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lang, setLang] = useState('');
+  const translation = sectionTitleName.filter(category => category.language === lang);
   const pokemonIdx = usePokemonIdx(data?.id || 0);
 
   const barRef = useRef<HTMLDivElement[] | null[]>([]);
@@ -59,7 +63,7 @@ const Detail = (props: DetailProps) => {
   
 
   const getEvolutionData = useCallback(async (url: string | null, seq: number) => {
-    const initialData = { id: 0, name: null, nameKr: null, image: null };
+    const initialData = { id: 0, name: null, translatedNm: null, image: null };
     if (!url) return initialData;
 
     const result = await fetch(url).then(async (res) => {
@@ -69,18 +73,18 @@ const Detail = (props: DetailProps) => {
       return {
         id: seq,
         name: data.name,
-        nameKr: data.names.filter(name => name.language.name === 'ko')[0].name,
+        translatedNm: data.names.filter(name => name.language.name === lang)[0].name,
         image: detail.sprites.front_default,
       }
     });
     return result;
-  }, []);
+  }, [lang]);
 
 
   const getEvolutionChain = useCallback(async (url: string) => {
     const res: EvolutionApiRes = await fetch(url).then(data => data.json());
     const evolutionChain = res.chain.evolves_to;
-    const initialData = [{ id: 0, name: null, nameKr: null, image: null }];
+    const initialData = [{ id: 0, name: null, translatedNm: null, image: null }];
 
     if (evolutionChain.length === 0) return [initialData];
 
@@ -108,8 +112,8 @@ const Detail = (props: DetailProps) => {
 
   }, [getEvolutionData]);
 
-  function getPokemonForm(pokemonName: string) {
-    let label;
+  const getPokemonForm = useCallback((pokemonName: string) => {
+    let label:string = '';
     const rapid = pokemonName.includes('rapid-strike'); // 연격의 태세
     const single = pokemonName.includes('single-strike'); // 일격의 태세
     const large = pokemonName.includes('large');
@@ -119,50 +123,52 @@ const Detail = (props: DetailProps) => {
     const percentage = pokemonName.includes('50') || pokemonName.includes('10');
     const complete = pokemonName.includes('complete');
 
-    if (rapid) label = '(연격의 태세)';
-    if (single) label = '(일격의 태세)';
+    if (rapid) label = lang === 'ko' ? '(연격의 태세)' : '(いちげきのかた)';
+    if (single) label = lang === 'ko' ? '(일격의 태세)' : '(れんげきのかた)';
     if (large) label = '(L)';
     if (small) label = '(S)';
     if (average) label = '(Average)';
     if (superSize) label = '(Super)';
-    if (percentage) label = `(${pokemonName.split('-')[1]}%폼)`;
-    if (complete) label = `(퍼펙트폼)`;
+    if (percentage) label = lang === 'ko' ? `(${pokemonName.split('-')[1]}%폼)` : '';
+    if (complete) label = lang === 'ko' ? `(퍼펙트폼)` : '';
 
     return label;
-  }
+  }, [lang]);
 
-  const getFullName = useCallback((nameKr: string) => {
-    const pokemonName = props.data.detail.name;
-    const isMega = pokemonName.includes('mega');
-    const nameArr = pokemonName.split('-');
-    
+
+  const getFullName = useCallback((name: string) => {
+    const pokemonNameEn = props.data.detail.name;
+    const isMega = pokemonNameEn.includes('mega');
+    const nameArr = pokemonNameEn.split('-');
+    const megaText = lang === 'ko' ? '메가' : 'メガ';
+    const form = getPokemonForm(pokemonNameEn);
+
     if (isMega) {
       if (nameArr.length > 2) {
-        const megaKeywordIdx = nameArr.indexOf('mega');
-        return `메가${nameKr}-${nameArr[megaKeywordIdx + 1].toUpperCase()}`;
+        const megaKeywordIdx = form.indexOf('mega');
+        return `${megaText}${name}-${form[megaKeywordIdx + 1].toUpperCase()}`;
       } else {
-        return `메가${nameKr}`;
+        return `${megaText}${name}`;
       }
     }
-    
-    const form = getPokemonForm(pokemonName);
-    return form ? `${nameKr} ${form}` : nameKr;
-  }, [props.data]);
+
+    return form ? `${name} ${form}` : name;
+  }, [props.data, getPokemonForm, lang]);
 
 
   const customData = useCallback(async (detailData:PokemonDetailApiRes, speciesData: PokemonSpeciesApiRes) => {
     if (!speciesData || !detailData) return;
-    
-    const nameKr = getFullName(speciesData.names.filter(name => name.language.name === 'ko')[0].name);
-    const pokemonDesc = speciesData.flavor_text_entries.filter(text => text.language.name === 'ko');
+    const translatedNm = speciesData.names.filter(name => name.language.name === lang)[0].name;
+    const fullname = lang !== 'en' ? getFullName(translatedNm) : translatedNm;
+    const pokemonDesc = speciesData.flavor_text_entries.filter(text => text.language.name === lang);
     const evolutionChain = await getEvolutionChain(speciesData.evolution_chain.url);
   
     const abilitiesKr = await Promise.all(detailData.abilities.map(async (ability) => {
       const abilityDetail: AbilityApiRes = await fetch(ability.ability.url).then(data => data.json());
-      const result = abilityDetail.flavor_text_entries.filter(effect => effect.language.name === 'ko');
+      const result = abilityDetail.flavor_text_entries.filter(effect => effect.language.name === lang);
       return {
         text: result[0].flavor_text,
-        name: abilityDetail.names.filter(name => name.language.name === 'ko')[0],
+        name: abilityDetail.names.filter(name => name.language.name === lang)[0],
         isHidden: ability.is_hidden
       };
     }));
@@ -176,8 +182,7 @@ const Detail = (props: DetailProps) => {
 
     const result = {
       name: speciesData.name,
-      nameKr: nameKr, 
-      names: speciesData.names,
+      translatedNm: fullname, 
       desc: pokemonDesc,
       id: detailData.id,
       weight: detailData.weight,
@@ -189,7 +194,7 @@ const Detail = (props: DetailProps) => {
       capture_rate: speciesData.capture_rate,
       growth_rate: speciesData.growth_rate,
       flavor_text_entries: speciesData.flavor_text_entries,
-      genera: speciesData.genera.filter(genera => genera.language.name === 'ko'),
+      genera: speciesData.genera.filter(genera => genera.language.name === lang),
       generation: speciesData.generation,
       has_gender_differences: speciesData.has_gender_differences,
       is_legendary: speciesData.is_legendary,
@@ -200,39 +205,46 @@ const Detail = (props: DetailProps) => {
     setData(result);
     paintGraphBar(result);
 
-  }, [getEvolutionChain, paintGraphBar, getFullName]);
-
-
+  }, [getEvolutionChain, paintGraphBar, getFullName, lang]);
 
 
 
   useEffect(() => {
+    const query = router.query.lang as string;
+    console.log('start Detail');
+
+    setLang(query);
+
+    if (!lang) return;
     customData(props.data.detail, props.data.species);
-  },[customData, props.data]);
+
+  }, [customData, props.data, lang, router]);
 
   return (
     <>
-      {!data ? <Loader text={'정보를 불러오는 중입니다...'} /> :
+      {!data ? <Loader text={'정보를 불러오는 중입니다..'} /> :
         <div className={detailStyle.detail}>
           <div className={detailStyle.container}>
-            <ImageSection images={data.images} pokemonIdx={pokemonIdx} pokemonName={data.nameKr} desc={data.desc}/>
+            <ImageSection images={data.images} lang={lang} pokemonIdx={pokemonIdx} pokemonName={ data.translatedNm } desc={data.desc} sectionTitle={translation.filter(category => category.category === 'desc')[0].text } />
         
             <section className={detailStyle["pokemon-info-section"]}>
               {/* 기본정보 */}
-              <DefaultInfo image={data.images.front_default} pokemonName={data.nameKr} pokemonIdx={pokemonIdx} types={data.types} generation={data.generation}/>
+              <DefaultInfo lang={lang} sectionTitle={translation.filter(category => category.category === 'default info')[0].text} image={data.images.front_default} pokemonName={data.translatedNm} pokemonIdx={pokemonIdx} types={data.types} />
 
               {/* 세부정보 */}
-              <DetailInfo genera={data.genera[0].genus} height={data.height} weight={data.weight} />
+              <DetailInfo lang={lang} genera={data.genera[0].genus} height={data.height} weight={data.weight} captureRate={data.capture_rate} sectionTitle={translation.filter(category => category.category === 'detail info')[0].text}/>
 
               {/* 특성 */}
-              <AbilityInfo abilities={data.abilitiesKr}/>
+              <AbilityInfo lang={lang} abilities={data.abilitiesKr} sectionTitle={translation.filter(category => category.category === 'ability')[0].text}/>
 
               {/* 진화 */}
-              <EvolutionInfo evolution={data.evloution_chain} />
+              <EvolutionInfo evolution={data.evloution_chain} sectionTitle={translation.filter(category => category.category === 'evolution')[0].text} />
 
               {/* 종족치 */}
               <div className={` ${detailStyle.section}`}>
-                <p className={detailStyle["section-title"]}>종족치</p>
+                <p className={detailStyle["section-title"]}>
+                  {translation.filter(category => category.category === 'stat')[0].text}
+                </p>
 
                 <div className={detailStyle.rate}>
                   {data?.stats.map((stat: PokemonStat, index: number) => {

@@ -67,17 +67,13 @@ const Main = (props: MainProps) => {
     return label;
   }, [lang]);
 
-  // 거다이맥스, 메가 포켓몬인 경우 표기해주기
+  // 메가 포켓몬인 경우 표기해주기
   const getFullName = useCallback((pokemonName: string, translatedNm: string) => {
     const pokemonForm = pokemonName.split('-');
-    const isGmax = pokemonName.includes('gmax');
     const isMega = pokemonName.includes('mega');
     const form = getPokemonForm(pokemonName);
-
-    const gmaxText = lang === 'ko' ? '거다이맥스' : 'ダイマックス';
     const megaText = lang === 'ko' ? '메가' : 'メガ';
 
-    if (isGmax) return `${gmaxText} ${translatedNm} ${form || ''}`;
     if (isMega) {
       if (pokemonForm.length > 2) {
         const megaKeywordIdx = pokemonForm.indexOf('mega');

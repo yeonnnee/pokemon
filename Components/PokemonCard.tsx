@@ -4,7 +4,7 @@ import labelStyle from '../styles/label.module.scss'
 import Link from "next/link";
 import { Pokemon } from "../types/pokemons";
 import usePokemonIdx from "../hooks/usePokemonIdx";
-import { gmaxLabel } from "../translate/text";
+import useLabel from "../hooks/useLabel";
 
 interface PokemonCardProps {
   pokemon: Pokemon,
@@ -14,8 +14,7 @@ interface PokemonCardProps {
 const PokemonCard = (props: PokemonCardProps) => {
   const { pokemon, lang } = props;
   const pokemonIdx = usePokemonIdx(pokemon.id);
-  const gmaxText = gmaxLabel.filter(text => text.language == lang)[0].text;
-  const label = pokemon.name.includes('gmax') ? `${gmaxText}` : `No.${pokemonIdx}`;
+  const label = useLabel(pokemon.name, lang, pokemonIdx);
 
   return(
     <Link href={`/pokemon/${pokemon.name}?lang=${lang}`}>

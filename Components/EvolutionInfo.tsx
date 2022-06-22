@@ -6,17 +6,18 @@ import { EvolutionData } from '../types/detail';
 import ImageCard from './ImageCard';
 
 interface EvolutionInfoProps {
-  evolution: EvolutionData[][]
+  evolution: EvolutionData[][],
+  sectionTitle: string
 }
 
 const EvolutionInfo = (props : EvolutionInfoProps) => {
-  const { evolution } = props;
+  const { evolution, sectionTitle } = props;
 
   console.log('eve', evolution);
 
   return (
     <div className={detailStyle.evolution}>
-      <p className={detailStyle["section-title"]}>진화</p>
+      <p className={detailStyle["section-title"]}>{sectionTitle}</p>
       {
         evolution.map((evolutionCase, index) => {
           return (
@@ -29,7 +30,7 @@ const EvolutionInfo = (props : EvolutionInfoProps) => {
                   return chain.id ?
                     <React.Fragment key={`evolve-${chain.id}`}>
                       <li >
-                        <ImageCard width={100} height={100} src={chain.image} alt={chain.name} name={chain.name} nameKr={chain.nameKr}/>
+                        <ImageCard width={100} height={100} src={chain.image} alt={chain.name} name={chain.name} translatedNm={chain.translatedNm}/>
                       </li>
                       {
                         evolution[chain.id] ? <li><FontAwesomeIcon icon={faChevronRight} /></li> : null
