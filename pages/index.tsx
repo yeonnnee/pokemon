@@ -21,7 +21,7 @@ interface TotalState {
 }
 export interface SearchState {
   searchString: string,
-  types: (string | null)[],
+  types: string,
   isAll: boolean,
 }
 
@@ -39,7 +39,7 @@ const Main = (props: MainProps) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<SearchState>({
     searchString: '',
-    types: [],
+    types: '',
     isAll: true,
   });
   const [itemCount, setItemCount] = useState<number>(0);
@@ -129,7 +129,7 @@ const Main = (props: MainProps) => {
       return result;
     }));
     setLoading(false);
-
+    console.log('getPokemons', pokemons);
     return pokemons;
   }, [getFullName, lang]);
   
@@ -138,7 +138,7 @@ const Main = (props: MainProps) => {
     const fetchedData = await getPokemons(data);
     setPokemons(pokemons.concat(fetchedData));
     setItemCount(itemCount + 20);
-
+    console.log('fetch', fetchedData);
   }, [getPokemons,itemCount,  pokemons]);
 
 
@@ -150,7 +150,7 @@ const Main = (props: MainProps) => {
     if (itemCount === 0 || nextPokemons.length === 0) return;
     setLoading(true);
     await fetchData(nextPokemons);
-    console.log(nextPokemons)
+    console.log('next', nextPokemons)
   }, [fetchData, props, itemCount]);
 
 
@@ -171,27 +171,20 @@ const Main = (props: MainProps) => {
   }
 
 
-  async function filterByTypes(types: (string | null)[]) {
-    const pokemon = await Promise.all(types.map(async (type) => {
-      const res = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
-      const data: TypeDetailApiRes = await res.json();
-      const result = data.pokemon.map(pokemon => { return { ...pokemon.pokemon } });
 
-      return result;
-    }));
 
-    const filteredArr = pokemon.reduce(function (acc, cur) {
-      return acc.concat(cur);
-    });
-
-    return filteredArr;
+  async function filterByTypes(type: string) {
+    const res = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+    const data: TypeDetailApiRes = await res.json();
+    const result = data.pokemon.map(pokemon => { return { ...pokemon } });
+    return result;
   }
 
   //필터조회
-  async function searchWithFilters(selectedTypes: (string|null)[], isReset: boolean = false) {    
+  async function searchWithFilters(selectedType: string, isReset: boolean = false) {    
     setPokemons([]);
     setLoading(true);
-    console.log('asd');
+
     // if (selectedTypes.length === 0 || selectedTypes.length === types.length) {
     //   setSearch({ ...search, types: selectedTypes, isAll: true });
     //   // const totalData = total.data.length > 0 ? total.data.splice(0, 50) : await getPokemons(total.originData.splice(0, 50));
@@ -200,16 +193,18 @@ const Main = (props: MainProps) => {
     //   return;
     // }
 
-    setSearch({ ...search, searchString: isReset ? '' : search.searchString, types: selectedTypes, isAll: false });
-    const filteredPokemonsArr = await filterByTypes(selectedTypes);
-    const filteredPokemons = await getPokemons([]);
-
-    if (!isReset && search.searchString) {
-      const result = getSearchResults(filteredPokemons);
-      setPokemons(result);
-    } else {
-      setPokemons(filteredPokemons);
-    }
+    setSearch({ ...search, searchString: isReset ? '' : search.searchString, types: selectedType, isAll: false });
+    const filteredPokemonsArr = await filterByTypes(selectedType);
+    console.log('filter ', filteredPokemonsArr);
+    const filteredPokemons = await getPokemons(filteredPokemonsArr.splice(0, 20));
+    console.log('filter result ', filteredPokemons);
+    
+    setPokemons(filteredPokemons);
+    // if (!isReset && search.searchString) {
+    //   const result = getSearchResults(filteredPokemons);
+    //   setPokemons(result);
+    // } else {
+    // }
 
     setLoading(false);
   }
@@ -232,7 +227,7 @@ const Main = (props: MainProps) => {
       setPokemons(results);
       setLoading(false);
     }
-
+    console.log('search', pokemons);
   }
 
   function getSearchResults(standardPokemons: Pokemon[]) { 

@@ -2,13 +2,13 @@ import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MutableRefObject, useRef } from 'react';
 
-import { Filter } from '../hooks/useFilter';
+import { Filter, OptionItem } from '../hooks/useFilter';
 import mainStyle from '../styles/main.module.scss'
-import FilterOption from './FilterOption';
+// import FilterOption from './FilterOption';
 
 
 interface PokemonFilterProps {
-  searchWithFilters: (type:(string|null)[]) => void,
+  searchWithFilters: (type:string) => void,
   category: Filter,
 }
 
@@ -20,7 +20,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
   const checkBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
   const selectedOption = category.options.filter(op => op.isChecked)[0];
 
-  console.log(category)
+  console.log('filter', category);
 
   // filter 드롭다운 닫기
   function closeFilter() {
@@ -28,21 +28,20 @@ const PokemonFilter = (props: PokemonFilterProps) => {
     filterIconRef.current.checked = false;
   }
 
-  function cancelCheckBoxChecked(refs: MutableRefObject<HTMLInputElement[] | null[]>) {
-    refs.current.forEach(ref => {
+  function cancelCheckBoxChecked() {
+    checkBoxRefs.current.forEach(ref => {
       if (!ref) return;
       ref.checked = false;
     });
   }
 
 
-  function filterPokemon(option: string) {
-    console.log(option);
-    const checked = checkBoxRefs.current.filter(cur => cur.checked);
-    console.log(checked);
-    // const typeConditions = getFilterConditions('타입');
-    // searchWithFilters(typeConditions);
-    // closeFilter();
+  function filterPokemon(option: OptionItem) {
+    cancelCheckBoxChecked();
+    category.fn(category.options, option);
+    searchWithFilters(option.code);
+
+    closeFilter();
   }
 
 
@@ -60,8 +59,8 @@ const PokemonFilter = (props: PokemonFilterProps) => {
           category.options.map((option, index) => {
             return (
               <li key={index} className={`${mainStyle.option}`}>
-                <input type="checkbox" id={option.code} ref={el => (checkBoxRefs.current[index] = el)} />
-                <label htmlFor={ option.code } onClick={()=>filterPokemon(option.code)}> {option.name} </label>
+                <input type="checkbox" id={option.code} onChange={() => filterPokemon(option)} checked={option.isChecked} ref={el => (checkBoxRefs.current[index] = el)} />
+                <label htmlFor={ option.code } >{option.name} </label>
               </li>
             )
           })

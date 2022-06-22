@@ -27,7 +27,7 @@ export interface TypeDetailApiRes {
 
 export interface TypePokemon {
   pokemon: ResourceForPokemon,
-  slot: number
+  slot?: number
 }
 
 export interface Damage {

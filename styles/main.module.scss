@@ -69,13 +69,15 @@
     }
 
     .option-list {
+      @include card-normal-shadow();
       min-width: 131px;
       visibility: hidden;
       position: absolute;
       z-index: 1;
       right: 0px;
       top: 65px;
-      background: white;
+      background-color: $container-bg;
+      border-radius: 10px;
 
       .option {
         label {
