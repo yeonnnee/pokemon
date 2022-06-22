@@ -16,7 +16,7 @@ export const title = [
 export const placeholder = [
   {
     "language": "ko",
-    "text": "포켓몬 이름을 입력해주세요"
+    "text": "포켓몬 영문 이름을 입력해주세요"
   },
   {
     "language": "en",
@@ -24,7 +24,7 @@ export const placeholder = [
   },
   {
     "language": "ja",
-    "text": "ポケモン名を入力してください"
+    "text": "ポケモン英語の名前を入力してください"
   }
 ];
 

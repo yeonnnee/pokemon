@@ -1,10 +1,10 @@
 import type { GetStaticProps } from 'next'
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import PokemonCard from '../components/PokemonCard';
 import mainStyle from '../styles/main.module.scss'
 import { PokemonName, PokemonSpeciesApiRes } from '../types/speices';
 import { PokemonDetailApiRes, PokemonSprites, PokemonType } from '../types/detail';
-import { Pokemon, PokemonsApiRes, ResourceForPokemon } from '../types/pokemons';
+import { Pokemon} from '../types/pokemons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { PokemonTypesApiRes, TypeDetailApiRes, TypePokemon } from '../types/pokemonTypes';
@@ -20,8 +20,7 @@ interface TotalState {
 }
 export interface SearchState {
   searchString: string,
-  types: string,
-  isAll: boolean,
+  isSearching: boolean,
 }
 
 interface MainProps {
@@ -32,23 +31,21 @@ interface MainProps {
 
 const Main = (props: MainProps) => {
   const Router = useRouter();
+
   const [lang, setLang] = useState('ko');
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [total, setTotal] = useState<TotalState>({ totalCount: 0, data: []});
   const [loading, setLoading] = useState<boolean>(true);
-  const [search, setSearch] = useState<SearchState>({
-    searchString: '',
-    types: '',
-    isAll: true,
-  });
+  const [search, setSearch] = useState<SearchState>({ searchString: '', isSearching: false });
   const [itemCount, setItemCount] = useState<number>(0);
+
   const titleTxt = title.filter(text => text.language === lang)[0];
   const placeHolderText = placeholder.filter(placeholder => placeholder.language === lang)[0];
   const typeFilter = useFilterCategory(props.types, lang);
   const target = useRef<HTMLDivElement>(null);
 
   const getPokemonForm = useCallback((pokemonName: string) => {
-    let label;
+    let label:string = '';
     const rapid = pokemonName.includes('rapid-strike'); // 연격의 태세
     const single = pokemonName.includes('single-strike'); // 일격의 태세
     const large = pokemonName.includes('large');
@@ -132,6 +129,7 @@ const Main = (props: MainProps) => {
     return pokemons;
   }, [getFullName, lang]);
   
+  
   // 데이터 fetch
   const fetchData = useCallback(async (data: TypePokemon[]) => {
     const fetchedData = await getPokemons(data);
@@ -150,29 +148,23 @@ const Main = (props: MainProps) => {
     setLoading(true);
     await fetchData(nextPokemons);
     console.log('next', nextPokemons);
-  }, [fetchData, total, itemCount]);
+  }, [fetchData, total.data, itemCount]);
 
 
 
-  // 검색조건 초기화 (전체조회)
+  // 검색조건 초기화
   function resetSearchCondition() {
     setSearch({
-      ...search,
+      isSearching:false,
       searchString: '',
-      isAll: search.types.length > 0 ? false : true
     });
-    setPokemons([]);
-    setItemCount(0);
-    setTotal({ ...total, totalCount: 0 });
-    // if (search.types.length > 0) {
-    //   searchWithFilters(search.types, true);
-    // }
+
+    if (itemCount === 20) return;
+    filterByType(typeFilter.options.filter(op => op.isChecked)[0].code);
   }
 
 
-
   //타입별 조회
-
   async function filterByType(selectedType: string, isReset: boolean = false) {
     setPokemons([]);
     setItemCount(0);
@@ -187,13 +179,42 @@ const Main = (props: MainProps) => {
     setPokemons(filteredPokemons);
     setLoading(false);
     setItemCount(20);
+  }
 
+  function checkCharEn(event: ChangeEvent<HTMLInputElement>) {
+    const reg = /^[a-zA-Z]*$/;
+    
+    if (!reg.test(event.target.value)) { 
+      return;
+    } else {
+      setSearch({ ...search, searchString: event.target.value });
+    }
   }
 
 
-  function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
-    if (e.key !== 'Enter' || !search.searchString) return;
-    // searchPokemon();
+  async function searchByPokemonName(e: React.KeyboardEvent<HTMLElement>) {
+    if (e.key !== 'Enter' || (!search.searchString && !search.isSearching)) return;
+    if (!search.searchString) return resetSearchCondition();
+
+    setItemCount(0);
+    setPokemons([]);
+    setLoading(true);
+    setSearch({ ...search, isSearching: true });
+
+    const result = await fetch(`https://pokeapi.co/api/v2/pokemon/${search.searchString}`)
+      .then(res => res.json())
+      .catch(error => setPokemons([]));
+
+    if (result) {
+      const species:PokemonSpeciesApiRes = await getSpeciesData(result.species.url);
+      const translatedNm: PokemonName = species.names.filter((d: PokemonName) => d.language.name === lang)[0];
+      const fullName = lang !== 'en' ? getFullName(result.name, translatedNm?.name) : null;
+      const searchedPokemon = getPokemonObj(result.name, fullName, result.sprites, result.types, result.id, species.color.name);
+      setPokemons([searchedPokemon]);
+      setTotal({...total, totalCount: 1});
+    }
+
+    setLoading(false);
   }
 
 
@@ -207,7 +228,6 @@ const Main = (props: MainProps) => {
   
     console.log('reRendered');
 
-    setLang(query);
     fetchData(props.data.splice(0, 20));
     setTotal({ totalCount: props.data.length, data: props.data});
   },[Router, fetchData, props, total]);
@@ -227,7 +247,7 @@ const Main = (props: MainProps) => {
       <div className={mainStyle['search-section']}>
         <div className={mainStyle['search-bar']}>
           <FontAwesomeIcon icon={ faSearch } className={mainStyle['search-icon']}/>
-          <input type="text" disabled={loading} value={search.searchString} placeholder={placeHolderText?.text || ''} onChange={(e) => setSearch({ ...search, searchString: e.target.value })} onKeyUp={searchByPokemonName} />
+          <input type="text" disabled={loading} value={search.searchString} placeholder={placeHolderText?.text || ''} onChange={(e) => checkCharEn(e)} onKeyUp={searchByPokemonName} />
           {search.searchString ? <FontAwesomeIcon icon={faTimes} className={mainStyle['reset-icon']} onClick={ resetSearchCondition }/> : null }
         </div>
       </div>
@@ -237,7 +257,7 @@ const Main = (props: MainProps) => {
           <div className={mainStyle['filter-container']}>
             <div className={mainStyle.count}>
               <p>{titleTxt?.text}</p>
-              <span>{search.isAll ? total.totalCount : pokemons.length}</span>
+              <span>{ total.totalCount }</span>
             </div>
 
             <PokemonFilter
