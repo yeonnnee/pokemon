@@ -114,8 +114,6 @@ const Main = (props: MainProps) => {
 
   // 데이터 받아서 customizing
   const getPokemons = useCallback(async (data: TypePokemon[]) => {
-    setLoading(true);
-
     const pokemons = await Promise.all(data.map(async (pokemon) => {
       const detail: PokemonDetailApiRes = await getDetailData(pokemon.pokemon.url);
       const species:PokemonSpeciesApiRes = await getSpeciesData(detail.species.url);
@@ -132,23 +130,32 @@ const Main = (props: MainProps) => {
   
   // 데이터 fetch
   const fetchData = useCallback(async (data: TypePokemon[]) => {
+    setLoading(true);
     const fetchedData = await getPokemons(data);
     setPokemons(pokemons.concat(fetchedData));
-    setItemCount(itemCount + 20);
+    setLoading(false);
     console.log('fetch', fetchedData);
-  }, [getPokemons,itemCount,  pokemons]);
+  }, [getPokemons, pokemons]);
 
 
   // 무한 스크롤 : 스크롤 하단 위치시 데이터 추가 로드
   const checkIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
     if (!entry.isIntersecting) return;
-    const nextPokemons = total.data.slice(itemCount, itemCount + 20);
+
+    if (total.data.length === 0) {
+      setTotal({ totalCount: props.data.length, data: props.data });
+      return;
+    }
     
-    if (itemCount === 0 || nextPokemons.length === 0) return;
-    setLoading(true);
+    const nextPokemons = total.data.slice(itemCount, itemCount + 20);
+    if ( total.totalCount === pokemons.length) return;
     await fetchData(nextPokemons);
-    console.log('next', nextPokemons);
-  }, [fetchData, total.data, itemCount]);
+    setItemCount(itemCount + 20);
+
+    console.log('next');
+
+    
+  }, [fetchData,pokemons, total, props, itemCount]);
 
 
 
@@ -223,14 +230,19 @@ const Main = (props: MainProps) => {
     const query = Router.query.lang as string;
     const supportedLang = ['ko', 'en', 'ja'];
     
-    if (!query || !supportedLang.includes(query)) Router.push({ pathname: '/', query: { lang: 'ko' } })
-    if (!query || total.totalCount) return;
+    if (!query || !supportedLang.includes(query)) Router.push({ pathname: '/', query: { lang: 'ko' } });
+ 
+    console.log('start');
+
+    setLang(query);
+
+    if (total.data) return;
+    setItemCount(0);
+    setPokemons([]);
   
     console.log('reRendered');
 
-    fetchData(props.data.splice(0, 20));
-    setTotal({ totalCount: props.data.length, data: props.data});
-  },[Router, fetchData, props, total]);
+  },[Router, total]);
 
 
   // Intersection Observer API
