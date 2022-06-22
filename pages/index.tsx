@@ -9,16 +9,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { PokemonTypesApiRes, TypeDetailApiRes, TypePokemon } from '../types/pokemonTypes';
 import PokemonFilter from '../components/PokemonFilter';
-import useFilterCategory, { OptionItem } from '../hooks/useFilterCategory';
+import useFilterCategory, { OptionItem } from '../hooks/useFilter';
 import { useRouter } from 'next/router';
 import { placeholder, title } from '../translate/text';
+
 
 interface TotalState {
   totalCount: number,
   data: TypePokemon[]
   originData: TypePokemon[]
 }
-
 export interface SearchState {
   searchString: string,
   types: (string | null)[],
@@ -43,10 +43,9 @@ const Main = (props: MainProps) => {
     isAll: true,
   });
   const [itemCount, setItemCount] = useState<number>(0);
-  const [types, setTypes] = useState<OptionItem[]>([]);
   const titleTxt = title.filter(text => text.language === lang)[0];
   const placeHolderText = placeholder.filter(placeholder => placeholder.language === lang)[0];
-  const filterCategory = useFilterCategory(types); 
+  const typeFilter = useFilterCategory(props.types, lang);
   const target = useRef<HTMLDivElement>(null);
 
   const getPokemonForm = useCallback((pokemonName: string) => {
@@ -193,13 +192,13 @@ const Main = (props: MainProps) => {
     setPokemons([]);
     setLoading(true);
     console.log('asd');
-    if (selectedTypes.length === 0 || selectedTypes.length === types.length) {
-      setSearch({ ...search, types: selectedTypes, isAll: true });
-      // const totalData = total.data.length > 0 ? total.data.splice(0, 50) : await getPokemons(total.originData.splice(0, 50));
-      setPokemons([]);
-      setLoading(false);
-      return;
-    }
+    // if (selectedTypes.length === 0 || selectedTypes.length === types.length) {
+    //   setSearch({ ...search, types: selectedTypes, isAll: true });
+    //   // const totalData = total.data.length > 0 ? total.data.splice(0, 50) : await getPokemons(total.originData.splice(0, 50));
+    //   setPokemons([]);
+    //   setLoading(false);
+    //   return;
+    // }
 
     setSearch({ ...search, searchString: isReset ? '' : search.searchString, types: selectedTypes, isAll: false });
     const filteredPokemonsArr = await filterByTypes(selectedTypes);
@@ -263,11 +262,8 @@ const Main = (props: MainProps) => {
   
     console.log('reRendered');
     setLang(query);
-    const filteredTypesByLang = props.types.map(typeInfo => typeInfo.filter(t => t.language.name === query)[0]);
     fetchData(props.data.splice(0, 20));
     setTotal({ totalCount: props.data.length, originData: props.data, data: []});
-    setTypes(filteredTypesByLang);
-
   },[Router, fetchData, props, total]);
 
 
@@ -299,14 +295,14 @@ const Main = (props: MainProps) => {
             </div>
 
             <PokemonFilter
-              filterCategory={filterCategory}
+              category={typeFilter}
               searchWithFilters={searchWithFilters}
             />
           </div>
         : null
       }
 
-      {
+      {/* {
         !loading ? 
         <ul className={mainStyle["filter-condition-list"]}>
           {filterCategory.map(category => category.options.map((op, index) => {
@@ -314,11 +310,11 @@ const Main = (props: MainProps) => {
           }))}
         </ul>
         : null
-      }
+      } */}
 
 
       { 
-        pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>검색 결과가 없습니다.</p> :
+        pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>{lang === 'ko' ? '검색 결과가 없습니다.' : 'No Results'}</p> :
         <ul className={mainStyle['pokemon-list']}>
           {
             pokemons.map((pokemon, index) => {return <PokemonCard {...pokemon} key={index} />})
@@ -335,28 +331,24 @@ const Main = (props: MainProps) => {
 
 // 데이터가 있어야 화면을 그릴 수 있으므로 SSG 방식으로 렌더링 
 
-export const getStaticProps: GetStaticProps = async(context) => {
-  // const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=0&offset=0").then(res => res.json());
-  // const total: PokemonsApiRes = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${res.count}&offset=0`).then(res => res.json());
-  // const totalData = total.results.filter(result => !result.name.includes('totem') || !result.name.includes('starter'));
-  const grassTypePokemon:TypeDetailApiRes = await fetch("https://pokeapi.co/api/v2/type/grass").then(res => res.json());
+export const getStaticProps: GetStaticProps = async(context) => {  const grassTypePokemon:TypeDetailApiRes = await fetch("https://pokeapi.co/api/v2/type/grass").then(res => res.json());
   const pokemons = grassTypePokemon.pokemon.filter(pokemon => !pokemon.pokemon.name.includes('starter') && !pokemon.pokemon.name.includes('dada') && !pokemon.pokemon.name.includes('totem'));
   const types: PokemonTypesApiRes = await fetch("https://pokeapi.co/api/v2/type").then(res => res.json());
   const filteredTypeByLang = await Promise.all(types.results.map(async (type) => {
-    const typeRes = await fetch(type.url).then(res => res.json());
+  const typeRes = await fetch(type.url).then(res => res.json());
 
-    const typesWithLang = await typeRes.names.filter((name: any) => name.language.name == 'ko' || name.language.name == 'ja-Hrkt' || name.language.name == 'en');
-    const trimLangData = typesWithLang.map((t:PokemonName) => {
-      if (t.language.name === 'ja-Hrkt') {
-        return {
-          ...t,
-          code: typeRes.name,
-          language: {
-            ...t.language,
-            name: 'ja'
-          }
+  const typesWithLang = await typeRes.names.filter((name: any) => name.language.name == 'ko' || name.language.name == 'ja-Hrkt' || name.language.name == 'en');
+  const trimLangData = typesWithLang.map((t:PokemonName) => {
+    if (t.language.name === 'ja-Hrkt') {
+      return {
+        ...t,
+        code: typeRes.name,
+        language: {
+          ...t.language,
+          name: 'ja'
         }
-      } else {
+      }
+    } else {
         return {
           ...t,
           code: typeRes.name,

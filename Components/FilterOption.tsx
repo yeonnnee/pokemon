@@ -1,10 +1,10 @@
 import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { FilterCategory } from '../hooks/useFilterCategory';
+import { Filter } from '../hooks/useFilter';
 import mainStyle from '../styles/main.module.scss'
 
 
 interface FilterOptionProps {
-  category: FilterCategory,
+  category: Filter,
   checkBoxRefs: MutableRefObject<HTMLInputElement[] | null[]>
 }
 

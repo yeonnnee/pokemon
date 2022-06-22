@@ -50,9 +50,6 @@
       }
     }
 
-    .filter-label {
-      margin: 0 0 30px;
-    }
   }
 
   .filter-container {
@@ -71,115 +68,31 @@
       }
     }
 
-
-    .filter-section {
-      width: 100%;
+    .option-list {
+      min-width: 131px;
       visibility: hidden;
       position: absolute;
       z-index: 1;
-      right: 204px;
-      top: 47px;
-  
+      right: 0px;
+      top: 65px;
+      background: white;
+
       .option {
-        @include input-shadow();
-        min-width: 311px;
-        background-color: #f4f4f4;
-        border-radius: 10px;
-  
-        .category {
-          padding: 5px 10px;
-          text-align: left;
-  
-          &:nth-child(1) {
-            padding: 10px 13px 0;
-            text-align: right;
-
-            .reset-icon {
-              font-size: 13px;
-            }
-
-            button {
-              &:hover, &:hover ~ .reset-icon {
-                color: $pink;
-              }
-            }
-          }
-  
-          &:nth-last-child(1) {
-            padding: 20px 10px;
-          }
-  
-          .category-title {
-            display: flex;
-            padding: 2px 10px;
-            margin: 0 0 5px;
-            background: #c69b9bbd;
-  
-            span {
-              padding: 2px 5px;
-            }
-          }
-  
-          .option-list {
-            display: flex;
-            flex-wrap: wrap;
-            width: 300px;
-  
-            .item {
-              width: 141px;
-              margin: 2px;
-  
-              label {
-                display: inline-block;
-                text-align: center;
-                width: 100%;
-                padding: 5px 0;
-                border: 1px solid $shadow-label;
-                border-radius: 5px;
-                cursor: pointer;
-  
-                &:hover {
-                  @include sm-box-shadow();
-                  border: 1px solid $dragon-label;
-                  color: $dragon-label;
-                }
-              }
-  
-              input[type="checkbox"]:checked ~ label{
-                @include sm-box-shadow();
-                border: 1px solid $dragon-label;
-                background-color: #64b4c8;
-                color: white;
-              }
-            }
-          }
-  
-          .filter-btn {
-            text-align: center;
-            button {
-              @include input-shadow;
-              padding: 10px 20px;
-              border-radius: 20px;
-  
-              &:hover {
-                @include card-normal-shadow();
-              }
-  
-              &:nth-child(1) {
-                @include sm-box-shadow();
-  
-                background-color: $dragon-label;
-                margin: 0 10px 0 0;
-  
-                &:hover {
-                  @include btn-hover-shadow();
-                }
-              }
-            }
-  
-          }
+        label {
+          display: inline-block;
+          width: 100%;
+          padding: 3px 10px;
+          text-align: center;
+          cursor: pointer;
         }
-      }
+
+        input[type="checkbox"]:checked ~ label, &:hover{
+          @include sm-box-shadow();
+          border: 1px solid $dragon-label;
+          background-color: #64b4c8;
+          color: white;
+        }
+      }    
     }
   
     .filter {
@@ -188,6 +101,10 @@
       margin: 0 0 0 10px;
       cursor: pointer;
   
+      p {
+        font-size: 13px;
+        font-weight: bold;
+      }
       .filter-icon-label {
         @include input-shadow();
         display: inline-block;
@@ -213,7 +130,7 @@
         }
       }
   
-      .filter-icon:checked ~ .filter-section {
+      .filter-icon:checked ~ .option-list{
         visibility: visible;
       }
     }

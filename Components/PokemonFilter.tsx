@@ -1,25 +1,27 @@
-import { faAngleDown, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Image from 'next/image';
 import { MutableRefObject, useRef } from 'react';
-import { FilterCategory } from '../hooks/useFilterCategory';
+
+import { Filter } from '../hooks/useFilter';
 import mainStyle from '../styles/main.module.scss'
 import FilterOption from './FilterOption';
 
 
 interface PokemonFilterProps {
   searchWithFilters: (type:(string|null)[]) => void,
-  filterCategory: FilterCategory[],
+  category: Filter,
 }
 
 
 const PokemonFilter = (props: PokemonFilterProps) => {
-  const { searchWithFilters, filterCategory } = props;
-  const lang = filterCategory[0].options[0]?.language.name;
-  const filterIconRef = useRef<HTMLInputElement>(null);
-  const typeCheckBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
+  const { searchWithFilters, category } = props;
 
-  
+  const filterIconRef = useRef<HTMLInputElement>(null);
+  const checkBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
+  const selectedOption = category.options.filter(op => op.isChecked)[0];
+
+  console.log(category)
+
   // filter 드롭다운 닫기
   function closeFilter() {
     if (!filterIconRef.current) return;
@@ -33,66 +35,38 @@ const PokemonFilter = (props: PokemonFilterProps) => {
     });
   }
 
-  function resetFilterCondition() {
-    filterCategory.forEach(op => op.options.forEach(option => option.isChecked = false));
-    cancelCheckBoxChecked(typeCheckBoxRefs);
-  }
 
-  function getRefs(op: FilterCategory) {
-    switch (op.category) {
-      case 'type': return typeCheckBoxRefs;
-      default: return typeCheckBoxRefs;
-    }
-  }
-
-  function getFilterConditions(categoryNm: string) {
-    const checkedOptions = filterCategory.filter(options => options.category === categoryNm)[0];
-    const options = checkedOptions.options.map(op => op.isChecked ? op.code : null).filter(op => op);
-    return options;
-  }
-
-  function filterPokemon() {
-    const typeConditions = getFilterConditions('타입');
-    searchWithFilters(typeConditions);
-    closeFilter();
+  function filterPokemon(option: string) {
+    console.log(option);
+    const checked = checkBoxRefs.current.filter(cur => cur.checked);
+    console.log(checked);
+    // const typeConditions = getFilterConditions('타입');
+    // searchWithFilters(typeConditions);
+    // closeFilter();
   }
 
 
 
   return (
     <div className={mainStyle.filter}>
+      <p>Type</p>
       <input type="checkbox" id="filter" className={mainStyle["filter-icon"]} ref={filterIconRef} />
       <label htmlFor="filter" className={mainStyle["filter-icon-label"]}>
-        Filters <FontAwesomeIcon icon={faAngleDown} className={mainStyle['filter-arrow']}/>
+        {selectedOption?.name} <FontAwesomeIcon icon={faAngleDown} className={mainStyle['filter-arrow']}/>
       </label>
       
-      <div className={mainStyle["filter-section"]}>
-        <ul className={mainStyle.option}>
-          <li className={mainStyle.category}>
-            <button onClick={resetFilterCondition}>{ lang === 'ko'? '초기화' : 'Reset' }</button>
-            <FontAwesomeIcon onClick={resetFilterCondition} icon={faRedoAlt} className={mainStyle['reset-icon']}/>
-          </li>
-          {
-            filterCategory.map((op, index) => {
-              return (
-                <li key={index} className={mainStyle.category}>
-                  <div className={mainStyle["category-title"]}>
-                    <Image width={20} height={20} src={`/pokeball.png`} alt={'icon'} />
-                    <span>{op.category}</span>
-                  </div>
-                  <FilterOption category={op} checkBoxRefs={getRefs(op)} />
-                </li>
-              )
-            })
-          }
-          <li className={mainStyle.category}>
-            <div className={mainStyle["filter-btn"]}>
-              <button onClick={filterPokemon}>{ lang === 'ko'? '적용' : 'Filter' }</button>
-              <button onClick={closeFilter}>{ lang === 'ko'? '닫기' : 'Close' }</button>
-            </div>
-          </li>
-        </ul>
-      </div>
+      <ul className={mainStyle["option-list"]}>
+        {
+          category.options.map((option, index) => {
+            return (
+              <li key={index} className={`${mainStyle.option}`}>
+                <input type="checkbox" id={option.code} ref={el => (checkBoxRefs.current[index] = el)} />
+                <label htmlFor={ option.code } onClick={()=>filterPokemon(option.code)}> {option.name} </label>
+              </li>
+            )
+          })
+        }
+      </ul>
     </div>
   )
 }
