@@ -3,6 +3,9 @@
 포켓몬 OPEN API를 활용한 포켓몬 도감
 <br />
 
+[POKEMON API](https://pokeapi.co/)
+
+<br />
 
 #### 기간
 
@@ -10,10 +13,15 @@
 
 <br/>
 
-#### API
-[POKEMON API](https://pokeapi.co/)
+#### Preview
 
-<br/>
+<Img src="https://user-images.githubusercontent.com/61894688/175268650-6b2d5788-0c87-4b64-9e15-48915cb7b298.PNG" width="600px" height="291px" alt="Main"/>
+
+<Img src="https://user-images.githubusercontent.com/61894688/175268478-f0ad335c-9962-4e8a-b04c-8a49a8e1773a.PNG" width="600px" height="291px" alt="Detail"/>
+
+<Img src="https://user-images.githubusercontent.com/61894688/175268025-b3e66bb9-4177-4625-8a9e-fa84e41d236f.PNG" width="600px" height="291px" alt="Stat"/>
+
+
 <br/>
 
 
@@ -21,6 +29,7 @@
 ### 개발 내용
 
 ---
+
 
 - 포켓몬 조회
     - 20개씩 조회
