@@ -114,10 +114,12 @@
       }
 
       .filter-icon-label {
-        @include input-shadow();
+        @include btn-hover-shadow();
         display: inline-block;
         border-radius: 10px;
         padding: 6px 20px;
+        color: $pink;
+        border: 1px solid $gray-border;
         cursor: pointer;
   
         .filter-arrow {

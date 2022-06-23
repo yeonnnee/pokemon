@@ -32,11 +32,13 @@
     position: relative;
 
     .selected-lang {
+      @include btn-hover-shadow();
+      border: 1px solid $gray-border;
+      border-radius: 9px;
       float: right;
       display: flex;
       justify-content: flex-end;
       padding: 5px 10px;
-      border-bottom: 1px solid $shade-shadow;
       cursor: pointer;
 
       span {
@@ -45,7 +47,7 @@
 
       &:hover {
         color: $pink;
-        border-bottom: 1px solid #000;
+        @include input-shadow();
       }
 
       .drop-down-icon {

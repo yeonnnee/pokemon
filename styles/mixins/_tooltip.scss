@@ -1,9 +1,11 @@
-@mixin tooltip( $top, $left,$arrowTop, $arrowLeft, $paddingTopBottom, $paddingSide) {
+@mixin tooltip( $top, $left,$arrowTop, $arrowLeft) {
   visibility: hidden;
   position: absolute;
   top: $top;
   left: $left;
-  padding: $paddingTopBottom $paddingSide;
+  width: 100%;
+  padding: 6px 0;
+  text-align: center;
   background-color: #3d3b3bcf;
   color: white;
   font-size: 13px;
