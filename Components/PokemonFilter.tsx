@@ -1,6 +1,7 @@
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MutableRefObject, useRef } from 'react';
+import useOutsideClick from '../hooks/useClickOutside';
 
 import { Filter, OptionItem } from '../hooks/useFilter';
 import mainStyle from '../styles/main.module.scss'
@@ -19,7 +20,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
   const checkBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
   const selectedOption = category.options.filter(op => op.isChecked)[0];
 
-  console.log('filter', category);
+  useOutsideClick(filterIconRef);
 
   // filter 드롭다운 닫기
   function closeFilter() {

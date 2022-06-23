@@ -17,6 +17,7 @@ import { PokemonsApiRes, ResourceForPokemon } from "../../../types/pokemons";
 import { GetStaticProps } from "next";
 import { sectionTitleName } from "../../../translate/text";
 import RadarChart from "../../../components/common/RadarChart";
+import useOutsideClick from "../../../hooks/useClickOutside";
 
 
 interface DetailProps {
@@ -42,7 +43,7 @@ const Detail = (props: DetailProps) => {
   const queryPokemonNm = router.query.pokemonName as string;
   const pokemonIdx = usePokemonIdx( queryPokemonNm.includes('gmax') ? -1 : data?.id || 0);
 
-
+  
   const convertStatName = (name: string) => {
     switch (name) { 
       case 'hp' : return 'Hp';

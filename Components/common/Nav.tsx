@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import useOutsideClick from "../../hooks/useClickOutside";
 import NavStyle from '../../styles/nav.module.scss'
 
 interface SupportedLanguage {
@@ -21,7 +22,7 @@ const Nav = () => {
   const selectBoxRef = useRef<HTMLInputElement>(null);
   const Router = useRouter();
   const supportedLanguage = useMemo(() => getSupportedLanguage(),[]);
-
+  useOutsideClick(selectBoxRef);
 
   function getSupportedLanguage() {
     return [
