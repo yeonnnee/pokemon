@@ -1,6 +1,6 @@
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useOutsideClick from '../hooks/useClickOutside';
 import detailStyle from '../styles/detail.module.scss';
 import { FlavorTextEntry } from '../types/speices';
@@ -17,12 +17,17 @@ const PokemonDesc = (props: PokemonDescProps) => {
 
   useOutsideClick(dropdownRef);
 
+
   function selectDescVersion(description: FlavorTextEntry) {
     setSelectedVersion(description);
 
     if (!dropdownRef.current) return;
     dropdownRef.current.checked = false;
   }
+
+  useEffect(() => {
+    setSelectedVersion(desc[0]);
+  },[desc])
 
   return (
     <div className={detailStyle['detail-info']}>
