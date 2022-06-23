@@ -35,9 +35,12 @@ const Detail = (props: DetailProps) => {
   const [data, setData] = useState<PokemonDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [lang, setLang] = useState('');
-  const translation = sectionTitleName.filter(category => category.language === lang);
-  const pokemonIdx = usePokemonIdx(props.data.isGmax ? -1 : data?.id || 0);
   const [stats, setStats] = useState<PokemonStat[]>([]);
+  const [totalStat, setTotalStat] = useState<number>(0);
+
+  const translation = sectionTitleName.filter(category => category.language === lang);
+  const queryPokemonNm = router.query.pokemonName as string;
+  const pokemonIdx = usePokemonIdx( queryPokemonNm.includes('gmax') ? -1 : data?.id || 0);
 
 
   const convertStatName = (name: string) => {
@@ -212,18 +215,21 @@ const Detail = (props: DetailProps) => {
       stats: stats
     };
 
+    let total: number = 0;
+    stats.forEach(stat => total = total + stat.base_stat);
     setLoading(false);
     setData(result);
     setStats(result.stats);
+    setTotalStat(total);
 
   }, [getEvolutionChain, getFullName, lang]);
 
-
+  function goToMain() {
+    router.push(`/?lang=${lang}`);
+  }
 
   useEffect(() => {
     const query = router.query.lang as string;
-    console.log('start Detail');
-
     setLang(query);
 
     if (!lang) return;
@@ -253,9 +259,12 @@ const Detail = (props: DetailProps) => {
 
               {/* 종족치 */}
               <div className={` ${detailStyle.section}`}>
-                <p className={detailStyle["section-title"]}>
-                  {translation.filter(category => category.category === 'stat')[0].text}
-                </p>
+                <div className={detailStyle["section-title"]}>
+                  <span>{translation.filter(category => category.category === 'stat')[0].text}</span>
+                  <p className={detailStyle.total}>
+                    <span>Total</span>: <span>{totalStat}</span>
+                  </p>
+                </div>
                 <div className={detailStyle["chart-section"]}>
                   <RadarChart chartData={ stats } />
                 </div>
@@ -263,9 +272,7 @@ const Detail = (props: DetailProps) => {
             </section>
           </div>
           <div className={detailStyle["btn-section"]}>
-            <Link href={`/?lang=${lang}`}>
-              <button className={detailStyle.btn}>{lang === 'ko' ? '목록으로' : 'Main'}</button>
-            </Link>
+              <button onClick={goToMain} className={detailStyle.btn}>{lang === 'ko' ? '목록으로' : 'Main'}</button>
           </div>
         </div>
       }
