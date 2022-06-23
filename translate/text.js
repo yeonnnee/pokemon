@@ -276,3 +276,33 @@ export const sectionTitleName = [
     "category": 'stat'
   },
 ];
+
+export const noEvolutionInfo = [
+  {
+    "language": "ko",
+    "text": "진화 정보가 없습니다.",
+  },
+  {
+    "language": "en",
+    "text": "No Evolution Info",
+  },
+  {
+    "language": "ja",
+    "text": "進化情報がありません。",
+  },
+];
+
+export const loadPokemonInfo = [
+  {
+    "language": "ko",
+    "text": "포켓몬 정보를 불러오는 중입니다.",
+  },
+  {
+    "language": "en",
+    "text": "Load Pokemon Info...",
+  },
+  {
+    "language": "ja",
+    "text": "ポケモン情報を読み込んでいます。",
+  },
+];

@@ -2,6 +2,7 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import detailStyle from '../styles/detail.module.scss';
+import { noEvolutionInfo } from '../translate/text';
 import { EvolutionData } from '../types/detail';
 import ImageCard from './ImageCard';
 
@@ -13,8 +14,8 @@ interface EvolutionInfoProps {
 
 const EvolutionInfo = (props : EvolutionInfoProps) => {
   const { evolution, sectionTitle, lang } = props;
+  const noEvolutionInfoText = noEvolutionInfo.filter(text => text.language == lang)[0].text;
 
-  console.log('eve', evolution);
 
   return (
     <div className={detailStyle.evolution}>
@@ -25,7 +26,7 @@ const EvolutionInfo = (props : EvolutionInfoProps) => {
             <ul key={index} className={detailStyle["evolution-image"]}>
               {
                 evolutionCase.length === 1 ?
-                  <li>진화 정보가 없습니다.</li>
+                  <li>{noEvolutionInfoText}</li>
                   :
                 evolutionCase.map((chain) => {
                   return chain.id ?

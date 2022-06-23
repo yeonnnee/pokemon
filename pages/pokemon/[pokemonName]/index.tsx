@@ -15,7 +15,7 @@ import EvolutionInfo from "../../../components/EvolutionInfo";
 import Loader from "../../../components/common/Loader";
 import { PokemonsApiRes, ResourceForPokemon } from "../../../types/pokemons";
 import { GetStaticProps } from "next";
-import { sectionTitleName } from "../../../translate/text";
+import { loadPokemonInfo, sectionTitleName } from "../../../translate/text";
 import RadarChart from "../../../components/common/RadarChart";
 import useOutsideClick from "../../../hooks/useClickOutside";
 
@@ -42,7 +42,7 @@ const Detail = (props: DetailProps) => {
   const translation = sectionTitleName.filter(category => category.language === lang);
   const queryPokemonNm = router.query.pokemonName as string;
   const pokemonIdx = usePokemonIdx( queryPokemonNm.includes('gmax') ? -1 : data?.id || 0);
-
+  const loadPokemonInfoTxt = loadPokemonInfo.filter(text => text.language === lang)[0].text;
   
   const convertStatName = (name: string) => {
     switch (name) { 
@@ -240,7 +240,7 @@ const Detail = (props: DetailProps) => {
 
   return (
     <>
-      {!data ? <Loader text={'정보를 불러오는 중입니다..'} /> :
+      {!data ? <Loader text={loadPokemonInfoTxt} /> :
         <div className={detailStyle.detail}>
           <div className={detailStyle.container}>
             <ImageSection images={data.images} lang={lang} pokemonIdx={pokemonIdx} pokemonName={ data.translatedNm } desc={data.desc} sectionTitle={translation.filter(category => category.category === 'desc')[0].text } />
