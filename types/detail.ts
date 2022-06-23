@@ -31,8 +31,14 @@ export interface EvolutionData {
   name: string | null,
   translatedNm: string | null,
   image: string | null,
-  item?: ResourceForPokemon | null
+  item?: EvolutionItem | null
 }
+
+interface EvolutionItem {
+  name: string,
+  image: string
+}
+
 export interface PokemonDetailApiRes {
   abilities: PokemonAbility[],
   base_experience: number,

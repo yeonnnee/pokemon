@@ -1,4 +1,6 @@
+import { PokemonGame } from "./detail"
 import { ResourceForPokemon } from "./pokemons"
+import { FlavorTextEntry, PokemonName } from "./speices"
 
 export interface EvolutionApiRes {
   id: number,
@@ -29,7 +31,7 @@ export interface EvolvesTo {
 export interface EvolutionDetail {
   gender: null,
   held_item: null,
-  item: null,
+  item: ResourceForPokemon,
   known_move: null,
   known_move_type: null,
   location: null,
@@ -45,4 +47,35 @@ export interface EvolutionDetail {
   trade_species: null,
   trigger: ResourceForPokemon,
   turn_upside_down: boolean
+}
+
+export interface EvolutionItem {
+  attributes: ResourceForPokemon[],
+  baby_trigger_for: null,
+  category: ResourceForPokemon,
+  cost: number,
+  effect_entries: EffectEntry[],
+  flavor_text_entries: FlavorTextEntry[]
+  fling_effect: null,
+  fling_power: number,
+  game_indices: Game[],
+  held_by_pokemon: [],
+  id: number,
+  machines: [],
+  name: string,
+  names: PokemonName[],
+  sprites: {
+    default: string
+  }
+}
+
+export interface EffectEntry {
+  effect: string,
+  language: ResourceForPokemon
+  short_effect: string,
+}
+
+export interface Game {
+  game_index: number,
+  generation: ResourceForPokemon
 }

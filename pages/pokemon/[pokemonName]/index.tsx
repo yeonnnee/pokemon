@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import detailStyle from '../../../styles/detail.module.scss';
 import { EvolutionData, PokemonDetail, PokemonDetailApiRes, PokemonStat } from "../../../types/detail";
-import { PokemonSpeciesApiRes } from "../../../types/speices";
+import { PokemonName, PokemonSpeciesApiRes } from "../../../types/speices";
 import { AbilityApiRes } from "../../../types/ability";
 import usePokemonIdx from "../../../hooks/usePokemonIdx";
 import { EvolutionApiRes } from "../../../types/evolution";
@@ -88,29 +88,49 @@ const Detail = (props: DetailProps) => {
 
     if (evolutionChain.length === 0) return [initialData];
 
-
     if (evolutionChain.length > 1) {
       // 이브이 진화
       let cases: EvolutionData[][] = [];
+      const origin = await getEvolutionData(res.chain.species.url, 1);
       const evolutionCases = await Promise.all(evolutionChain.map(async (chain, index) => {
-        const info = await getEvolutionData(chain.species.url, index);
+        const info = await getEvolutionData(chain.species.url, index + 2);
         return {
           ...info,
-          item: chain.evolution_details[0].item,
+          item: chain.evolution_details[0].item
         }
       }));
-      evolutionCases.forEach(data => { if (data.name) cases.push([data]) });
+      
+
+      evolutionCases.forEach(data => {
+        if (data.name) {
+          cases.push([origin, data]);
+        }
+      });
 
       return cases;
     } else {
       const beforeLevelUp = await getEvolutionData(res.chain.species.url, 1);
       const firstLevelUp = await getEvolutionData(evolutionChain[0].species.url, 2);
-      const lastLevelUp = await getEvolutionData(evolutionChain[0].evolves_to[0].species.url, 3);
-      const evolutionInfo = [beforeLevelUp, firstLevelUp, lastLevelUp].filter(info => info.name);
-      return [evolutionInfo];
+      const lastLevelUp = await getEvolutionData(evolutionChain[0].evolves_to[0]?.species.url, 3);
+
+      if (props.data.isMega) {
+        const mega = await fetch(`https://pokeapi.co/api/v2/pokemon/${evolutionChain[0].evolves_to[0]?.species.name}-mega`).then(res => res.json());
+        const megaEvolution = { 
+          id: 4,
+          name: mega.name,
+          translatedNm: lang === 'ko' ? `메가${lastLevelUp.translatedNm}` : `メガ${lastLevelUp.translatedNm}`,
+          image: mega.sprites.front_default,
+          
+        }
+        return [[beforeLevelUp, firstLevelUp, lastLevelUp, megaEvolution].filter(info => info.name)];
+
+      } else {
+        return [[beforeLevelUp, firstLevelUp, lastLevelUp,].filter(info => info.name)];
+      }
+
     }
 
-  }, [getEvolutionData]);
+  }, [getEvolutionData, props, lang]);
 
   const getPokemonForm = useCallback((pokemonName: string) => {
     let label:string = '';

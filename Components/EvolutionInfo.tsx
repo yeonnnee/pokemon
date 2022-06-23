@@ -24,9 +24,9 @@ const EvolutionInfo = (props : EvolutionInfoProps) => {
           return (
             <ul key={index} className={detailStyle["evolution-image"]}>
               {
-                // evolution.length === 1 ?
-                //   <li>진화 정보가 없습니다.</li>
-                //   :
+                evolutionCase.length === 1 ?
+                  <li>진화 정보가 없습니다.</li>
+                  :
                 evolutionCase.map((chain) => {
                   return chain.id ?
                     <React.Fragment key={`evolve-${chain.id}`}>
@@ -34,8 +34,14 @@ const EvolutionInfo = (props : EvolutionInfoProps) => {
                         <ImageCard lang={lang} width={100} height={100} src={chain.image} alt={chain.name} name={chain.name} translatedNm={chain.translatedNm}/>
                       </li>
                       {
-                        evolution[chain.id] ? <li><FontAwesomeIcon icon={faChevronRight} /></li> : null
+                        evolutionCase[chain.id] ?
+                          <li>
+                            <FontAwesomeIcon icon={faChevronRight} />
+                          </li>
+                          : null
                       }
+
+
                     </React.Fragment>
                   : null
                 })
