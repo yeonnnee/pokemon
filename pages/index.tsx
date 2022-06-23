@@ -166,8 +166,10 @@ const Main = (props: MainProps) => {
   //타입별 조회
   async function filterByType(selectedType: string | null) {
     if (!selectedType) return;
+
     setPokemons([]);
     setInitialLoading(true);
+    setLoading(true);
     setItemCount(0);
 
     const res = await fetch(`https://pokeapi.co/api/v2/type/${selectedType}`);
@@ -177,6 +179,8 @@ const Main = (props: MainProps) => {
     if (result.length == 0) {
       setItemCount(0);
       setPokemons([]);
+      setLoading(false);
+
       return;
     }
 
@@ -186,6 +190,7 @@ const Main = (props: MainProps) => {
     setPokemons(filteredPokemons);
     setItemCount(20);
     setInitialLoading(false);
+    setLoading(false);
   }
 
   function checkCharEn(event: ChangeEvent<HTMLInputElement>) {
@@ -261,7 +266,7 @@ const Main = (props: MainProps) => {
       </div>
 
       {
-        !loading && !search.isSearching ? 
+        !search.isSearching ? 
           <div className={mainStyle['filter-container']}>
             <div className={mainStyle.count}>
               <p>{titleTxt?.text}</p>
@@ -277,16 +282,16 @@ const Main = (props: MainProps) => {
       }
 
       { 
-        pokemons.length === 0 && !loading ? <p className={mainStyle["no-result"]}>{lang === 'ko' ? '검색 결과가 없습니다.' : 'No Results'}</p> :
+        pokemons.length === 0 && (!loading && initialLoading) ? <p className={mainStyle["no-result"]}>{lang === 'ko' ? '검색 결과가 없습니다.' : 'No Results'}</p> :
         <ul className={mainStyle['pokemon-list']}>
           {
-              pokemons.map((pokemon, index) => { return <PokemonCard pokemon={pokemon} lang={lang} key={index} />})
+            pokemons.map((pokemon, index) => { return <PokemonCard pokemon={pokemon} lang={lang} key={index} />})
           }
         </ul>
       }
 
       <div ref={target} className={mainStyle.loader}>
-        { loading ? <p>Loading</p> : null}
+        { (loading && initialLoading) || (loading && !initialLoading) ? <p>Loading</p> : null}
       </div>
     </div>
   )
