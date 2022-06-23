@@ -2,7 +2,7 @@
 
 포켓몬 OPEN API를 활용한 포켓몬 도감
 <br />
-[Pokedex 보러가기](https://pokedex-nv7x4zbgd-yeonnnee.vercel.app/?lang=ko)
+[Pokedex 보러가기](https://pokedex-b1moveuwo-yeonnnee.vercel.app/?lang=ko)
 
 
 #### 기간
