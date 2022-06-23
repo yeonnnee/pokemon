@@ -16,6 +16,7 @@ import Loader from "../../../components/common/Loader";
 import { PokemonsApiRes, ResourceForPokemon } from "../../../types/pokemons";
 import { GetStaticProps } from "next";
 import { sectionTitleName } from "../../../translate/text";
+import RadarChart from "../../../components/common/RadarChart";
 
 
 interface DetailProps {
@@ -36,18 +37,8 @@ const Detail = (props: DetailProps) => {
   const [lang, setLang] = useState('');
   const translation = sectionTitleName.filter(category => category.language === lang);
   const pokemonIdx = usePokemonIdx(props.data.isGmax ? -1 : data?.id || 0);
+  const [stats, setStats] = useState<PokemonStat[]>([]);
 
-  const barRef = useRef<HTMLDivElement[] | null[]>([]);
-
-  const paintGraphBar = useCallback((result:PokemonDetail | null) => {
-    if (!result || loading) return;
-    const stats = result.stats.map(stat => stat.base_stat);
-
-    barRef.current.forEach((ref, index) => {
-      if (!ref) return;
-      ref.style.width = `${(stats[index] && stats[index] > 100) ? 100 : stats[index]}%`
-    });
-  }, [loading]);
 
   const convertStatName = (name: string) => {
     switch (name) { 
@@ -130,7 +121,7 @@ const Detail = (props: DetailProps) => {
 
     }
 
-  }, [getEvolutionData, props, lang]);
+  }, [getEvolutionData, lang, props]);
 
   const getPokemonForm = useCallback((pokemonName: string) => {
     let label:string = '';
@@ -223,9 +214,9 @@ const Detail = (props: DetailProps) => {
 
     setLoading(false);
     setData(result);
-    paintGraphBar(result);
+    setStats(result.stats);
 
-  }, [getEvolutionChain, paintGraphBar, getFullName, lang]);
+  }, [getEvolutionChain, getFullName, lang]);
 
 
 
@@ -265,19 +256,8 @@ const Detail = (props: DetailProps) => {
                 <p className={detailStyle["section-title"]}>
                   {translation.filter(category => category.category === 'stat')[0].text}
                 </p>
-
-                <div className={detailStyle.rate}>
-                  {data?.stats.map((stat: PokemonStat, index: number) => {
-                    return (
-                      <div className={detailStyle['graph-section']} key={`stat-${index}`}>
-                        <p className={detailStyle['graph-label']}>{ stat.label }</p>
-                        <div className={ detailStyle.graph }>
-                          <div ref={el => (barRef.current[index] = el)} className={`${detailStyle['graph-bar']} ${detailStyle[`${stat.stat.name}-bar`]}`}></div>
-                        </div>
-                        <p>{ stat.base_stat }</p>
-                      </div>
-                    )
-                  })}
+                <div className={detailStyle["chart-section"]}>
+                  <RadarChart chartData={ stats } />
                 </div>
               </div>
             </section>
