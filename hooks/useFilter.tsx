@@ -14,7 +14,7 @@ export interface Filter {
 
 
 function useFilter(types: OptionItem[][], lang:string) {
-  const [filter, setFilter] = useState<Filter>(null);
+  const [filter, setFilter] = useState<Filter | null>(null);
   const [supportLang, setSupportLang] = useState('');
 
   function selectOption(options:OptionItem[], selectedOption: OptionItem) {

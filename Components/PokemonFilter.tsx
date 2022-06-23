@@ -9,7 +9,7 @@ import mainStyle from '../styles/main.module.scss'
 
 interface PokemonFilterProps {
   filterByType: (type:string) => void,
-  category: Filter,
+  category: Filter | null,
 }
 
 
@@ -18,7 +18,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
 
   const filterIconRef = useRef<HTMLInputElement>(null);
   const checkBoxRefs = useRef<HTMLInputElement[] | null[]>([]);
-  const selectedOption = category.options.filter(op => op.isChecked)[0];
+  const selectedOption = category?.options.filter(op => op.isChecked)[0];
 
   useOutsideClick(filterIconRef);
 
@@ -38,7 +38,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
 
   function filterPokemon(option: OptionItem) {
     cancelCheckBoxChecked();
-    category.fn(category.options, option);
+    category?.fn(category.options, option);
     filterByType(option.code);
 
     closeFilter();
@@ -56,7 +56,7 @@ const PokemonFilter = (props: PokemonFilterProps) => {
       
       <ul className={mainStyle["option-list"]}>
         {
-          category.options.map((option, index) => {
+          category?.options.map((option, index) => {
             return (
               <li key={index} className={`${mainStyle.option}`}>
                 <input type="checkbox" id={option.code} onChange={() => filterPokemon(option)} checked={option.isChecked} ref={el => (checkBoxRefs.current[index] = el)} />

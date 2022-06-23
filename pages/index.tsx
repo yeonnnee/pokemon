@@ -157,12 +157,14 @@ const Main = (props: MainProps) => {
     });
 
     if (itemCount === 20) return;
-    filterByType(typeFilter.options.filter(op => op.isChecked)[0].code);
+    const selectedOption = typeFilter?.options.filter(op => op.isChecked)[0].code;
+    filterByType(selectedOption || '');
   }
 
 
   //타입별 조회
-  async function filterByType(selectedType: string) {
+  async function filterByType(selectedType: string | null) {
+    if (!selectedType) return;
     setPokemons([]);
     setLoading(true);
 
