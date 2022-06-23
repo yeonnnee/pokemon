@@ -118,8 +118,6 @@ const Main = (props: MainProps) => {
       const result = getPokemonObj(detail.name, fullName, detail.sprites, detail.types, detail.id, species.color.name);
       return result;
     }));
-    setLoading(false);
-    console.log('getPokemons', pokemons);
     return pokemons;
   }, [getFullName, lang]);
   
@@ -130,13 +128,12 @@ const Main = (props: MainProps) => {
     const fetchedData = await getPokemons(data);
     setPokemons(pokemons.concat(fetchedData));
     setLoading(false);
-    console.log('fetch', fetchedData);
   }, [getPokemons, pokemons]);
 
 
   // 무한 스크롤 : 스크롤 하단 위치시 데이터 추가 로드
   const checkIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-    if (!entry.isIntersecting) return;
+    if (!entry.isIntersecting || search.isSearching) return;
 
     if (total.data.length === 0) {
       setTotal({ totalCount: props.data.length, data: props.data });
@@ -151,7 +148,7 @@ const Main = (props: MainProps) => {
     console.log('next');
 
     
-  }, [fetchData,pokemons, total, props, itemCount]);
+  }, [fetchData,pokemons, total, props, itemCount, search]);
 
 
 
@@ -170,8 +167,9 @@ const Main = (props: MainProps) => {
   //타입별 조회
   async function filterByType(selectedType: string, isReset: boolean = false) {
     setPokemons([]);
-    setItemCount(0);
     setLoading(true);
+
+    setItemCount(0);
 
     const res = await fetch(`https://pokeapi.co/api/v2/type/${selectedType}`);
     const data: TypeDetailApiRes = await res.json();
@@ -180,8 +178,9 @@ const Main = (props: MainProps) => {
     const filteredPokemons = await getPokemons(result.splice(0, 20));
 
     setPokemons(filteredPokemons);
-    setLoading(false);
     setItemCount(20);
+    setLoading(false);
+
   }
 
   function checkCharEn(event: ChangeEvent<HTMLInputElement>) {
@@ -261,7 +260,7 @@ const Main = (props: MainProps) => {
       </div>
 
       {
-        !loading ? 
+        !loading && !search.isSearching ? 
           <div className={mainStyle['filter-container']}>
             <div className={mainStyle.count}>
               <p>{titleTxt?.text}</p>
