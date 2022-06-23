@@ -4,7 +4,7 @@ import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 
 import Head from 'next/head';
-import Nav from '../components/common/Nav';
+import Nav from '../Components/common/Nav';
 
 config.autoAddCss = false;
 

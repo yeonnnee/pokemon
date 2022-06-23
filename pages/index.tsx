@@ -1,6 +1,6 @@
 import type { GetStaticProps } from 'next'
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
-import PokemonCard from '../components/PokemonCard';
+import PokemonCard from '../Components/PokemonCard';
 import mainStyle from '../styles/main.module.scss'
 import { PokemonName, PokemonSpeciesApiRes } from '../types/speices';
 import { PokemonDetailApiRes, PokemonSprites, PokemonType } from '../types/detail';
@@ -8,7 +8,7 @@ import { Pokemon} from '../types/pokemons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { PokemonTypesApiRes, TypeDetailApiRes, TypePokemon } from '../types/pokemonTypes';
-import PokemonFilter from '../components/PokemonFilter';
+import PokemonFilter from '../Components/PokemonFilter';
 import useFilterCategory, { OptionItem } from '../hooks/useFilter';
 import { useRouter } from 'next/router';
 import { placeholder, title } from '../translate/text';

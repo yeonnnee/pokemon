@@ -7,16 +7,16 @@ import { AbilityApiRes } from "../../../types/ability";
 import usePokemonIdx from "../../../hooks/usePokemonIdx";
 import { EvolutionApiRes } from "../../../types/evolution";
 import Link from "next/link";
-import ImageSection from "../../../components/ImageSection";
-import DefaultInfo from "../../../components/DefaultInfo";
-import DetailInfo from "../../../components/DetailInfo";
-import AbilityInfo from "../../../components/AbilityInfo";
-import EvolutionInfo from "../../../components/EvolutionInfo";
-import Loader from "../../../components/common/Loader";
+import ImageSection from "../../../Components/ImageSection";
+import DefaultInfo from "../../../Components/DefaultInfo";
+import DetailInfo from "../../../Components/DetailInfo";
+import AbilityInfo from "../../../Components/AbilityInfo";
+import EvolutionInfo from "../../../Components/EvolutionInfo";
+import Loader from "../../../Components/common/Loader";
 import { PokemonsApiRes, ResourceForPokemon } from "../../../types/pokemons";
 import { GetStaticProps } from "next";
 import { loadPokemonInfo, sectionTitleName } from "../../../translate/text";
-import RadarChart from "../../../components/common/RadarChart";
+import RadarChart from "../../../Components/common/RadarChart";
 import useOutsideClick from "../../../hooks/useClickOutside";
 
 
