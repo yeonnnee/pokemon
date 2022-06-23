@@ -1,4 +1,7 @@
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import useLabel from '../hooks/useLabel';
 import detailStyle from '../styles/detail.module.scss';
@@ -21,10 +24,19 @@ const ImageSection = (props: ImageSectionProps) => {
   const queryPokemonNm = router.query.pokemonName as string;
   const label = useLabel(queryPokemonNm, lang, pokemonIdx);
 
+  function goToMain() {
+    router.push(`/?lang=${lang}`);
+  }
+
   return (
     <section className={detailStyle["image-section"]}>
       {/* 프로필 이미지 */}
-
+      <div className={detailStyle["back-btn"]}>
+        <button className={detailStyle.btn} onClick={goToMain}>
+          <FontAwesomeIcon icon={faArrowLeft} className={detailStyle["back-btn-icon"] } />
+          {lang === 'ko' ? '목록으로' : 'Go To Main'}
+        </button>
+      </div>
       <div className={detailStyle.profile}>
         <span className={detailStyle.order}>{ label }</span>
         <div className={detailStyle.name}>
