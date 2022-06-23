@@ -1,4 +1,5 @@
 import { PokemonSprites, PokemonType } from "./detail"
+import { PokemonName } from "./speices"
 
 export interface PokemonsApiRes {
   count: number,
@@ -14,9 +15,14 @@ export interface ResourceForPokemon {
 
 export interface Pokemon {
   name: string,
-  translatedNm: string | null,
+  translatedNm: PokemonTranslatedName[] | null,
   images: PokemonSprites,
   types: PokemonType[],
   id: number,
   color: string
+}
+
+export interface PokemonTranslatedName {
+  language: string,
+  name: string
 }

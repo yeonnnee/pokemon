@@ -50,7 +50,8 @@ function useFilter(types: OptionItem[][], lang:string) {
 
   useEffect(() => {
     if (supportLang === lang) return;
-    
+
+    setSupportLang(lang);
     getFilterOptions();
   }, [getFilterOptions, supportLang, lang]);
 
