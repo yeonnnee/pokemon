@@ -85,7 +85,7 @@ const Nav = () => {
 
 
       <div className={NavStyle.intro} >
-        <Link href={`/`}>
+        <Link href={`/?lang=${selectedLang.code}`}>
           <a>
             {/* <Image src="/main_logo.png" alt="logo" width={150} height={50} /> */}
             <span className={NavStyle.logo}>Pokédex</span>
