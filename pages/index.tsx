@@ -165,7 +165,7 @@ const Main = (props: MainProps) => {
 
 
   //타입별 조회
-  async function filterByType(selectedType: string, isReset: boolean = false) {
+  async function filterByType(selectedType: string) {
     setPokemons([]);
     setLoading(true);
 
@@ -284,8 +284,8 @@ const Main = (props: MainProps) => {
         </ul>
       }
 
-      <div ref={target} className={mainStyle.loading}>
-        { loading ? <span>Loading</span> : null}
+      <div ref={target} className={mainStyle.loader}>
+        { loading ? <p>Loading</p> : null}
       </div>
     </div>
   )
