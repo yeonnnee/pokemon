@@ -144,9 +144,6 @@ const Main = (props: MainProps) => {
     if ( total.totalCount  === pokemons.length) return;
     await fetchData(nextPokemons);
     setItemCount(itemCount + 20);
-
-    console.log('next');
-
     
   }, [fetchData,pokemons, total, props, itemCount, search]);
 
@@ -227,16 +224,12 @@ const Main = (props: MainProps) => {
     
     if (!query || !supportedLang.includes(query)) Router.push({ pathname: '/', query: { lang: 'ko' } });
  
-    console.log('start');
-
     setLang(query);
 
     if (!lang) return;
     setItemCount(0);
     setPokemons([]);
   
-    console.log('reRendered');
-
   },[Router, lang]);
 
 

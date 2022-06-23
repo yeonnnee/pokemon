@@ -42,7 +42,7 @@ const Detail = (props: DetailProps) => {
   const translation = sectionTitleName.filter(category => category.language === lang);
   const queryPokemonNm = router.query.pokemonName as string;
   const pokemonIdx = usePokemonIdx( queryPokemonNm.includes('gmax') ? -1 : data?.id || 0);
-  const loadPokemonInfoTxt = loadPokemonInfo.filter(text => text.language === lang)[0].text;
+  const loadPokemonInfoTxt = loadPokemonInfo.filter(text => text.language === lang)[0]?.text;
   
   const convertStatName = (name: string) => {
     switch (name) { 
