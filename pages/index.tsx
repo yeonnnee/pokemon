@@ -35,7 +35,8 @@ const Main = (props: MainProps) => {
   const [lang, setLang] = useState('');
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [total, setTotal] = useState<TotalState>({ totalCount: 0, data: []});
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(false);
   const [search, setSearch] = useState<SearchState>({ searchString: '', isSearching: false });
   const [itemCount, setItemCount] = useState<number>(0);
 
@@ -133,19 +134,19 @@ const Main = (props: MainProps) => {
 
   // 무한 스크롤 : 스크롤 하단 위치시 데이터 추가 로드
   const checkIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-    if (!entry.isIntersecting || search.isSearching) return;
+    if (!entry.isIntersecting || initialLoading) return;
 
     if (total.data.length === 0) {
       setTotal({ totalCount: props.data.length, data: props.data });
       return;
     }
-    
     const nextPokemons = total.data.slice(itemCount, itemCount + 20);
-    if ( total.totalCount  === pokemons.length) return;
+    if (total.totalCount === pokemons.length) return;
+    
     await fetchData(nextPokemons);
     setItemCount(itemCount + 20);
     
-  }, [fetchData,pokemons, total, props, itemCount, search]);
+  }, [fetchData,pokemons, total, props, itemCount, initialLoading]);
 
 
 
@@ -166,20 +167,25 @@ const Main = (props: MainProps) => {
   async function filterByType(selectedType: string | null) {
     if (!selectedType) return;
     setPokemons([]);
-    setLoading(true);
-
+    setInitialLoading(true);
     setItemCount(0);
 
     const res = await fetch(`https://pokeapi.co/api/v2/type/${selectedType}`);
     const data: TypeDetailApiRes = await res.json();
     const result = data.pokemon.map(pokemon => { return { ...pokemon } });
+
+    if (result.length == 0) {
+      setItemCount(0);
+      setPokemons([]);
+      return;
+    }
+
     setTotal({ totalCount: data.pokemon.length, data: data.pokemon });
     const filteredPokemons = await getPokemons(result.splice(0, 20));
 
     setPokemons(filteredPokemons);
     setItemCount(20);
-    setLoading(false);
-
+    setInitialLoading(false);
   }
 
   function checkCharEn(event: ChangeEvent<HTMLInputElement>) {
@@ -199,7 +205,7 @@ const Main = (props: MainProps) => {
 
     setItemCount(0);
     setPokemons([]);
-    setLoading(true);
+    setInitialLoading(true);
     setSearch({ ...search, isSearching: true });
 
     const result = await fetch(`https://pokeapi.co/api/v2/pokemon/${search.searchString}`)
@@ -215,7 +221,7 @@ const Main = (props: MainProps) => {
       setTotal({...total, totalCount: 1});
     }
 
-    setLoading(false);
+    setInitialLoading(false);
   }
 
 
