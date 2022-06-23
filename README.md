@@ -2,16 +2,21 @@
 
 포켓몬 OPEN API를 활용한 포켓몬 도감
 <br />
+[Pokedex 보러가기](https://pokedex-nv7x4zbgd-yeonnnee.vercel.app/?lang=ko)
 
-[POKEMON API](https://pokeapi.co/)
-
-<br />
 
 #### 기간
 
-2022-05-29 ~
+2022-05-29 ~ 2022-06-23
 
 <br/>
+
+#### Stack
+- Next.js
+- [POKEMON API](https://pokeapi.co/)
+- vercel
+
+<br />
 
 #### Preview
 
