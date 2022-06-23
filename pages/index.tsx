@@ -12,6 +12,7 @@ import PokemonFilter from '../Components/PokemonFilter';
 import useFilterCategory, { OptionItem } from '../hooks/useFilter';
 import { useRouter } from 'next/router';
 import { placeholder, title } from '../translate/text';
+import useInfinitScroll from 'hooks/useInfinitScroll';
 
 
 interface TotalState {
@@ -44,6 +45,8 @@ const Main = (props: MainProps) => {
   const placeHolderText = placeholder.filter(placeholder => placeholder.language === lang)[0];
   const typeFilter = useFilterCategory(props.types, lang);
   const target = useRef<HTMLDivElement>(null);
+
+  useInfinitScroll(target, loadMorePokemon);
 
   const getPokemonForm = useCallback((pokemonName: string) => {
     let label:string = '';
@@ -132,21 +135,20 @@ const Main = (props: MainProps) => {
   }, [getPokemons, pokemons]);
 
 
-  // 무한 스크롤 : 스크롤 하단 위치시 데이터 추가 로드
-  const checkIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-    if (!entry.isIntersecting || initialLoading) return;
+  async function loadMorePokemon () {
+    if ( initialLoading) return;
 
     if (total.data.length === 0) {
       setTotal({ totalCount: props.data.length, data: props.data });
       return;
     }
+
     const nextPokemons = total.data.slice(itemCount, itemCount + 20);
     if (total.totalCount === pokemons.length) return;
     
     await fetchData(nextPokemons);
-    setItemCount(itemCount + 20);
-    
-  }, [fetchData,pokemons, total, props, itemCount, initialLoading]);
+    setItemCount(itemCount + 20);    
+  };
 
 
 
@@ -244,14 +246,6 @@ const Main = (props: MainProps) => {
     setPokemons([]);
   
   },[Router, lang]);
-
-
-  // Intersection Observer API
-  useEffect(() => {
-    const observer = new IntersectionObserver(checkIntersect, {threshold:1});
-    if (target.current) observer.observe(target.current);
-    return () => observer && observer.disconnect();
-  }, [checkIntersect]);
 
 
   return (
