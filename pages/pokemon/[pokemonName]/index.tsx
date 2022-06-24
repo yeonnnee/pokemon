@@ -24,11 +24,9 @@ interface DetailProps {
   data: {
     detail: PokemonDetailApiRes,
     species: PokemonSpeciesApiRes,
-    isMega: boolean,
-    isGmax: boolean,
-    hasDifferVersion: boolean
+    isMega: string[],
+    isGmax: string[],
   }
-
 }
 
 const Detail = (props: DetailProps) => {
@@ -108,17 +106,20 @@ const Detail = (props: DetailProps) => {
       const firstLevelUp = await getEvolutionData(evolutionChain[0].species.url, 2);
       const lastLevelUp = await getEvolutionData(evolutionChain[0].evolves_to[0]?.species.url, 3);
 
-      if (props.data.isMega) {
-        const mega = await fetch(`https://pokeapi.co/api/v2/pokemon/${evolutionChain[0].evolves_to[0]?.species.name}-mega`).then(res => res.json());
-        const megaEvolution = { 
-          id: 4,
-          name: mega.name,
-          translatedNm: lang === 'ko' ? `메가${lastLevelUp.translatedNm}` : `メガ${lastLevelUp.translatedNm}`,
-          image: mega.sprites.front_default,
-          
-        }
-        return [[beforeLevelUp, firstLevelUp, lastLevelUp, megaEvolution].filter(info => info.name)];
-
+      if (props.data.isMega.length > 0) {
+        const mega = await Promise.all(props.data.isMega.map(async (megaName, index) => {
+          const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${megaName}`).then(res => res.json());
+          const megaEvolution = {
+            id: 3 + index + 1,
+            name: res.name,
+            translatedNm: lang === 'ko' ? `메가${lastLevelUp.translatedNm}` : `メガ${lastLevelUp.translatedNm}`,
+            image: res.sprites.front_default,
+            
+          };
+          return megaEvolution;
+        })); 
+       
+        return mega.map(megaEvolution => [beforeLevelUp, firstLevelUp, lastLevelUp, megaEvolution].filter(info => info.name));
       } else {
         return [[beforeLevelUp, firstLevelUp, lastLevelUp,].filter(info => info.name)];
       }
@@ -308,9 +309,8 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   // Form 정보
   const forms = pokemonName ? pokemons.map(pokemon => {if(pokemon.name.includes(pokemonName as string)) {return pokemon.name}}) : [];
-  const isMega = forms.filter(form => form?.includes('mega')).length > 0;
-  const isGmax = forms.filter(form => form?.includes('gmax')).length > 0;
-  const hasDifferVersion = forms.filter(form => form?.includes('mega')).length > 1;
+  const isMega = forms.filter(form => form?.includes('mega'));
+  const isGmax = forms.filter(form => form?.includes('gmax'));
 
   // 포켓몬 정보
   const detail = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`).then(res => res.json());
@@ -318,7 +318,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
 
   return {
-    props: { data: {detail, species, isMega, isGmax, hasDifferVersion} }
+    props: { data: {detail, species, isMega, isGmax} }
   }
 }
 
