@@ -16,8 +16,6 @@ const EvolutionInfo = (props : EvolutionInfoProps) => {
   const { evolution, sectionTitle, lang } = props;
   const noEvolutionInfoText = noEvolutionInfo.filter(text => text.language == lang)[0].text;
 
-  console.log(evolution)
-
   return (
     <div className={detailStyle.evolution}>
       <p className={detailStyle["section-title"]}>{sectionTitle}</p>
