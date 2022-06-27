@@ -1,0 +1,6 @@
+@import "../variables/shadow";
+
+@mixin label($label-name) {
+  background-color: $label-name;
+  box-shadow: $btn-shadow;
+}

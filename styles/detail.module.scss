@@ -1,5 +1,5 @@
 @import './variables/colors';
-@import './mixins/shadow';
+@import './variables/shadow';
 @import './mixins/tooltip';
 @import './mixins/media';
 
@@ -73,13 +73,12 @@
     .detail-info, .default-info {
 
       ul {
-        @include container-shadow();
-
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         width: 100%;
         text-align: center;
+        box-shadow: $container-shadow;
 
         li {
           width: 25%;
@@ -109,10 +108,10 @@
             }
 
             .label {
-              @include btn-hover-shadow();
+              padding: 2px 7px;
               border-radius: 4px;
               font-size: 14px;
-              padding: 2px 7px;
+              box-shadow: $btn-shadow;
               cursor: pointer;
             }
 
@@ -240,12 +239,12 @@
     }
 
     .selected-version {
-      @include btn-hover-shadow();
       display: inline-block;
       padding: 6px 20px;
       border-radius: 10px;
       border: 1px solid $gray-border;
       color: $pink;
+      box-shadow: $btn-shadow;
       cursor: pointer;
 
       .drop-down-icon {
@@ -255,7 +254,7 @@
       }
 
       &:hover {
-        @include input-shadow();
+        box-shadow: $input-shadow;
       }
     }
   
@@ -291,20 +290,19 @@
     }
 
     .desc-text {
-      @include container-shadow();
-
       height: 130px;
       padding: 50px 42px;
       margin: 20px 0 0;
       border-radius: 10px;
       text-align: center;
+      box-shadow: $container-shadow;
     }
   }
 
   .evolution {
-    @include container-shadow();
     padding: 0 0 18px;
     margin: 0 0 20px;
+    box-shadow: $container-shadow;
     
     .evolution-image {
       display: flex;
@@ -324,8 +322,6 @@
         }
 
         .pic {
-          @include sm-box-shadow();
-
           position: relative;
           width: 100px;
           height: 100px;
@@ -334,10 +330,11 @@
           text-align: center;
           background-color: $container-bg;
           transition: all 0.3s ease;
+          box-shadow: $sm-box-shadow;
           cursor: pointer;
 
           &:hover {
-            @include sm-box-inner-shadow();
+            box-shadow: $sm-box-inner-shadow;
           }
 
           @include respond-to(mobile) {
@@ -363,15 +360,14 @@
     display: none;
 
     .btn {
-      @include btn-hover-shadow();
-
       border: 1px solid $pink;
       padding: 10px 20px;
       background-color: $container-bg;
       border-radius: 20px;
+      box-shadow: $btn-shadow;
 
       &:hover {
-        @include input-shadow();
+        box-shadow: $input-shadow;
       }
     }
 
@@ -394,15 +390,16 @@
     }
 
     .btn {
-      @include btn-hover-shadow();
-
       border: 1px solid $pink;
       padding: 5px 10px;
       background-color: $container-bg;
       border-radius: 20px;
+      box-shadow: $btn-shadow;
+
 
       &:hover {
-        @include input-shadow();
+        box-shadow: $input-shadow;
+
       }
 
       .back-btn-icon {

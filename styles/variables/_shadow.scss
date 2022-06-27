@@ -1,0 +1,13 @@
+@import "./colors";
+
+$container-shadow: inset -2px -1px 7px #c7c6c68f, inset 1px 4px 5px $shade-shadow;
+
+$card-inner-shadow: inset 7px 10px 15px 0px $gray-border, 1px 2px 0px 0px #fffefe, inset 0px 1px 10px 8px #fff;
+$card-normal-shadow: 12px 11px 11px 5px #e1e4e6, -8px -8px 7px 0px $list-bg;
+
+$sm-box-shadow: -3px -3px 7px $base-shadow, 3px 3px 5px $shade-shadow;
+$sm-box-inner-shadow: inset -2px -1px 7px $base-shadow, inset 1px 4px 5px $shade-shadow;
+
+$btn-shadow: -3px -3px 7px $base-shadow, 3px 3px 7px 0px #b7b8b9;
+$input-shadow: 4px 5px 20px $shade-shadow, -2px -1px 20px #fff, inset -5px -5px 5px $base-shadow, inset 5px 5px 5px #0000000d;
+

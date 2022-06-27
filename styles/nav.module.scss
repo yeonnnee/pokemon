@@ -1,5 +1,5 @@
 
-@import "./mixins/shadow";
+@import "./variables/shadow";
 @import "./mixins/media";
 @import "./variables/colors";
 
@@ -30,7 +30,6 @@
     position: relative;
 
     .selected-lang {
-      @include btn-hover-shadow();
       position: absolute;
       top: -10px;
       right: 0;
@@ -40,6 +39,7 @@
       border: 1px solid $gray-border;
       border-radius: 9px;
       font-size: 13px;
+      box-shadow: $btn-shadow;
       cursor: pointer;
 
       span {
@@ -48,7 +48,7 @@
 
       &:hover {
         color: $pink;
-        @include input-shadow();
+        box-shadow: $input-shadow;
       }
 
       .drop-down-icon {
@@ -63,7 +63,6 @@
     }
 
     ul {
-      @include btn-hover-shadow();
       visibility:hidden;
       position: absolute;
       right: 20px;
@@ -73,6 +72,7 @@
       border: 1px solid $gray-border;
       border-radius: 10px;
       background-color: #f8f6f6;
+      box-shadow: $btn-shadow;
       
       li {
         padding: 5px 10px;
