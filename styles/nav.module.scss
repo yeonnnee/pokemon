@@ -1,6 +1,7 @@
 
 @import "./variables/shadow";
 @import "./mixins/media";
+@import "./mixins/position";
 @import "./variables/colors";
 
 .nav {
@@ -30,9 +31,8 @@
     position: relative;
 
     .selected-lang {
-      position: absolute;
-      top: -10px;
-      right: 0;
+      @include pos-absolute(-10px, right, 0);
+
       display: flex;
       justify-content: flex-end;
       padding: 5px;
@@ -58,15 +58,14 @@
       }
 
       @include respond-to(mobile) {
-        right: -16px;
+        @include pos-absolute(-10px, right, -16px);
       }
     }
 
     ul {
+      @include pos-absolute(29px, right, 20px);
+
       visibility:hidden;
-      position: absolute;
-      right: 20px;
-      top: 29px;
       padding: 0 10px;
       transition: all 0.3s ease;
       border: 1px solid $gray-border;

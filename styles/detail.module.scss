@@ -2,6 +2,7 @@
 @import './variables/shadow';
 @import './mixins/tooltip';
 @import './mixins/media';
+@import './mixins/position';
 
 .detail {
   padding: 0 0 30px;
@@ -157,9 +158,7 @@
             }
 
             span {
-              position: absolute;
-              left: 9px;
-              top: 6px;
+              @include pos-absolute(6px, left, 9px);
               color: red;
               cursor: pointer;
 
@@ -259,12 +258,10 @@
     }
   
     .version-tab {
-      position: absolute;
-      right: 0;
-      top: 50px;
+      @include pos-absolute(50px, right, 0);
+      height: 200px;
       text-align: left;
       background-color: $container-bg;
-      height: 200px;
       overflow-y: scroll;
       visibility: hidden;
   
@@ -379,11 +376,10 @@
 
 
   .back-btn {
-    position: absolute;
+    @include pos-absolute(-50px, left, -10px);
     display: block;
     text-align: left;
-    top: -50px;
-    left: -10px;
+
 
     @include respond-to(wide) {
       display: none;

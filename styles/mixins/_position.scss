@@ -1,0 +1,10 @@
+@mixin pos-absolute($top, $side: left, $value) {
+  position: absolute;
+  top: $top;
+  
+  @if($side == left) {
+    left: $value;
+  } @else {
+    right: $value;
+  }
+}

@@ -1,6 +1,7 @@
 @import './variables/colors';
 @import './variables/shadow';
 @import './mixins/media';
+@import "./mixins/position";
 
 .main {
   padding: 20px;
@@ -31,17 +32,14 @@
       }
 
       .search-icon {
-        position: absolute;
-        left: 15px;
-        top: 13px;
-        color: #525050;
+        @include pos-absolute(13px, left, 15px);
+        color: $icon-color;
       }
 
       .reset-icon {
-        position: absolute;
-        right: 15px;
-        top: 13px;
-        color: #525050;
+        @include pos-absolute(13px, right, 15px);
+
+        color: $icon-color;
         cursor: pointer;
 
         &:hover {
@@ -72,12 +70,11 @@
     }
 
     .option-list {
+      @include pos-absolute(65px, right, 0);
+      
       min-width: 131px;
       visibility: hidden;
-      position: absolute;
       z-index: 1;
-      right: 0px;
-      top: 65px;
       background-color: $container-bg;
       border-radius: 10px;
       box-shadow: $card-normal-shadow;
