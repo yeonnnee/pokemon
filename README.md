@@ -11,9 +11,10 @@
 
 <br/>
 
-#### Stack
+#### Features
 - Next.js
 - Chart.js
+- scss
 - [POKEMON API](https://pokeapi.co/)
 - vercel
 
